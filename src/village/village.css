@@ -1,0 +1,100 @@
+#village-root { position: fixed; inset: 0; background: #57a94f; z-index: 50; }
+#village-root canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+#village-classic { bottom: 16px; left: 16px; }
+
+/* ---- the lock: a handheld waking up ---- */
+.v-lock { position: fixed; inset: 0; z-index: 90; background: #0a0f1e;
+  display: flex; align-items: center; justify-content: center; }
+.v-shell { background: #2c3452; border: 4px solid #404c74; border-radius: 18px;
+  padding: 26px 30px; width: min(360px, 92vw); text-align: center;
+  font-family: ui-monospace, Menlo, monospace; color: #7dde6a; }
+.v-shell .v-screen { background: #0e2a16; border: 3px solid #09140b; border-radius: 6px;
+  padding: 22px 14px; margin-bottom: 18px; }
+.v-shell h3 { margin: 0 0 10px; font-size: 15px; letter-spacing: .2em; }
+.v-shell .v-hint { color: #4f9d5d; font-size: 12px; margin: 8px 0 0; }
+.v-shell .v-nudge { color: #ffd93b; font-size: 12px; margin: 8px 0 0; }
+.v-code { display: flex; gap: 8px; justify-content: center; margin: 14px 0 4px; }
+.v-code input { width: 44px; height: 52px; text-align: center; font: 700 24px ui-monospace, monospace;
+  background: #09140b; color: #7dde6a; border: 2px solid #2f7a3a; border-radius: 6px; caret-color: #7dde6a; }
+.v-code input:focus { outline: 2px solid #7dde6a; }
+.v-shell.shake .v-screen { animation: vshake .3s; }
+@keyframes vshake { 25% { transform: translateX(-6px) } 75% { transform: translateX(6px) } }
+.v-lock .corner-btn { position: absolute; bottom: 18px; right: 18px; }
+
+/* ---- panels & dialogue: pixel paper ---- */
+.v-overlay { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center;
+  justify-content: center; padding: 18px; background: rgba(20, 30, 20, .45); }
+.v-panel { background: #f7ecd7; color: #2b3550; border: 4px solid #2b3550; border-radius: 4px;
+  box-shadow: 4px 4px 0 rgba(43, 53, 80, .5); width: 100%; max-width: 460px; max-height: 80vh;
+  overflow: auto; padding: 20px 22px; font-family: ui-monospace, Menlo, monospace; position: relative; }
+.v-panel h3 { margin: 0 0 10px; font-size: 15px; letter-spacing: .12em; }
+.v-panel h4 { margin: 12px 0 6px; font-size: 13px; }
+.v-panel p, .v-panel li { font-size: 13px; line-height: 1.55; }
+.v-panel ul { margin: 0 0 8px; padding-left: 18px; }
+.v-flavor { color: #6b6455; font-style: italic; }
+.v-story { border-top: 2px dashed #d9cbb0; padding-top: 8px; margin-top: 8px; }
+.v-story.dusty { opacity: .7; }
+.v-tag { font-size: 10px; background: #d9cbb0; border-radius: 3px; padding: 2px 5px; vertical-align: 1px; }
+.v-tag.on { background: #7dde6a; }
+.v-dim { color: #8a8272; font-size: 11px; }
+.v-btn { background: #2b3550; color: #f7ecd7; border: 0; border-radius: 3px; padding: 9px 14px;
+  font: 700 12px ui-monospace, monospace; cursor: pointer; text-decoration: none; display: inline-block; }
+.v-btn.ghost { background: transparent; color: #2b3550; border: 2px solid #2b3550; }
+.v-btn:hover { filter: brightness(1.15); }
+.v-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.v-close { position: absolute; top: 6px; right: 10px; background: none; border: 0;
+  font: 700 18px monospace; color: #2b3550; cursor: pointer; }
+.v-letter { width: 100%; font: 13px/1.5 ui-monospace, monospace; background: #fffdf6;
+  border: 2px solid #2b3550; border-radius: 3px; padding: 10px; resize: vertical; box-sizing: border-box; }
+.v-options { display: grid; gap: 8px; margin-top: 10px; }
+
+.v-dialogue { position: fixed; left: 50%; transform: translateX(-50%); bottom: 26px; z-index: 82;
+  background: #f7ecd7; color: #2b3550; border: 4px solid #2b3550; border-radius: 4px;
+  box-shadow: 4px 4px 0 rgba(43,53,80,.5); width: min(520px, 92vw); padding: 12px 16px;
+  font-family: ui-monospace, monospace; cursor: pointer; }
+.v-dialogue b { font-size: 12px; letter-spacing: .1em; }
+.v-dialogue p { margin: 6px 0 0; font-size: 13px; }
+.v-next { position: absolute; right: 10px; bottom: 6px; font-size: 11px; animation: vbob 1s infinite; }
+@keyframes vbob { 50% { transform: translateY(-3px) } }
+
+/* ---- arcade ---- */
+.v-panel.arcade { background: #0e2a16; color: #7dde6a; border-color: #09140b;
+  box-shadow: 4px 4px 0 rgba(9, 20, 11, .8); text-align: center; }
+.v-panel.arcade .v-flavor { color: #4f9d5d; }
+.v-record { font-size: 16px; line-height: 1.5; color: #ffd93b; }
+.v-hud { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px; }
+.v-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; max-width: 300px; margin: 0 auto; }
+.v-grid button { aspect-ratio: 1; font: 700 20px ui-monospace, monospace; border-radius: 4px;
+  border: 2px solid #2f7a3a; background: #1c4a28; color: #d2ffe9; cursor: pointer; }
+.v-grid button:hover { background: #2f7a3a; }
+.v-grid .hole { background: transparent; border-color: transparent; cursor: default; }
+.v-help { margin-top: 10px; }
+.v-ticket { background: #f7ecd7; color: #2b3550; padding: 8px 10px; border-radius: 3px;
+  font-size: 12px; letter-spacing: .06em; }
+.v-panel.win h3 { color: #ffd93b; }
+
+/* ---- toasts + quest chip ---- */
+.v-toast { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 95;
+  background: #2b3550; color: #ffd93b; border: 3px solid #ffd93b; border-radius: 4px;
+  padding: 10px 18px; font: 700 12px ui-monospace, monospace; letter-spacing: .08em;
+  animation: vtoast 2.6s forwards; }
+@keyframes vtoast { 0% { opacity: 0; transform: translate(-50%, -12px) } 10%, 80% { opacity: 1; transform: translate(-50%, 0) } 100% { opacity: 0 } }
+#quest-chip { top: 16px; right: 16px; position: fixed; }
+
+/* ---- share card + CRT ---- */
+.v-panel.win-all { text-align: center; }
+.v-panel.win-all h3 { color: #b95d4d; }
+.v-share-img { width: 100%; image-rendering: pixelated; border: 3px solid #2b3550; border-radius: 3px; }
+#village-root.crt::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply; }
+
+/* ---- touch controls ---- */
+.v-dpad { position: fixed; left: 18px; bottom: 64px; z-index: 75; display: none;
+  grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 46px); gap: 4px; }
+.v-dpad button { background: rgba(43, 53, 80, .75); color: #f7ecd7; border: 0; border-radius: 8px;
+  font-size: 18px; }
+.v-interact { position: fixed; right: 18px; bottom: 76px; z-index: 75; display: none;
+  width: 64px; height: 64px; border-radius: 50%; background: rgba(43, 53, 80, .85);
+  color: #ffd93b; border: 3px solid #ffd93b; font: 700 16px ui-monospace, monospace; }
+@media (pointer: coarse) { .v-dpad { display: grid; } .v-interact { display: block; } }

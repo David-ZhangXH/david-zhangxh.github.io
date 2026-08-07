@@ -1,0 +1,27 @@
+{
+  "school": [
+    { "title": "The classroom (replace me)", "text": "A school-life story goes here — a class, a teacher, a moment David remembers. He will write these himself." },
+    { "title": "After class (replace me)", "text": "Another memory from school days — clubs, friends, the small things that stuck." }
+  ],
+  "home": [
+    { "title": "On the walls (replace me)", "text": "Photos and hobbies live here. David will describe what he loves outside of work." },
+    { "title": "The bookshelf (replace me)", "text": "Fun facts told by objects — a favorite book, a keepsake, a story behind each." }
+  ],
+  "npcs": {
+    "villager": [
+      "Welcome to town! Not many make it past the lock.",
+      "You must be one of the curious ones.",
+      "The Lab has an old arcade machine. The record on it is... intimidating."
+    ],
+    "librarian": [
+      "Shh — welcome to the library.",
+      "Everything David has written lives on these shelves.",
+      "Care to try my little quiz? Three questions, no pressure."
+    ]
+  },
+  "quiz": [
+    { "q": "Placeholder quiz question 1 about David's paper (replace me)?", "options": ["Right answer", "Wrong answer", "Wrong answer", "Wrong answer"], "answer": 0 },
+    { "q": "Placeholder quiz question 2 (replace me)?", "options": ["Wrong answer", "Right answer", "Wrong answer", "Wrong answer"], "answer": 1 },
+    { "q": "Placeholder quiz question 3 (replace me)?", "options": ["Wrong answer", "Wrong answer", "Right answer", "Wrong answer"], "answer": 2 }
+  ]
+}

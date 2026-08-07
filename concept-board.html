@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>David.world — Concept Board</title>
+<style>
+:root{--bg:#0a0c13;--ink:#e8ecf4;--dim:#98a0b4;--line:rgba(255,255,255,.08)}
+*{margin:0;box-sizing:border-box}
+body{
+  background:
+    radial-gradient(1200px 600px at 70% -10%, #1b2138 0%, transparent 60%),
+    radial-gradient(900px 500px at 0% 100%, #171226 0%, transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  padding:38px 20px 64px;
+}
+.wrap{max-width:1080px;margin:0 auto}
+.eyebrow{font:600 11px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.24em;color:#8fa0ff;text-transform:uppercase}
+h1{font-size:clamp(30px,5vw,48px);font-weight:800;letter-spacing:-.02em;margin:12px 0 10px;
+  background:linear-gradient(90deg,#ffffff,#a9b8ff 55%,#6be5ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--dim);max-width:660px;font-size:15px}
+.grid{display:grid;gap:22px;margin-top:36px;grid-template-columns:1fr}
+@media(min-width:820px){.grid{grid-template-columns:1fr 1fr}}
+.card{position:relative;background:linear-gradient(180deg,#151a26,#10131d);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:transform .25s ease,border-color .25s ease}
+.card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.2)}
+.vig{aspect-ratio:16/9;display:block;width:100%;background:#0c0f18}
+.vig svg{display:block;width:100%;height:100%}
+.num{position:absolute;top:8px;right:14px;font:800 44px/1 ui-monospace,Menlo,monospace;color:rgba(255,255,255,.16);text-shadow:0 1px 8px rgba(0,0,0,.5);pointer-events:none}
+.cbody{padding:18px 20px 20px}
+h2{font-size:19px;margin-bottom:3px}
+.pitch{font-style:italic;color:#c9d0e0;font-size:14px;margin-bottom:9px}
+.desc{color:var(--dim);font-size:13.5px;margin-bottom:11px}
+.sig{font-size:13px;color:#dde3f0;background:rgba(255,255,255,.04);border-left:3px solid var(--acc,#8fa0ff);padding:8px 11px;border-radius:0 9px 9px 0;margin-bottom:13px}
+.sig b{color:var(--acc,#8fa0ff);font-weight:650}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 11px/1 ui-monospace,Menlo,monospace;color:#aab3c7;border:1px solid var(--line);border-radius:99px;padding:5px 9px;background:rgba(255,255,255,.02);white-space:nowrap}
+.chip .on{color:var(--acc,#8fa0ff)}
+.chip .off{color:#414a60}
+.note{margin-top:32px;border:1px dashed rgba(255,255,255,.16);border-radius:14px;padding:17px 19px;color:var(--dim);font-size:13.5px}
+.note strong{color:var(--ink);font-weight:650}
+/* ---- animations ---- */
+.fog{animation:fogx 26s ease-in-out infinite alternate}
+@keyframes fogx{to{transform:translateX(230px)}}
+.tw1,.tw2,.tw3{animation:tw 2.8s ease-in-out infinite}
+.tw2{animation-delay:.9s}.tw3{animation-delay:1.8s}
+@keyframes tw{0%,100%{opacity:.3}50%{opacity:1}}
+.shipA{animation:shipf 12s ease-in-out infinite alternate}
+@keyframes shipf{to{transform:translate(-30px,12px) rotate(-10deg)}}
+.cloud{animation:cloudx 24s ease-in-out infinite alternate}
+@keyframes cloudx{to{transform:translateX(48px)}}
+.walkerA{animation:walkx 7s linear infinite alternate}
+@keyframes walkx{to{transform:translateX(150px)}}
+.bob{animation:boby .5s steps(2) infinite}
+@keyframes boby{50%{transform:translateY(-1.5px)}}
+.bounce{animation:bnc 1s ease-in-out infinite}
+@keyframes bnc{50%{transform:translateY(-5px)}}
+.glowf{animation:fpulse 3.4s ease-in-out infinite}
+.gf2{animation-delay:.7s}.gf3{animation-delay:1.4s}.gf4{animation-delay:2.1s}.gf5{animation-delay:2.8s}.gf6{animation-delay:.35s}
+@keyframes fpulse{0%,100%{opacity:.45}50%{opacity:1}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pls 1.1s ease-in-out infinite}
+.pslow{animation-duration:2.6s}.pmid{animation-duration:3.4s}
+@keyframes pls{50%{transform:scale(1.22)}}
+.ekg{stroke-dasharray:900;animation:dash 5.5s linear infinite}
+@keyframes dash{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+.steam{animation:stm 3.2s ease-out infinite;fill:none}
+.s2{animation-delay:1.1s}.s3{animation-delay:2.2s}
+@keyframes stm{0%{opacity:0;transform:translateY(4px)}30%{opacity:.5}100%{opacity:0;transform:translateY(-13px)}}
+.blink{animation:blk 1.1s steps(1) infinite}
+@keyframes blk{50%{opacity:0}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">david.world — concept board 01</div>
+  <h1>A space, not a page</h1>
+  <p class="sub">Six directions for a personal site people explore like a place — walk it, fly it, play it. None of them scroll. Pick the world that feels like you; we can steal the best moments from the rest.</p>
+
+  <div class="grid">
+
+  <!-- ============ 01 PROBABILITY LANDSCAPE ============ -->
+  <article class="card" style="--acc:#ff9d6b">
+    <div class="vig">
+    <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" aria-label="Mountains shaped like probability curves at dusk">
+      <defs>
+        <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#171040"/><stop offset=".55" stop-color="#5c2f63"/><stop offset="1" stop-color="#e98a63"/>
+        </linearGradient>
+        <radialGradient id="sun1">
+          <stop offset="0" stop-color="#ffd9a0"/><stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="blur1"><feGaussianBlur stdDeviation="5"/></filter>
+      </defs>
+      <rect width="400" height="225" fill="url(#sky1)"/>
+      <circle cx="118" cy="112" r="58" fill="url(#sun1)" opacity=".85"/>
+      <circle cx="118" cy="112" r="13" fill="#ffe9c4"/>
+      <!-- back ridge -->
+      <path d="M0,160 C40,160 60,96 95,96 C130,96 140,160 180,160 C210,160 225,118 250,118 C275,118 290,160 320,160 C350,160 360,134 400,134 L400,225 L0,225 Z" fill="#3b2a55" opacity=".85"/>
+      <!-- mid ridge: the Gaussian -->
+      <path d="M0,186 C50,186 70,110 118,110 C166,110 180,186 232,186 C262,186 272,150 302,150 C332,150 342,186 400,178 L400,225 L0,225 Z" fill="#2a1e44"/>
+      <line x1="118" y1="112" x2="118" y2="186" stroke="#ffe9c4" stroke-width=".8" stroke-dasharray="2 3" opacity=".55"/>
+      <text x="123" y="132" font-size="10" fill="#ffe9c4" opacity=".9" font-style="italic" font-family="Georgia,serif">μ</text>
+      <!-- flag on the peak -->
+      <line x1="118" y1="110" x2="118" y2="99" stroke="#ffe9c4" stroke-width="1"/>
+      <polygon points="118,99 127,101.5 118,104" fill="#ff9d6b"/>
+      <!-- front ridge with Kaplan-Meier step cliffs -->
+      <path d="M0,206 C40,206 55,152 90,152 C125,152 140,206 190,201 L214,201 L214,207 L240,207 L240,213 L266,213 L266,219 L294,219 L294,225 L0,225 Z" fill="#180f2e"/>
+      <text x="52" y="147" font-size="6.5" fill="#ffd9c9" opacity=".5" font-family="ui-monospace,monospace" letter-spacing="1">GAUSSIAN RANGE</text>
+      <text x="222" y="197" font-size="6.5" fill="#ffd9c9" opacity=".5" font-family="ui-monospace,monospace" letter-spacing="1">K–M CLIFFS</text>
+      <!-- drifting fog = confidence band -->
+      <rect class="fog" x="-140" y="152" width="300" height="24" rx="12" fill="#ffffff" opacity=".09" filter="url(#blur1)"/>
+    </svg>
+    </div>
+    <div class="num">01</div>
+    <div class="cbody">
+      <h2>The Probability Landscape</h2>
+      <p class="pitch">“A world terraformed from the distributions you work in.”</p>
+      <p class="desc">Visitors hike a 3D terrain whose mountains literally <em>are</em> probability curves — a Gaussian range at the center, Kaplan–Meier cliffs stepping down to the sea, a skewed χ² valley. Each landmark opens a chapter: your CV waits at the summit (at μ, naturally), papers are camps pitched along the survival cliffs, and fog banks you walk through are confidence intervals.</p>
+      <p class="sig"><b>Signature moment</b> — a visitor realizes the mountain they're climbing is a bell curve, and your CV sits exactly at the mean.</p>
+      <div class="meta">
+        <span class="chip">uniqueness <span class="on">●●●●●</span></span>
+        <span class="chip">effort <span class="on">●●●●</span><span class="off">○</span></span>
+        <span class="chip">phone <span class="on">●●●</span><span class="off">○○</span></span>
+        <span class="chip">three.js terrain</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ 02 DATA OBSERVATORY ============ -->
+  <article class="card" style="--acc:#6be5ff">
+    <div class="vig">
+    <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" aria-label="A galaxy of data points with labelled research constellations">
+      <rect width="400" height="225" fill="#04060f"/>
+      <ellipse cx="92" cy="72" rx="58" ry="40" fill="#6be5ff" opacity=".08"/>
+      <ellipse cx="292" cy="62" rx="62" ry="42" fill="#ff6bd5" opacity=".07"/>
+      <ellipse cx="212" cy="166" rx="72" ry="42" fill="#ffd27a" opacity=".07"/>
+      <!-- background stars -->
+      <g fill="#cfe6ff" class="tw1">
+        <circle cx="30" cy="30" r="1"/><circle cx="150" cy="18" r=".8"/><circle cx="238" cy="120" r="1.1"/>
+        <circle cx="330" cy="150" r=".9"/><circle cx="376" cy="40" r="1"/><circle cx="58" cy="180" r=".8"/>
+        <circle cx="132" cy="128" r=".9"/><circle cx="196" cy="60" r=".7"/><circle cx="352" cy="204" r="1"/>
+      </g>
+      <g fill="#cfe6ff" class="tw2">
+        <circle cx="80" cy="14" r=".9"/><circle cx="112" cy="96" r="1"/><circle cx="262" cy="24" r=".8"/>
+        <circle cx="308" cy="108" r="1.1"/><circle cx="386" cy="120" r=".8"/><circle cx="20" cy="120" r="1"/>
+        <circle cx="172" cy="200" r=".9"/><circle cx="118" cy="210" r=".8"/><circle cx="248" cy="88" r=".7"/>
+      </g>
+      <g fill="#cfe6ff" class="tw3">
+        <circle cx="46" cy="66" r=".8"/><circle cx="176" cy="34" r="1"/><circle cx="220" cy="12" r=".7"/>
+        <circle cx="344" cy="82" r=".9"/><circle cx="300" cy="196" r=".8"/><circle cx="14" cy="200" r=".9"/>
+        <circle cx="94" cy="150" r=".7"/><circle cx="368" cy="176" r="1"/><circle cx="140" cy="70" r=".8"/>
+      </g>
+      <!-- constellation: survival analysis -->
+      <polyline points="66,58 92,44 118,64 104,92 74,86" fill="none" stroke="#6be5ff" stroke-width=".6" opacity=".5"/>
+      <g fill="#aef0ff"><circle cx="66" cy="58" r="1.8"/><circle cx="92" cy="44" r="2.2"/><circle cx="118" cy="64" r="1.7"/><circle cx="104" cy="92" r="1.9"/><circle cx="74" cy="86" r="1.6"/></g>
+      <text x="60" y="110" font-size="6.5" fill="#6be5ff" opacity=".75" font-family="ui-monospace,monospace" letter-spacing="1">SURVIVAL ANALYSIS</text>
+      <!-- constellation: causal inference -->
+      <polyline points="268,44 292,36 316,52 306,80 274,72" fill="none" stroke="#ff6bd5" stroke-width=".6" opacity=".5"/>
+      <g fill="#ffc2ec"><circle cx="268" cy="44" r="1.7"/><circle cx="292" cy="36" r="2.2"/><circle cx="316" cy="52" r="1.8"/><circle cx="306" cy="80" r="1.6"/><circle cx="274" cy="72" r="1.9"/></g>
+      <text x="258" y="98" font-size="6.5" fill="#ff6bd5" opacity=".75" font-family="ui-monospace,monospace" letter-spacing="1">CAUSAL INFERENCE</text>
+      <!-- constellation: clinical trials -->
+      <polyline points="186,158 212,146 240,160 228,184 196,180" fill="none" stroke="#ffd27a" stroke-width=".6" opacity=".5"/>
+      <g fill="#ffe7b3"><circle cx="186" cy="158" r="1.8"/><circle cx="212" cy="146" r="2.3"/><circle cx="240" cy="160" r="1.7"/><circle cx="228" cy="184" r="1.9"/><circle cx="196" cy="180" r="1.6"/></g>
+      <text x="184" y="206" font-size="6.5" fill="#ffd27a" opacity=".75" font-family="ui-monospace,monospace" letter-spacing="1">CLINICAL TRIALS</text>
+      <!-- comet -->
+      <circle r="1.8" fill="#ffffff">
+        <animateMotion dur="9s" repeatCount="indefinite" path="M-20,190 C120,130 260,95 430,30"/>
+      </circle>
+      <circle r="1" fill="#ffffff" opacity=".45">
+        <animateMotion dur="9s" begin="0.25s" repeatCount="indefinite" path="M-20,190 C120,130 260,95 430,30"/>
+      </circle>
+      <!-- little ship -->
+      <g transform="translate(346,140) rotate(-28)">
+        <g class="shipA">
+          <polygon points="0,-5 3.5,4 0,2.4 -3.5,4" fill="#e8ecf4"/>
+          <line x1="0" y1="4" x2="0" y2="9" stroke="#6be5ff" stroke-width="1" opacity=".7"/>
+        </g>
+      </g>
+    </svg>
+    </div>
+    <div class="num">02</div>
+    <div class="cbody">
+      <h2>The Data Observatory</h2>
+      <p class="pitch">“Every paper a star. Your career, a navigable galaxy.”</p>
+      <p class="desc">Your work floats as a universe of glowing points: publications are stars, research areas form constellations, co-authorships are threads of light between them. Visitors pilot a camera through the dark and land on any star to read the work. The killer feature: one click <em>re-projects the entire sky</em> by year, topic, or journal — because the galaxy is a real dataset.</p>
+      <p class="sig"><b>Signature moment</b> — hitting “reproject” and watching the whole night sky rearrange itself into a live scatterplot.</p>
+      <div class="meta">
+        <span class="chip">uniqueness <span class="on">●●●●●</span></span>
+        <span class="chip">effort <span class="on">●●●●</span><span class="off">○</span></span>
+        <span class="chip">phone <span class="on">●●●●</span><span class="off">○</span></span>
+        <span class="chip">three.js points</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ 03 PIXEL RESEARCH VILLAGE ============ -->
+  <article class="card" style="--acc:#7dde6a">
+    <div class="vig">
+    <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" aria-label="A retro pixel-art village with a lab and a library">
+      <rect width="400" height="70" fill="#8fd3ff"/>
+      <rect y="70" width="400" height="155" fill="#57a94f"/>
+      <g fill="#3f8f3a" opacity=".35">
+        <rect x="20" y="90" width="10" height="6"/><rect x="140" y="196" width="12" height="6"/>
+        <rect x="330" y="120" width="10" height="6"/><rect x="250" y="205" width="12" height="6"/>
+        <rect x="60" y="185" width="10" height="6"/><rect x="368" y="188" width="10" height="6"/>
+      </g>
+      <!-- clouds -->
+      <g class="cloud" fill="#ffffff" opacity=".9">
+        <rect x="40" y="18" width="34" height="10"/><rect x="48" y="12" width="18" height="8"/>
+      </g>
+      <g class="cloud" style="animation-delay:-12s" fill="#ffffff" opacity=".8">
+        <rect x="240" y="28" width="40" height="10"/><rect x="250" y="21" width="20" height="8"/>
+      </g>
+      <!-- path -->
+      <rect x="0" y="152" width="400" height="22" fill="#d9b36c"/>
+      <rect x="0" y="152" width="400" height="3" fill="#c29a54"/>
+      <rect x="0" y="171" width="400" height="3" fill="#c29a54"/>
+      <!-- cottage -->
+      <rect x="42" y="98" width="64" height="46" fill="#c98a5b"/>
+      <polygon points="36,98 74,66 112,98" fill="#8a4a3b"/>
+      <rect x="66" y="118" width="16" height="26" fill="#5b3220"/>
+      <rect x="48" y="108" width="13" height="13" fill="#ffe58a"/>
+      <rect x="88" y="108" width="13" height="13" fill="#ffe58a"/>
+      <!-- LAB -->
+      <rect x="168" y="88" width="74" height="56" fill="#cdd6e4"/>
+      <rect x="163" y="80" width="84" height="10" fill="#7c8aa5"/>
+      <rect x="182" y="104" width="22" height="16" fill="#9adfff"/>
+      <rect x="188" y="110" width="4" height="8" fill="#4fd1a1"/>
+      <rect x="196" y="107" width="4" height="11" fill="#ff8fa3"/>
+      <rect x="214" y="118" width="16" height="26" fill="#3a4560"/>
+      <rect x="186" y="90" width="38" height="11" fill="#ffd27a"/>
+      <text x="192" y="99" font-size="9" font-family="ui-monospace,monospace" font-weight="bold" fill="#22304a">LAB</text>
+      <text x="196" y="76" class="bounce" font-size="14" font-family="ui-monospace,monospace" font-weight="bold" fill="#ffd93b" style="transform-box:fill-box">!</text>
+      <!-- LIBRARY -->
+      <rect x="288" y="94" width="82" height="50" fill="#b9805a"/>
+      <polygon points="282,94 329,64 376,94" fill="#6e4534"/>
+      <rect x="322" y="120" width="15" height="24" fill="#4a2c1c"/>
+      <rect x="296" y="106" width="18" height="14" fill="#f7ecd7"/>
+      <rect x="298" y="108" width="4" height="10" fill="#c05d5d"/>
+      <rect x="303" y="108" width="4" height="10" fill="#4f7fbf"/>
+      <rect x="308" y="108" width="4" height="10" fill="#d9a441"/>
+      <rect x="344" y="106" width="18" height="14" fill="#f7ecd7"/>
+      <rect x="346" y="108" width="4" height="10" fill="#5da05d"/>
+      <rect x="351" y="108" width="4" height="10" fill="#8a5db0"/>
+      <rect x="356" y="108" width="4" height="10" fill="#c05d5d"/>
+      <text x="300" y="90" font-size="8" font-family="ui-monospace,monospace" font-weight="bold" fill="#f7ecd7">LIBRARY</text>
+      <!-- trees -->
+      <g><rect x="10" y="120" width="8" height="14" fill="#6e4534"/><rect x="2" y="96" width="24" height="26" fill="#2f7a3a"/><rect x="6" y="88" width="16" height="10" fill="#2f7a3a"/></g>
+      <g><rect x="140" y="126" width="8" height="12" fill="#6e4534"/><rect x="132" y="104" width="24" height="24" fill="#2f7a3a"/></g>
+      <g><rect x="382" y="122" width="8" height="14" fill="#6e4534"/><rect x="374" y="98" width="24" height="26" fill="#2f7a3a"/></g>
+      <!-- mailbox -->
+      <rect x="128" y="176" width="4" height="14" fill="#6e4534"/>
+      <rect x="123" y="168" width="14" height="9" fill="#d95d5d"/>
+      <!-- walking pixel-David -->
+      <g transform="translate(160,150)">
+        <g class="walkerA">
+          <g class="bob">
+            <rect x="0" y="0" width="9" height="4" fill="#2b2b2b"/>
+            <rect x="0" y="4" width="9" height="6" fill="#f2c69a"/>
+            <rect x="0" y="10" width="9" height="9" fill="#3a6ea8"/>
+            <rect x="0" y="19" width="4" height="6" fill="#2b3550"/>
+            <rect x="5" y="19" width="4" height="6" fill="#2b3550"/>
+          </g>
+        </g>
+      </g>
+    </svg>
+    </div>
+    <div class="num">03</div>
+    <div class="cbody">
+      <h2>Pixel Research Village</h2>
+      <p class="pitch">“Your career as a cozy retro RPG town.”</p>
+      <p class="desc">A tiny pixel-David walks through a hand-built village: the Lab holds current projects, the Library shelves your publications, NPCs (collaborators, mentors) offer dialogue, and the mailbox is your contact form. Visitors get a quest log — “read 3 papers, find the hidden coffee machine” — with achievements for completing your story.</p>
+      <p class="sig"><b>Signature moment</b> — a pixel-you hands visitors their first quest: <em>Collect all publications.</em></p>
+      <div class="meta">
+        <span class="chip">uniqueness <span class="on">●●●●</span><span class="off">○</span></span>
+        <span class="chip">effort <span class="on">●●●</span><span class="off">○○</span></span>
+        <span class="chip">phone <span class="on">●●●●●</span></span>
+        <span class="chip">canvas 2D</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ 04 THE INSTITUTE ============ -->
+  <article class="card" style="--acc:#ffd27a">
+    <div class="vig">
+    <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" aria-label="A first-person corridor of a research institute with glowing framed papers">
+      <rect width="400" height="225" fill="#10141f"/>
+      <polygon points="0,0 400,0 258,68 142,68" fill="#171d2c"/>
+      <polygon points="0,225 400,225 258,142 142,142" fill="#1d2536"/>
+      <polygon points="0,0 142,68 142,142 0,225" fill="#141927"/>
+      <polygon points="400,0 258,68 258,142 400,225" fill="#12172a"/>
+      <!-- floor lines toward vanishing point -->
+      <g stroke="#2c3550" stroke-width=".6" opacity=".25" stroke-linecap="round">
+        <line x1="60" y1="225" x2="166" y2="142"/><line x1="140" y1="225" x2="184" y2="142"/>
+        <line x1="220" y1="225" x2="203" y2="142"/><line x1="300" y1="225" x2="222" y2="142"/>
+      </g>
+      <!-- end wall + door -->
+      <rect x="142" y="68" width="116" height="74" fill="#0d1120"/>
+      <polygon points="186,142 214,142 236,208 164,208" fill="#ffd9a0" opacity=".08"/>
+      <rect x="186" y="86" width="28" height="56" fill="#ffe9c4" opacity=".9"/>
+      <rect x="190" y="90" width="20" height="52" fill="#fff6e3"/>
+      <!-- ceiling lights -->
+      <ellipse cx="200" cy="30" rx="26" ry="4" fill="#e8ecf4" opacity=".2"/>
+      <ellipse cx="200" cy="56" rx="16" ry="2.6" fill="#e8ecf4" opacity=".2"/>
+      <!-- framed papers, left -->
+      <polygon class="glowf" points="26,58 52,66 52,120 26,126" fill="#ffd9a0" fill-opacity=".14" stroke="#ffd27a" stroke-width="1"/>
+      <polygon class="glowf gf2" points="72,80 92,86 92,124 72,129" fill="#ffd9a0" fill-opacity=".14" stroke="#ffd27a" stroke-width=".9"/>
+      <polygon class="glowf gf3" points="108,95 122,99 122,127 108,130" fill="#ffd9a0" fill-opacity=".14" stroke="#ffd27a" stroke-width=".8"/>
+      <!-- framed papers, right -->
+      <polygon class="glowf gf4" points="374,58 348,66 348,120 374,126" fill="#ffd9a0" fill-opacity=".14" stroke="#ffd27a" stroke-width="1"/>
+      <polygon class="glowf gf5" points="328,80 308,86 308,124 328,129" fill="#ffd9a0" fill-opacity=".14" stroke="#ffd27a" stroke-width=".9"/>
+      <polygon class="glowf gf6" points="292,95 278,99 278,127 292,130" fill="#ffd9a0" fill-opacity=".14" stroke="#ffd27a" stroke-width=".8"/>
+      <text x="26" y="140" font-size="6.5" fill="#ffd27a" opacity=".55" font-family="ui-monospace,monospace" letter-spacing="1">GALLERY OF PUBLICATIONS</text>
+      <text x="292" y="140" font-size="6.5" fill="#ffd27a" opacity=".55" font-family="ui-monospace,monospace" letter-spacing="1">SEMINAR ROOM →</text>
+    </svg>
+    </div>
+    <div class="num">04</div>
+    <div class="cbody">
+      <h2>The Institute</h2>
+      <p class="pitch">“A first-person walk through the research institute of you.”</p>
+      <p class="desc">Push open the doors of a stylized institute: a gallery corridor where framed papers light up as you pass, a lab where each bench runs one of your projects as a live demo, a seminar room screening your talks, and your office at the end — CV on the desk, coffee still warm. WASD to walk, click to inspect.</p>
+      <p class="sig"><b>Signature moment</b> — papers lighting up one by one as you walk the gallery corridor.</p>
+      <div class="meta">
+        <span class="chip">uniqueness <span class="on">●●●</span><span class="off">○○</span></span>
+        <span class="chip">effort <span class="on">●●●●</span><span class="off">○</span></span>
+        <span class="chip">phone <span class="on">●●</span><span class="off">○○○</span></span>
+        <span class="chip">three.js first-person</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ 05 THE BODY ATLAS ============ -->
+  <article class="card" style="--acc:#ff6b8a">
+    <div class="vig">
+    <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" aria-label="A translucent human figure with glowing organs labelled by research area">
+      <rect width="400" height="225" fill="#060a16"/>
+      <g stroke="#59e6d8" opacity=".05"><line x1="0" y1="56" x2="400" y2="56"/><line x1="0" y1="112" x2="400" y2="112"/><line x1="0" y1="168" x2="400" y2="168"/><line x1="100" y1="0" x2="100" y2="225"/><line x1="200" y1="0" x2="200" y2="225"/><line x1="300" y1="0" x2="300" y2="225"/></g>
+      <!-- silhouette -->
+      <circle cx="200" cy="44" r="17" fill="rgba(89,230,216,.06)" stroke="#59e6d8" stroke-opacity=".5" stroke-width="1"/>
+      <path d="M162,82 C162,70 178,63 200,63 C222,63 238,70 238,82 L236,152 C236,164 222,172 200,172 C178,172 164,164 164,152 Z" fill="rgba(89,230,216,.05)" stroke="#59e6d8" stroke-opacity=".5" stroke-width="1"/>
+      <rect x="150" y="170" width="100" height="40" fill="#060a16" opacity=".65"/>
+      <!-- brain -->
+      <ellipse class="pulse pslow" cx="200" cy="42" rx="10" ry="8" fill="#b88aff" opacity=".95"/>
+      <ellipse cx="200" cy="42" rx="15" ry="12" fill="#b88aff" opacity=".14"/>
+      <!-- lungs -->
+      <ellipse class="pulse pmid" cx="184" cy="98" rx="9" ry="14" fill="#5fc9ff" opacity=".8"/>
+      <ellipse class="pulse pmid" cx="216" cy="98" rx="9" ry="14" fill="#5fc9ff" opacity=".8"/>
+      <!-- heart -->
+      <circle class="pulse" cx="200" cy="112" r="7.5" fill="#ff5f7a"/>
+      <circle cx="200" cy="112" r="12" fill="#ff5f7a" opacity=".16"/>
+      <!-- vessels + blood cells -->
+      <path id="arteryDown" d="M200,118 C186,132 208,146 200,160" fill="none" stroke="#ff5f7a" stroke-opacity=".3" stroke-width="1"/>
+      <path id="arteryUp" d="M200,105 C197,84 200,68 200,52" fill="none" stroke="#ff5f7a" stroke-opacity=".3" stroke-width="1"/>
+      <circle r="1.6" fill="#ff8fa3"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#arteryDown"/></animateMotion></circle>
+      <circle r="1.6" fill="#ff8fa3"><animateMotion dur="4s" begin="-1.5s" repeatCount="indefinite"><mpath href="#arteryDown"/></animateMotion></circle>
+      <circle r="1.6" fill="#ff8fa3"><animateMotion dur="3.2s" repeatCount="indefinite"><mpath href="#arteryUp"/></animateMotion></circle>
+      <!-- leader labels -->
+      <line x1="211" y1="40" x2="258" y2="32" stroke="#b88aff" stroke-width=".6" opacity=".6"/>
+      <text x="262" y="34" font-size="6.5" fill="#b88aff" opacity=".85" font-family="ui-monospace,monospace" letter-spacing="1">NEURO / ML</text>
+      <line x1="192" y1="112" x2="128" y2="104" stroke="#ff5f7a" stroke-width=".6" opacity=".6"/>
+      <text x="62" y="106" font-size="6.5" fill="#ff5f7a" opacity=".85" font-family="ui-monospace,monospace" letter-spacing="1">CARDIO TRIALS</text>
+      <line x1="226" y1="96" x2="266" y2="88" stroke="#5fc9ff" stroke-width=".6" opacity=".6"/>
+      <text x="270" y="90" font-size="6.5" fill="#5fc9ff" opacity=".85" font-family="ui-monospace,monospace" letter-spacing="1">RESPIRATORY MODELS</text>
+      <!-- EKG -->
+      <polyline class="ekg" points="0,205 60,205 72,205 78,193 84,216 90,205 150,205 162,205 168,190 174,218 180,205 240,205 252,205 258,192 264,217 270,205 330,205 342,205 348,191 354,216 360,205 400,205" fill="none" stroke="#59e6d8" stroke-width="1" opacity=".65"/>
+    </svg>
+    </div>
+    <div class="num">05</div>
+    <div class="cbody">
+      <h2>The Body Atlas</h2>
+      <p class="pitch">“Biostatistics, toured from inside the body itself.”</p>
+      <p class="desc">A translucent human figure floats in the dark; each glowing organ is a wing of your work — trials at the heart, ML at the brain, models in the lungs (mapped to <em>your</em> actual research areas). Visitors ride the bloodstream between stations, Magic-School-Bus style, while an EKG ticks along the bottom as the site's pulse.</p>
+      <p class="sig"><b>Signature moment</b> — riding a red blood cell from the heart to the brain to switch research areas.</p>
+      <div class="meta">
+        <span class="chip">uniqueness <span class="on">●●●●●</span></span>
+        <span class="chip">effort <span class="on">●●●●●</span></span>
+        <span class="chip">phone <span class="on">●●●</span><span class="off">○○</span></span>
+        <span class="chip">three.js + shaders</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ 06 THE INFINITE DESK ============ -->
+  <article class="card" style="--acc:#ffc46b">
+    <div class="vig">
+    <svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" aria-label="An isometric desk at night with a glowing monitor, lamp, coffee and books">
+      <defs>
+        <radialGradient id="lampGlow" cx=".72" cy=".45" r=".75">
+          <stop offset="0" stop-color="#3a2c14"/><stop offset="1" stop-color="#0b1020"/>
+        </radialGradient>
+      </defs>
+      <rect width="400" height="225" fill="url(#lampGlow)"/>
+      <!-- window with moon -->
+      <rect x="30" y="24" width="72" height="56" rx="4" fill="#0e1630" stroke="#2a3654" stroke-width="1.5"/>
+      <line x1="66" y1="24" x2="66" y2="80" stroke="#2a3654" stroke-width="1.5"/>
+      <line x1="30" y1="52" x2="102" y2="52" stroke="#2a3654" stroke-width="1.5"/>
+      <circle cx="50" cy="40" r="7" fill="#dfe8ff" opacity=".9"/>
+      <circle cx="86" cy="66" r=".9" fill="#dfe8ff" class="tw1"/>
+      <circle cx="93" cy="36" r=".8" fill="#dfe8ff" class="tw2"/>
+      <circle cx="76" cy="70" r=".7" fill="#dfe8ff" class="tw3"/>
+      <!-- desk -->
+      <polygon points="70,150 250,150 320,185 140,185" fill="#6b4a2f"/>
+      <polygon points="140,185 320,185 320,201 140,201" fill="#4e3521"/>
+      <polygon points="70,150 140,185 140,201 70,166" fill="#3f2a19"/>
+      <!-- monitor: live regression on screen -->
+      <polygon points="176,148 190,155 214,155 200,148" fill="#1a2233"/>
+      <rect x="193" y="138" width="6" height="12" fill="#1a2233"/>
+      <polygon points="150,88 242,95 242,141 150,134" fill="#0a121f" stroke="#223048" stroke-width="1.5"/>
+      <polygon points="155,92 237,98.6 237,137 155,130.4" fill="#0d1626"/>
+      <g fill="#6be5ff">
+        <circle cx="166" cy="122" r="1.4"/><circle cx="177" cy="117" r="1.4"/><circle cx="188" cy="119" r="1.4"/>
+        <circle cx="199" cy="111" r="1.4"/><circle cx="210" cy="113" r="1.4"/><circle cx="222" cy="106" r="1.4"/>
+      </g>
+      <line x1="160" y1="126" x2="230" y2="104" stroke="#ff9d6b" stroke-width="1.2"/>
+      <rect class="blink" x="226" y="128" width="4" height="6" fill="#6be5ff"/>
+      <polygon points="150,134 242,141 262,175 132,167" fill="#6be5ff" opacity=".05"/>
+      <!-- lamp -->
+      <ellipse cx="299" cy="172" rx="13" ry="4.5" fill="#1c1710"/>
+      <line x1="299" y1="171" x2="305" y2="140" stroke="#8a6a3a" stroke-width="2"/>
+      <line x1="305" y1="140" x2="285" y2="118" stroke="#8a6a3a" stroke-width="2"/>
+      <polygon points="278,110 296,116 288,128 272,121" fill="#d98f4a"/>
+      <polygon points="280,122 246,168 312,174" fill="#ffd9a0" opacity=".13"/>
+      <!-- mug + steam -->
+      <ellipse cx="255" cy="167" rx="7" ry="2.6" fill="#26180e"/>
+      <path d="M248,167 L248,156 A7,2.6 0 0 1 262,156 L262,167 A7,2.6 0 0 1 248,167" fill="#b8543f"/>
+      <ellipse cx="255" cy="156" rx="7" ry="2.6" fill="#7a3527"/>
+      <ellipse cx="255" cy="156.4" rx="5" ry="1.8" fill="#3a1c12"/>
+      <path class="steam" d="M251,150 c3,-5 -3,-9 0,-15" stroke="#ffffff" stroke-width="1" opacity=".4"/>
+      <path class="steam s2" d="M256,150 c-3,-5 3,-9 0,-15" stroke="#ffffff" stroke-width="1" opacity=".4"/>
+      <path class="steam s3" d="M259,151 c3,-4 -2,-8 1,-13" stroke="#ffffff" stroke-width=".8" opacity=".35"/>
+      <!-- books -->
+      <polygon points="92,158 134,158 150,166 108,166" fill="#7a3d3d"/>
+      <polygon points="96,152 138,152 152,159 110,159" fill="#31606a"/>
+      <polygon points="101,146 139,146 152,152 114,152" fill="#a08136"/>
+      <!-- plant -->
+      <polygon points="108,140 122,140 119,150 111,150" fill="#5b3a26"/>
+      <path d="M115,140 C110,128 102,126 98,118" stroke="#4f9d5d" stroke-width="2" fill="none"/>
+      <path d="M115,140 C115,126 120,120 118,110" stroke="#5db06a" stroke-width="2" fill="none"/>
+      <path d="M115,140 C120,130 128,128 131,120" stroke="#417f4c" stroke-width="2" fill="none"/>
+      <!-- papers -->
+      <polygon points="230,168 258,170 266,178 238,176" fill="#e8e4d8" opacity=".9"/>
+      <polygon points="234,163 260,165 267,171 241,169" fill="#f2eee2"/>
+      <g stroke="#b8b2a0" stroke-width=".5" opacity=".8">
+        <line x1="240" y1="166" x2="256" y2="167.2"/><line x1="241" y1="168" x2="258" y2="169.3"/>
+      </g>
+      <text x="300" y="212" font-size="6.5" fill="#ffc46b" opacity=".5" font-family="ui-monospace,monospace" letter-spacing="1">23:47 — STILL FITTING</text>
+    </svg>
+    </div>
+    <div class="num">06</div>
+    <div class="cbody">
+      <h2>The Infinite Desk</h2>
+      <p class="pitch">“One desk at midnight. Every object, a chapter.”</p>
+      <p class="desc">A single cinematic scene: your desk, lamp-lit, night outside. The camera glides as visitors click around — the monitor (running a live regression) opens projects, the book stack opens publications, the framed photo tells your story, the coffee steam hides an easter egg. The smallest world on this board, and the most polishable.</p>
+      <p class="sig"><b>Signature moment</b> — noticing the tiny scatterplot on the desk monitor is actually fitting itself in real time.</p>
+      <div class="meta">
+        <span class="chip">uniqueness <span class="on">●●●●</span><span class="off">○</span></span>
+        <span class="chip">effort <span class="on">●●</span><span class="off">○○○</span></span>
+        <span class="chip">phone <span class="on">●●●●</span><span class="off">○</span></span>
+        <span class="chip">three.js or CSS 3D</span>
+      </div>
+    </div>
+  </article>
+
+  </div>
+
+  <div class="note">
+    <strong>Worlds can be combined.</strong> The Observatory could be the hub you fly between rooms from; the Desk could be the last room of the Institute; the Village could be the phone version of any of them. — <strong>And every direction ships with Classic Mode:</strong> one keystroke (or one link) flips to a plain, fast, screen-reader-friendly page, so a recruiter in a hurry still gets everything. Being the most unique site in the world shouldn't cost you a single visitor.
+  </div>
+</div>
+</body>
+</html>

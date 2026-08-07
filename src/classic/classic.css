@@ -1,0 +1,38 @@
+/* Classic Mode — quiet, fast, print-friendly. Dark by preference, light by default. */
+:root {
+  --ink: #1b1e27; --dim: #5a6172; --bg: #fbfaf7; --line: #e5e2da; --acc: #2757d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #e8ecf4; --dim: #98a0b4; --bg: #0e1118; --line: #262b38; --acc: #7ea2ff; }
+}
+* { margin: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink);
+  font: 17px/1.65 Georgia, 'Times New Roman', serif; }
+.classic { max-width: 660px; margin: 0 auto; padding: 56px 22px 80px; }
+.classic header .hello { font: 600 12px/1 ui-monospace, Menlo, monospace; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--dim); }
+.classic h1 { font-size: 40px; line-height: 1.15; margin: 10px 0 6px; letter-spacing: -.01em; }
+.classic .tagline { color: var(--dim); font-style: italic; }
+.classic .links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; }
+.classic .links a { color: var(--acc); text-decoration: none; border-bottom: 1px solid transparent; }
+.classic .links a:hover { border-bottom-color: var(--acc); }
+.classic .links .cv { font-weight: 650; }
+.classic section { margin-top: 44px; padding-top: 28px; border-top: 1px solid var(--line); }
+.classic h2 { font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin-bottom: 16px; }
+.classic h3 { font-size: 13px; font-family: -apple-system, sans-serif; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--dim); margin: 26px 0 10px; }
+.classic ul.works, .classic ul.writings { list-style: none; padding: 0; }
+.classic ul.works li { margin-bottom: 18px; }
+.classic ul.works a { color: var(--ink); text-decoration: underline;
+  text-decoration-color: var(--acc); text-underline-offset: 3px; }
+.classic .kind { font: 600 11px/1 ui-monospace, monospace; color: var(--bg);
+  background: var(--dim); border-radius: 4px; padding: 2px 6px; vertical-align: 2px; }
+.classic .meta { color: var(--dim); font-size: 14px; }
+.classic ul.works p { color: var(--dim); font-size: 15px; margin-top: 4px; }
+.classic ul.writings li { margin-bottom: 8px; }
+.classic .writings .date { font: 500 12px/1 ui-monospace, monospace; color: var(--dim); margin-right: 8px; }
+.classic footer { margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--line);
+  color: var(--dim); font-size: 14px; font-style: italic; }
+@media print { .links .cv { display: none; } body { background: #fff; } }

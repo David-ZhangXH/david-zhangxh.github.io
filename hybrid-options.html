@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>David.world — How the three worlds connect</title>
+<style>
+:root{--bg:#0a0c13;--ink:#e8ecf4;--dim:#98a0b4;--line:rgba(255,255,255,.09)}
+*{margin:0;box-sizing:border-box}
+body{background:radial-gradient(1100px 500px at 75% -10%,#1b2138 0%,transparent 60%),var(--bg);
+ color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;padding:36px 20px 60px}
+.wrap{max-width:860px;margin:0 auto}
+.eyebrow{font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.24em;color:#8fa0ff;text-transform:uppercase}
+h1{font-size:clamp(26px,4.5vw,38px);font-weight:800;letter-spacing:-.02em;margin:10px 0 8px;
+ background:linear-gradient(90deg,#fff,#a9b8ff 55%,#6be5ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--dim);max-width:640px;font-size:14.5px}
+.opt{margin-top:26px;background:linear-gradient(180deg,#151a26,#10131d);border:1px solid var(--line);border-radius:16px;padding:20px 22px;position:relative}
+.opt.rec{border-color:rgba(255,196,107,.45)}
+.badge{position:absolute;top:-10px;right:16px;font:700 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:#0a0c13;background:#ffc46b;border-radius:99px;padding:5px 10px}
+h2{font-size:17.5px;margin-bottom:2px}
+h2 .k{color:#8fa0ff;font:700 13px ui-monospace,monospace;margin-right:6px}
+.tag{font-style:italic;color:#c9d0e0;font-size:13.5px;margin-bottom:12px}
+svg{display:block;width:100%;height:auto;margin:4px 0 12px}
+.pts{color:var(--dim);font-size:13.5px}
+.pts b{color:var(--ink);font-weight:650}
+.pts span{display:block;padding:3px 0}
+text{font-family:ui-monospace,Menlo,monospace}
+.node{fill:#1b2233;stroke:#39445e;stroke-width:1;rx:9}
+.hub{fill:#232d45;stroke:#8fa0ff;stroke-width:1.4}
+.lbl{fill:#e8ecf4;font-size:10.5px;font-weight:600}
+.sm{fill:#98a0b4;font-size:8.5px}
+.arr{stroke:#5a6682;stroke-width:1.2;fill:none;marker-end:url(#m)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">david.world — concept board 02</div>
+  <h1>Three worlds, one site: who hosts whom?</h1>
+  <p class="sub">You picked the Observatory, the Village, and the Desk. They can all live in one site — the question is which world is the front door. Three architectures:</p>
+
+  <!-- OPTION C : DESK PORTAL -->
+  <div class="opt rec">
+    <div class="badge">RECOMMENDED</div>
+    <h2><span class="k">C</span>The Desk Portal — “everything I make starts here”</h2>
+    <p class="tag">You arrive at a cinematic desk at midnight. Three objects glow — and each one is a door.</p>
+    <svg viewBox="0 0 720 190">
+      <defs><marker id="m" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#5a6682"/></marker></defs>
+      <rect class="node hub" x="20" y="70" width="150" height="52" rx="10"/>
+      <text class="lbl" x="42" y="92">🖥️ THE DESK</text>
+      <text class="sm" x="42" y="106">hub · 3D · midnight</text>
+      <path class="arr" d="M170,82 C230,60 280,48 330,44"/>
+      <path class="arr" d="M170,96 C230,96 280,96 330,96"/>
+      <path class="arr" d="M170,110 C230,132 280,144 330,148"/>
+      <rect class="node" x="334" y="24" width="196" height="42" rx="9"/>
+      <text class="lbl" x="350" y="42">monitor → THE GALAXY</text>
+      <text class="sm" x="350" y="56">dive through the screen · papers as stars</text>
+      <rect class="node" x="334" y="76" width="196" height="42" rx="9"/>
+      <text class="lbl" x="350" y="94">handheld → THE VILLAGE</text>
+      <text class="sm" x="350" y="108">boot the console · your story as an RPG</text>
+      <rect class="node" x="334" y="128" width="196" height="42" rx="9"/>
+      <text class="lbl" x="350" y="146">papers & tray → CV · CONTACT</text>
+      <text class="sm" x="350" y="160">no world needed — just pick them up</text>
+      <path class="arr" d="M530,45 C580,45 600,60 610,80"/>
+      <path class="arr" d="M530,97 C570,97 590,97 608,97"/>
+      <rect class="node" x="612" y="76" width="92" height="42" rx="9"/>
+      <text class="lbl" x="626" y="94">READ /</text>
+      <text class="lbl" x="626" y="106">PLAY</text>
+    </svg>
+    <p class="pts">
+      <span><b>Why it wins:</b> all three of your picks get equal billing, tied together by a true story — a statistician's work really does live behind a screen on a desk.</span>
+      <span><b>Effort curve:</b> ships in stages. Stage 1 = the desk alone (already a wow). Stage 2 = the galaxy. Stage 3 = the village. Something impressive is live early.</span>
+      <span><b>Signature transitions:</b> the camera diving <i>through</i> the monitor glass; the handheld boot-up jingle before the village fades in.</span>
+    </p>
+  </div>
+
+  <!-- OPTION A : GALAXY HUB -->
+  <div class="opt">
+    <h2><span class="k">A</span>The Observatory Hub — “fly first”</h2>
+    <p class="tag">You spawn in open space. Papers are stars you read in place; a few special planets are worlds you can land on.</p>
+    <svg viewBox="0 0 720 160">
+      <rect class="node hub" x="20" y="55" width="150" height="52" rx="10"/>
+      <text class="lbl" x="42" y="77">🌌 THE GALAXY</text>
+      <text class="sm" x="42" y="91">hub · fly anywhere</text>
+      <path class="arr" d="M170,66 C230,44 280,34 330,30"/>
+      <path class="arr" d="M170,81 C230,81 280,81 330,81"/>
+      <path class="arr" d="M170,96 C230,118 280,128 330,132"/>
+      <rect class="node" x="334" y="10" width="196" height="40" rx="9"/>
+      <text class="lbl" x="350" y="27">stars → PAPERS</text>
+      <text class="sm" x="350" y="40">read in orbit · reproject by year/topic</text>
+      <rect class="node" x="334" y="61" width="196" height="40" rx="9"/>
+      <text class="lbl" x="350" y="78">Planet Origin → THE VILLAGE</text>
+      <text class="sm" x="350" y="91">land → screen dissolves to pixels</text>
+      <rect class="node" x="334" y="112" width="196" height="40" rx="9"/>
+      <text class="lbl" x="350" y="129">Planet Now → THE DESK</text>
+      <text class="sm" x="350" y="142">land → your desk is the base camp</text>
+    </svg>
+    <p class="pts">
+      <span><b>Feel:</b> grand, cosmic, exploratory — the biggest “whoa” on first load.</span>
+      <span><b>Trade-off:</b> the heavy 3D (flight controls, camera, performance) must be built <i>first</i>, before anything ships. Landings come later.</span>
+    </p>
+  </div>
+
+  <!-- OPTION B : VILLAGE HUB -->
+  <div class="opt">
+    <h2><span class="k">B</span>The Village Hub — “play first”</h2>
+    <p class="tag">You spawn as pixel-David in the town square. Every building is a section; two buildings hide the other worlds.</p>
+    <svg viewBox="0 0 720 160">
+      <rect class="node hub" x="20" y="55" width="150" height="52" rx="10"/>
+      <text class="lbl" x="42" y="77">🏘️ THE VILLAGE</text>
+      <text class="sm" x="42" y="91">hub · walk & talk</text>
+      <path class="arr" d="M170,66 C230,44 280,34 330,30"/>
+      <path class="arr" d="M170,81 C230,81 280,81 330,81"/>
+      <path class="arr" d="M170,96 C230,118 280,128 330,132"/>
+      <rect class="node" x="334" y="10" width="196" height="40" rx="9"/>
+      <text class="lbl" x="350" y="27">Observatory bldg → GALAXY</text>
+      <text class="sm" x="350" y="40">look through the telescope</text>
+      <rect class="node" x="334" y="61" width="196" height="40" rx="9"/>
+      <text class="lbl" x="350" y="78">Cottage → THE DESK</text>
+      <text class="sm" x="350" y="91">step inside · zoom to the desk</text>
+      <rect class="node" x="334" y="112" width="196" height="40" rx="9"/>
+      <text class="lbl" x="350" y="129">Library · Mailbox · NPCs</text>
+      <text class="sm" x="350" y="142">papers · contact · quests</text>
+    </svg>
+    <p class="pts">
+      <span><b>Feel:</b> the most charming and playable; best on phones; lightest to build overall.</span>
+      <span><b>Trade-off:</b> everything inherits the pixel art style — the galaxy becomes a cute 2D starfield rather than a vast 3D one. Less “fancy”, more “lovable”.</span>
+    </p>
+  </div>
+
+</div>
+</body>
+</html>

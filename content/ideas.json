@@ -1,0 +1,15 @@
+[
+  {
+    "topic": "Placeholder topic A (replace me)",
+    "ideas": [
+      { "title": "An idea title goes here", "note": "One-paragraph sketch of the idea — what it is, why it might matter." },
+      { "title": "Another idea title", "note": "Rough thought, safe here in the dark until it's ready." }
+    ]
+  },
+  {
+    "topic": "Placeholder topic B (replace me)",
+    "ideas": [
+      { "title": "A third idea", "note": "David will replace all of these with his real idea archive." }
+    ]
+  }
+]

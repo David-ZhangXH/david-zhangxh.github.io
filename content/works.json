@@ -1,0 +1,50 @@
+[
+  {
+    "id": "paper-llm-kg",
+    "type": "paper",
+    "status": "review",
+    "title": "Statistical Network Analysis for LLMs via Knowledge Graphs",
+    "year": 2025,
+    "venue": "Revised & resubmitted",
+    "link": "",
+    "description": "With Lin Tang, Xuezhou Zhang, Xiaowei Yu, and Huimin Cheng. A statistical network lens on the knowledge graphs that large language models build and rely on — measuring their structure to understand and improve them."
+  },
+  {
+    "id": "poster-diabetes-kg",
+    "type": "poster",
+    "status": "published",
+    "title": "A Human-in-the-Loop LLM Framework for Trustworthy Diabetes–Nutrition Knowledge Graph",
+    "year": 2026,
+    "venue": "STAI-X 2026 · Poster Track (accepted)",
+    "pdf": "",
+    "description": "With Lin Tang, Xuezhou Zhang, and Huimin Cheng. Keeping humans in the loop so an LLM-built nutrition knowledge graph stays trustworthy enough for diabetes-care questions."
+  },
+  {
+    "id": "paper-cpg-clock",
+    "type": "paper",
+    "status": "ongoing",
+    "title": "Alcohol & the Epigenetic Clock — Alcohol–CpG Aging",
+    "description": "Advised by Prof. Chunyu Liu, BU Biostatistics. Does drinking show up in how fast our DNA-methylation clocks tick? Regression and mixed-effects models quantify alcohol-related epigenetic age acceleration."
+  },
+  {
+    "id": "project-graphrag-agent",
+    "type": "project",
+    "status": "ongoing",
+    "title": "Biomedical Q&A Agent — Graph-RAG + LLM",
+    "description": "Advised by Prof. Huimin Cheng. Community-detection methods that strengthen knowledge-graph construction, powering a biomedical question-answering agent."
+  },
+  {
+    "id": "paper-svg",
+    "type": "paper",
+    "status": "paused",
+    "title": "Spatially Variable Genes (SVG) Detection",
+    "description": "With Prof. Shariq Mohammed, BU School of Public Health. A detection algorithm for spatially variable genes with higher accuracy and clearer interpretability than the current benchmark. Paper-level work, paused — a matter of time, not interest."
+  },
+  {
+    "id": "paper-gnpc",
+    "type": "paper",
+    "status": "paused",
+    "title": "GNPC Hypergraph Modeling for Alzheimer's Subtypes",
+    "description": "With Prof. Selena Wang, Indiana University. Hypergraph models over Global Neurodegeneration Proteomics Consortium data to capture higher-order proteomic interactions and identify clinically meaningful Alzheimer's disease subtypes. Paused mid-flight, waiting for time."
+  }
+]
