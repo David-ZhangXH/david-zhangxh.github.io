@@ -47,7 +47,32 @@
     "Maroon 5",
     "Imagine Dragons"
    ],
-   "albums": []
+   "albums": [
+    {
+     "img": "albums/20.jpg",
+     "title": "20是件更美好的事"
+    },
+    {
+     "img": "albums/gladiator.jpg",
+     "title": "悲伤角斗士"
+    },
+    {
+     "img": "albums/survivor.jpg",
+     "title": "幸存者负罪感"
+    },
+    {
+     "img": "albums/speaker.jpg",
+     "title": "演说家"
+    },
+    {
+     "img": "albums/memories.jpg",
+     "title": "Memories…Do Not Open"
+    },
+    {
+     "img": "albums/one-more-light.jpg",
+     "title": "One More Light"
+    }
+   ]
   },
   "tv": {
    "title": "Television",

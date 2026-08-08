@@ -117,6 +117,9 @@ try {
     check(['Neo-Soul', 'Future Bass', 'Flamenco'].every(x => mt.includes(x)), 'music box: the nine sounds are listed')
     check(['王以太', '艾热', 'Gali', 'Linkin Park', '大张伟', '邓紫棋'].every(x => mt.includes(x)), 'music box: six favourite artists shine')
     check(['Kendrick Lamar', 'Molchat Doma', '方大同', 'Imagine Dragons'].every(x => mt.includes(x)), 'music box: the loved-music list plays')
+    await page.waitForTimeout(600) // let covers load
+    const covers = await page.$$eval('.v-album img', els => els.map(i => ({ w: i.naturalWidth, src: i.src })))
+    check(covers.length === 6 && covers.every(c => c.w > 0), `music box: all six album covers render (${covers.filter(c => c.w > 0).length}/6)`)
     await closePanel()
   } else check(false, 'music box reopens')
 
