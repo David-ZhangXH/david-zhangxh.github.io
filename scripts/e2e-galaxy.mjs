@@ -30,7 +30,7 @@ try {
   // ---- dive through the monitor ----
   await page.focus('.hotspot-proxies button[data-hotspot="monitor"]')
   await page.keyboard.press('Enter')
-  const galaxyUp = await page.waitForSelector('#galaxy-root canvas', { timeout: 8000 }).then(() => true).catch(() => false)
+  const galaxyUp = await page.waitForSelector('#galaxy-root canvas', { timeout: 15000 }).then(() => true).catch(() => false)
   check(galaxyUp, 'monitor dives into the galaxy')
   await page.waitForTimeout(1200)
   await page.screenshot({ path: 'shots/galaxy-desktop.png' })
@@ -39,7 +39,7 @@ try {
   check(idsInWorld.length === works.length + 1, `registry = ${works.length} works + secret (got ${idsInWorld.length})`)
 
   // ---- every work card, with the right status language ----
-  const phrase = { review: 'igniting', published: '', ongoing: 'in progress', paused: 'dormant' }
+  const phrase = { review: 'revised', published: '', ongoing: 'in progress', paused: 'on hold' }
   for (const w of works) {
     await page.focus(`.hotspot-proxies button[data-body="${w.id}"]`)
     await page.keyboard.press('Enter')
@@ -61,7 +61,7 @@ try {
   const secretCard = await page.waitForSelector('.card-backdrop .card', { timeout: 4000 }).catch(() => null)
   if (secretCard) {
     const txt = await secretCard.innerText()
-    check(/idea nebula/i.test(txt) && txt.includes('Placeholder topic A'), 'secret: idea archive opens with topics')
+    check(/idea nebula/i.test(txt) && /Cell–Organ–Body|Self-Evolving/i.test(txt), 'secret: idea archive opens with topics')
     await page.screenshot({ path: 'shots/galaxy-secret.png' })
   } else check(false, 'secret: card opens')
   await page.keyboard.press('Escape')

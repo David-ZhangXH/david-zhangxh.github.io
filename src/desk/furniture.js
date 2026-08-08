@@ -117,11 +117,15 @@ export function buildFurniture(scene) {
 
   // ---- sticky notes on right bezel ----
   const noteColors = [0xffe58a, 0xffb3c8, 0xa8e6b0]
+  const noteMarks = [
+    textTexture('♪', { bg: '#ffe58a', fg: '#6b5510', font: 'bold 26px monospace' }),
+    null,
+    textTexture('zzz', { bg: '#a8e6b0', fg: '#1c5a2a', font: 'bold 18px monospace' })
+  ]
   const notesGroup = new THREE.Group()
   noteColors.forEach((c, i) => {
-    const isJoke = i === 1
-    const mat = isJoke
-      ? new THREE.MeshBasicMaterial({ map: textTexture('p = 0.049', { bg: '#ffb3c8', fg: '#5a2233', font: 'bold 20px monospace' }) })
+    const mat = noteMarks[i]
+      ? new THREE.MeshBasicMaterial({ map: noteMarks[i] })
       : new THREE.MeshBasicMaterial({ color: c })
     const n = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.05), mat)
     n.position.set(0.315, DESK_TOP + 0.55 - i * 0.062, -0.135)
@@ -134,8 +138,24 @@ export function buildFurniture(scene) {
   group.add(notesHit)
   hotspots.notes = { hit: notesHit, visual: notesGroup, label: 'Sticky notes — quick links' }
 
-  // ---- keyboard ----
-  group.add(box(0.5, 0.016, 0.16, std(0x1c2436, { roughness: 0.5 }), 0, DESK_TOP + 0.008, 0.16))
+  // ---- keyboard (a hotspot: the message wall) ----
+  const kb = box(0.5, 0.016, 0.16, std(0x1c2436, { roughness: 0.5 }), 0, DESK_TOP + 0.008, 0.16)
+  group.add(kb)
+  const keyboardHit = hitBox(0.54, 0.08, 0.2, 0, DESK_TOP + 0.03, 0.16)
+  group.add(keyboardHit)
+  hotspots.keyboard = { hit: keyboardHit, visual: kb, label: 'The keyboard — leave your words' }
+
+  // ---- nameplate ----
+  const plateTex = textTexture('XIAOHANG — DAVID', { w: 256, h: 52, bg: '#2b2216', fg: '#e8d9b0', font: '600 24px Georgia, serif' })
+  const plateMats = [
+    std(0x2b2216), std(0x2b2216), std(0x3a2f1c), std(0x1c1710),
+    new THREE.MeshBasicMaterial({ map: plateTex }), std(0x2b2216)
+  ]
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.05, 0.016), plateMats)
+  plate.position.set(0.22, DESK_TOP + 0.028, 0.36)
+  plate.rotation.x = -0.3
+  plate.castShadow = true
+  group.add(plate)
 
   // ---- handheld console ----
   const handheld = new THREE.Group()
@@ -185,12 +205,19 @@ export function buildFurniture(scene) {
   const grad = pg.createLinearGradient(0, 0, 0, 96)
   grad.addColorStop(0, '#16233c'); grad.addColorStop(1, '#2a3a5c')
   pg.fillStyle = grad; pg.fillRect(0, 0, 128, 96)
-  pg.fillStyle = '#f2c69a'; pg.beginPath(); pg.arc(46, 40, 12, 0, 7); pg.fill()
-  pg.fillStyle = '#3a6ea8'; pg.fillRect(34, 52, 24, 26)
-  pg.fillStyle = '#e8b488'; pg.beginPath(); pg.arc(84, 44, 10, 0, 7); pg.fill()
-  pg.fillStyle = '#7a4f7f'; pg.fillRect(74, 54, 20, 24)
   const photoTex = new THREE.CanvasTexture(photoCanvas)
   photoTex.colorSpace = THREE.SRGBColorSpace
+  // the real photos: then + now, side by side, cover-cropped when they load
+  const cover = (g, img, x, y, w, h) => {
+    const s = Math.max(w / img.width, h / img.height)
+    const sw = w / s, sh = h / s
+    g.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, x, y, w, h)
+  }
+  // the frame on the desk holds only the childhood photo;
+  // clicking it reveals both then and now in the card
+  const p1 = new Image()
+  p1.onload = () => { cover(pg, p1, 1, 1, 126, 94); photoTex.needsUpdate = true }
+  p1.src = 'photos/then.jpg'
   const photo = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.07),
     new THREE.MeshBasicMaterial({ map: photoTex }))
   photo.position.set(0, 0.0475, 0.007)
@@ -284,6 +311,9 @@ export function buildFurniture(scene) {
   }
   plant.position.set(-0.78, DESK_TOP, -0.15)
   group.add(plant)
+  const plantHit = hitBox(0.16, 0.24, 0.16, -0.78, DESK_TOP + 0.1, -0.15)
+  group.add(plantHit)
+  hotspots.plant = { hit: plantHit, visual: plant, label: 'The mint — an old friend' }
 
   scene.add(group)
   return { group, hotspots, screen, crank, mugTip: new THREE.Vector3(0.33, DESK_TOP + 0.1, 0.12), windowRegion: { x: winX, y: winY, z: winZ - 0.15, w: winW, h: winH } }

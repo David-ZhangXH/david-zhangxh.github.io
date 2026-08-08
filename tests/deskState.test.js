@@ -32,9 +32,9 @@ describe('createDeskState', () => {
     s.focus('fridge')
     expect(s.get().mode).toBe('idle')
   })
-  it('exposes the canonical 7 hotspot ids', () => {
+  it('exposes the canonical 9 hotspot ids', () => {
     expect([...HOTSPOTS].sort()).toEqual(
-      ['frame', 'handheld', 'monitor', 'mug', 'musicbox', 'notes', 'tray'])
+      ['frame', 'handheld', 'keyboard', 'monitor', 'mug', 'musicbox', 'notes', 'plant', 'tray'])
   })
   it('notifies subscribers on change', () => {
     const s = createDeskState()

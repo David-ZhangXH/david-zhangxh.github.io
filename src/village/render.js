@@ -1,60 +1,153 @@
-// Camera-follow pixel renderer. Integer scale, crisp edges, board-03 daylight.
-import { WIDTH, HEIGHT, TILE, BUILDINGS, ZONES, TREES, isPath } from './map.js'
+// Village 2.0 renderer: shows the WHOLE scene when it fits (letterboxed),
+// falls back to camera-follow on small screens. Crisp integer scaling.
+import { TILE } from './map.js'
+
+const hash = (x, y) => Math.abs((x * 73856093) ^ (y * 19349663)) % 997
 
 export function createRenderer(canvas, sprites) {
   const ctx = canvas.getContext('2d')
-  let scale = 3
+  let view = { scale: 3, ox: 0, oy: 0 }
+
+  const fcache = {}
+  const furnitureFor = (id) => {
+    if (fcache[id]) return fcache[id]
+    let img = sprites.furniture[id]?.()
+    if (!img) {
+      if (['yuying', 's101', 'bu'].includes(id))
+        img = sprites.furniture.gate({ yuying: 'YUYING', s101: '101', bu: 'BU' }[id])
+      else if (['bio', 'chem', 'env'].includes(id)) img = sprites.furniture.table(id)
+    }
+    fcache[id] = img
+    return img
+  }
+
+  // multi-tile zones share an id — draw each group once, centered on its box
+  const gcache = new Map()
+  const groupsFor = (scene) => {
+    if (gcache.has(scene)) return gcache.get(scene)
+    const byId = new Map()
+    for (const z of scene.zones) {
+      const g = byId.get(z.id) || { id: z.id, x0: z.x, x1: z.x, y0: z.y, y1: z.y }
+      g.x0 = Math.min(g.x0, z.x); g.x1 = Math.max(g.x1, z.x)
+      g.y0 = Math.min(g.y0, z.y); g.y1 = Math.max(g.y1, z.y)
+      byId.set(z.id, g)
+    }
+    const groups = [...byId.values()]
+    gcache.set(scene, groups)
+    return groups
+  }
 
   function resize() {
     canvas.width = canvas.clientWidth
     canvas.height = canvas.clientHeight
-    scale = Math.max(2, Math.min(4, Math.round(canvas.width / (30 * TILE))))
     ctx.imageSmoothingEnabled = false
   }
   resize()
 
-  function draw(player, npcsBob, t) {
-    const vw = canvas.width / scale, vh = canvas.height / scale
-    let camX = player.px + TILE / 2 - vw / 2
-    let camY = player.py + TILE / 2 - vh / 2
-    camX = Math.max(0, Math.min(WIDTH * TILE - vw, camX))
-    camY = Math.max(0, Math.min(HEIGHT * TILE - vh, camY))
-    ctx.setTransform(scale, 0, 0, scale, -Math.round(camX * scale) / 1, -Math.round(camY * scale) / 1)
+  function computeView(scene, player) {
+    const fit = Math.floor(Math.min(canvas.width / (scene.w * TILE), canvas.height / (scene.h * TILE)))
+    if (fit >= 2) { // whole scene visible, centered
+      const scale = Math.min(4, fit)
+      view = {
+        scale,
+        ox: Math.floor((canvas.width - scene.w * TILE * scale) / 2),
+        oy: Math.floor((canvas.height - scene.h * TILE * scale) / 2)
+      }
+    } else { // phone: follow the player
+      const scale = 2
+      let camX = player.px + TILE / 2 - canvas.width / scale / 2
+      let camY = player.py + TILE / 2 - canvas.height / scale / 2
+      camX = Math.max(0, Math.min(scene.w * TILE - canvas.width / scale, camX))
+      camY = Math.max(0, Math.min(scene.h * TILE - canvas.height / scale, camY))
+      view = { scale, ox: -Math.floor(camX * scale), oy: -Math.floor(camY * scale) }
+    }
+  }
+
+  const townPath = (s, x, y) =>
+    (y === 6 || y === 7 || y === 13 || y === 14) ||
+    (x >= 10 && x <= 15 && y >= 6 && y <= 14) ||
+    ((x === 5 || x === 19) && (y === 6 || y === 7))
+
+  function draw(scene, player, npcBob, t, label) {
+    computeView(scene, player)
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.fillStyle = '#1c2a1c'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.setTransform(view.scale, 0, 0, view.scale, view.ox, view.oy)
     ctx.imageSmoothingEnabled = false
 
-    // ground
-    const x0 = Math.floor(camX / TILE), x1 = Math.ceil((camX + vw) / TILE)
-    const y0 = Math.floor(camY / TILE), y1 = Math.ceil((camY + vh) / TILE)
-    for (let y = y0; y <= y1 && y < HEIGHT; y++) {
-      for (let x = x0; x <= x1 && x < WIDTH; x++) {
-        ctx.drawImage(isPath(x, y) ? sprites.path : sprites.grass, x * TILE, y * TILE)
+    if (scene.kind === 'town') {
+      for (let y = 0; y < scene.h; y++) for (let x = 0; x < scene.w; x++) {
+        const h = hash(x, y)
+        if (townPath(scene, x, y)) ctx.drawImage(sprites.path[h % 3], x * TILE, y * TILE)
+        else ctx.drawImage(sprites.grass[h % 6], x * TILE, y * TILE)
+      }
+      for (const b of scene.buildings) {
+        const img = sprites.buildings[b.id]
+        ctx.drawImage(img, b.x * TILE, (b.y + b.h) * TILE - img.height)
+      }
+      for (const z of scene.zones) {
+        if (z.id === 'mailbox') ctx.drawImage(sprites.mailbox, z.x * TILE - 1, z.y * TILE - 10)
+        if (z.id === 'arcade') ctx.drawImage(sprites.arcade, z.x * TILE - 2, z.y * TILE - 16)
+        if (z.id === 'npc1') ctx.drawImage(sprites.npc1[npcBob ? 1 : 0], z.x * TILE + 1, z.y * TILE - 6)
+        if (z.id === 'npc2') ctx.drawImage(sprites.npc2[npcBob ? 1 : 0], z.x * TILE + 1, z.y * TILE - 6)
+      }
+      for (const [x, y] of scene.trees) ctx.drawImage(sprites.tree, x * TILE - 8, y * TILE - 24)
+    } else {
+      // interiors: plank floor, colored wall band, rug, furniture
+      for (let y = 0; y < scene.h; y++) for (let x = 0; x < scene.w; x++)
+        ctx.drawImage(sprites.floor, x * TILE, y * TILE)
+      ctx.fillStyle = sprites.wallColors[scene.kind] || '#e0d0b8'
+      ctx.fillRect(TILE, 0, (scene.w - 2) * TILE, 2 * TILE)
+      ctx.fillStyle = 'rgba(42,32,25,.3)'
+      ctx.fillRect(TILE, 2 * TILE - 3, (scene.w - 2) * TILE, 3)
+      ctx.fillStyle = '#3a2c1c'
+      ctx.fillRect(0, 0, TILE, scene.h * TILE)
+      ctx.fillRect((scene.w - 1) * TILE, 0, TILE, scene.h * TILE)
+      ctx.fillRect(0, (scene.h - 1) * TILE, scene.w * TILE, TILE)
+      ctx.drawImage(sprites.rug, Math.floor(scene.w / 2) * TILE - 24, 4 * TILE)
+      for (const e of scene.exits) ctx.drawImage(sprites.exitMat, e.x * TILE, e.y * TILE + 8)
+      for (const grp of groupsFor(scene)) {
+        const img = furnitureFor(grp.id)
+        if (!img) continue
+        const cx = ((grp.x0 + grp.x1 + 1) * TILE) / 2
+        ctx.drawImage(img, Math.round(cx - img.width / 2), (grp.y1 + 1) * TILE - img.height)
       }
     }
 
-    // buildings (anchored so the sprite's bottom sits on the footprint's bottom row)
-    for (const b of BUILDINGS) {
-      const img = sprites[b.id]
-      ctx.drawImage(img, b.x * TILE, (b.y + b.h) * TILE - img.height)
-    }
-
-    // objects
-    for (const z of ZONES) {
-      if (z.id === 'mailbox') ctx.drawImage(sprites.mailbox, z.x * TILE, z.y * TILE - 8)
-      if (z.id === 'arcade') ctx.drawImage(sprites.arcade, z.x * TILE, z.y * TILE - 12)
-      if (z.id === 'coffee') ctx.drawImage(sprites.coffee, z.x * TILE, z.y * TILE - 8)
-      if (z.id === 'npc1') ctx.drawImage(sprites.npc1[npcsBob ? 1 : 0], z.x * TILE, z.y * TILE - 8)
-      if (z.id === 'npc2') ctx.drawImage(sprites.npc2[npcsBob ? 1 : 0], z.x * TILE, z.y * TILE - 8)
-    }
-
-    // trees above objects for depth
-    for (const [x, y] of TREES) ctx.drawImage(sprites.tree, x * TILE, y * TILE - 8)
-
-    // player (bottom-anchored, 2-frame walk)
+    // player
     const frame = player.moving ? (Math.floor(t * 8) % 2) : 0
-    ctx.drawImage(sprites.player[frame], Math.round(player.px), Math.round(player.py) - 8)
-
+    ctx.drawImage(sprites.player[frame], Math.round(player.px) + 1, Math.round(player.py) - 6)
     ctx.setTransform(1, 0, 0, 1, 0, 0)
+
+    // floating name label over the faced / hovered thing
+    if (label) {
+      const grp = groupsFor(scene).find(g => g.id === label.id)
+      if (grp) {
+        const img = furnitureFor(grp.id)
+        const topWorld = scene.kind === 'town'
+          ? grp.y0 * TILE - 26
+          : (grp.y1 + 1) * TILE - (img ? img.height : TILE) - 8
+        const sx = view.ox + (((grp.x0 + grp.x1 + 1) * TILE) / 2) * view.scale
+        let sy = view.oy + topWorld * view.scale
+        ctx.font = '700 11px ui-monospace, Menlo, monospace'
+        const w = Math.ceil(ctx.measureText(label.text).width) + 12
+        const x = Math.round(Math.max(4, Math.min(canvas.width - w - 4, sx - w / 2)))
+        sy = Math.round(Math.max(4, sy))
+        ctx.fillStyle = 'rgba(43,53,80,.95)'
+        ctx.fillRect(x, sy, w, 17)
+        ctx.fillStyle = '#ffd93b'
+        ctx.fillRect(x, sy + 16, w, 1)
+        ctx.fillStyle = '#f7ecd7'
+        ctx.fillText(label.text, x + 6, sy + 12)
+      }
+    }
   }
 
-  return { draw, resize }
+  const screenToTile = (px, py) => ({
+    x: Math.floor((px - view.ox) / view.scale / TILE),
+    y: Math.floor((py - view.oy) / view.scale / TILE)
+  })
+
+  return { draw, resize, screenToTile }
 }

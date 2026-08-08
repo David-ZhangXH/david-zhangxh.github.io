@@ -154,6 +154,9 @@ Content that isn't ready at a stage ships with clearly-marked placeholder copy a
 | Art direction | the concept boards ARE the target look: their palette, soft illustration lighting, glow halos, monospace labels, cinematic color grade — carried into real-time 3D (hemisphere fill + accent lights, glow sprites, CSS grade overlay) | David: the board style is the site's soul; 3D must feel like the boards in motion, not like a tech demo |
 | Audio | generated in WebAudio (rain noise, original music-box loop, drones, chiptune arp) — zero audio files, off by default, music box is the master switch | no assets to license or load; the melody is composed in code so it can't infringe |
 | Village content file | single `content/village.json` (school/home/npcs/quiz) instead of separate school.json + home.json | one file for David to edit |
+| Home legibility | every object redrawn around one signature detail (notes above the music box, antenna on the TV, RGB keys, keyhole on the plaque, open pages, polaroids, reels on the VHS) + floating name label when faced or hovered + pointer cursor | David: "it is so unclear about which is which" — the sprite carries the identity, the label removes all doubt |
+| Jersey wall | 4 shirts as data (`home.jerseys.items`): Man Utd #8 Bruno Fernandes, Argentina #10 Messi, OKC #13 Paul George, OKC #0 Russell Westbrook — numbered mini-jerseys on a rail in-room, tee-shaped cards in the panel | David listed exactly these four; data-driven so he can swap shirts by editing JSON |
+| Leaving the village | persistent "⌫ back to the desk" corner button (bottom-right) inside the world; lock screen keeps its own | David: there was no visible way back to the desk — Escape-menu-only was hidden knowledge |
 
 ## 11. Non-goals
 

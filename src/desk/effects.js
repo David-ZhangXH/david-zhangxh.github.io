@@ -15,6 +15,21 @@ export function makeScreenTexture() {
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
 
+  // visitor words, typed across the screen (kept for their next visit)
+  let typed = null // { text, start }
+  let kept = ''
+  try { kept = localStorage.getItem('davidworld:typed') || '' } catch {}
+
+  const wrap = (text, max = 34) => {
+    const words = text.split(/\s+/)
+    const lines = ['']
+    for (const w of words) {
+      if ((lines[lines.length - 1] + ' ' + w).trim().length > max) lines.push(w)
+      else lines[lines.length - 1] = (lines[lines.length - 1] + ' ' + w).trim()
+    }
+    return lines.slice(0, 5)
+  }
+
   function draw(t) {
     const grad = g.createLinearGradient(0, 0, 0, 320)
     grad.addColorStop(0, '#0b1a33'); grad.addColorStop(1, '#07101f')
@@ -33,6 +48,21 @@ export function makeScreenTexture() {
     }
     g.fillStyle = '#dff8ff'
     g.beginPath(); g.arc(150, 118, 3.4, 0, 7); g.fill()
+
+    if (typed) {
+      const shown = typed.text.slice(0, Math.floor((t - typed.start) / 0.055))
+      g.font = '22px monospace'
+      g.fillStyle = 'rgba(223,248,255,0.95)'
+      wrap(shown).forEach((line, i) => g.fillText(line, 40, 150 + i * 28))
+      if (shown.length >= typed.text.length && t - typed.start > typed.text.length * 0.055 + 6) {
+        typed = null // rest again after a while; the words stay kept
+      }
+    } else if (kept) {
+      g.font = '15px monospace'
+      g.fillStyle = 'rgba(159,196,255,0.5)'
+      g.fillText(wrap(kept, 48)[0] || '', 40, 44)
+    }
+
     g.font = '20px monospace'
     g.fillStyle = 'rgba(107,229,255,0.95)'
     const cursor = Math.floor(t * 2) % 2 ? '▌' : ' '
@@ -40,7 +70,16 @@ export function makeScreenTexture() {
     tex.needsUpdate = true
   }
   draw(0)
-  return { texture: tex, update: draw }
+  return {
+    texture: tex,
+    update: draw,
+    typing: () => !!typed,
+    typeText(text, t) {
+      typed = { text: text.slice(0, 160), start: t }
+      kept = typed.text
+      try { localStorage.setItem('davidworld:typed', kept) } catch {}
+    }
+  }
 }
 
 export function makeRain(region) {

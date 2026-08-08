@@ -1,5 +1,6 @@
-// The village: lock → town. Canvas world + DOM interactions.
-import { TILE, SPAWN, isWalkable, zoneAt } from './map.js'
+// Village 2.0: lock → a one-screen town → walkable interiors.
+// Move with WASD/arrows, or click anywhere (doors auto-enter, objects auto-open).
+import { TILE, SCENES, RETURN_SPOTS } from './map.js'
 import { makeSprites } from './sprites.js'
 import { createRenderer } from './render.js'
 import { createPuzzle, claimCode } from './puzzle.js'
@@ -7,27 +8,32 @@ import { createLock } from './lock.js'
 import { createQuests, QUEST_IDS, QUEST_LABELS } from './quests.js'
 import * as ui from './panels.js'
 import { drawShareCard } from './share.js'
-import { parseFrontMatter } from '../core/frontmatter.js'
 import * as audio from '../core/audio.js'
 import '../core/overlay.css'
 import './village.css'
 import village from '../../content/village.json'
-import works from '../../content/works.json'
 import profile from '../../content/profile.json'
 
 const UNLOCK_KEY = 'davidworld:unlocked'
 const BEST_KEY = 'davidworld:puzzle-best'
 const RECORD_MS = 26000
 
-const writingFiles = import.meta.glob('../../content/writings/*.md', { eager: true, query: '?raw', import: 'default' })
-const writings = Object.entries(writingFiles).map(([path, raw]) => {
-  const { attrs } = parseFrontMatter(raw)
-  return { title: attrs.title || path.split('/').pop(), date: attrs.date || '' }
-})
+// names that float above whatever the player faces or hovers
+const LABELS = {
+  school: 'SCHOOL', lab: 'LAB', home: 'HOME', library: 'LIBRARY',
+  arcade: 'ARCADE', mailbox: 'MAILBOX', npc1: 'VILLAGER', npc2: 'LIBRARIAN',
+  musicbox: 'MUSIC BOX', tv: 'TELEVISION', laptop: 'GAMING LAPTOP',
+  music_corner: 'MUSIC CORNER', shelves: 'BOOK-SHELVES', board: 'PICTURE BOARD',
+  memory: 'SECRET MEMORY', toy: 'THE TOY', bigbook: 'THE BIG BOOK',
+  worldmap: 'WORLD MAP', tape: 'VIDEO-TAPE', jerseys: 'JERSEY WALL',
+  yuying: 'YUYING', s101: '101 MIDDLE SCHOOL', bu: 'BOSTON UNIVERSITY',
+  bio: 'BIOLOGY', chem: 'CHEMISTRY', env: 'ENVIRONMENTAL SCIENCE',
+  docs: 'LIFE DOCUMENTS', quiz: "THE LIBRARIAN'S QUIZ"
+}
 
 export function mountVillage({ onExit, onClassic } = {}) {
   const cleanup = []
-  const on = (el, ev, fn) => { el.addEventListener(ev, fn); cleanup.push(() => el.removeEventListener(ev, fn)) }
+  const on = (el, ev, fn, opts) => { el.addEventListener(ev, fn, opts); cleanup.push(() => el.removeEventListener(ev, fn, opts)) }
   const quests = createQuests(localStorage)
 
   const root = document.createElement('div')
@@ -40,24 +46,24 @@ export function mountVillage({ onExit, onClassic } = {}) {
     document.body.appendChild(t.firstElementChild)
     setTimeout(() => document.querySelectorAll('.v-toast').forEach(x => x.remove()), 2700)
   }
-  let showShare = null // assigned once the town (and its overlay system) exists
+  let showShare = null
   const questToast = (id) => {
     if (!quests.complete(id)) return
     toastNow(`QUEST COMPLETE — ${QUEST_LABELS[id]}`)
     if (quests.allDone()) setTimeout(() => showShare?.(), 1500)
   }
 
-  // ---------- THE LOCK ----------
-  let town = null
+  // ---------- THE LOCK (unchanged ritual) ----------
+  let world = null
   if (localStorage.getItem(UNLOCK_KEY) === 'yes') {
-    town = startTown()
+    world = startWorld()
   } else {
     const lock = createLock({
       code: '0716',
       onUnlock() {
         localStorage.setItem(UNLOCK_KEY, 'yes')
         lockEl.remove()
-        town = startTown()
+        world = startWorld()
         questToast('passcode')
       }
     })
@@ -101,8 +107,8 @@ export function mountVillage({ onExit, onClassic } = {}) {
     cleanup.push(() => lockEl.remove())
   }
 
-  // ---------- THE TOWN ----------
-  function startTown() {
+  // ---------- THE WORLD (town + interiors) ----------
+  function startWorld() {
     const canvas = document.createElement('canvas')
     canvas.style.cssText = 'width:100%;height:100%'
     root.appendChild(canvas)
@@ -110,48 +116,97 @@ export function mountVillage({ onExit, onClassic } = {}) {
     const renderer = createRenderer(canvas, sprites)
     on(window, 'resize', renderer.resize)
 
+    let sceneName = 'town'
+    let scene = SCENES.town
     const player = {
-      tx: SPAWN.x, ty: SPAWN.y,
-      px: SPAWN.x * TILE, py: SPAWN.y * TILE,
-      dir: [0, 1], moving: false
+      tx: scene.spawn.x, ty: scene.spawn.y,
+      px: scene.spawn.x * TILE, py: scene.spawn.y * TILE,
+      dir: [0, -1], moving: false
     }
+    let path = []            // click-to-move steps
+    let pendingZone = null   // interact when we arrive next to it
+
+    function goScene(name, at) {
+      sceneName = name
+      scene = SCENES[name]
+      const spot = at || scene.spawn
+      player.tx = spot.x; player.ty = spot.y
+      player.px = spot.x * TILE; player.py = spot.y * TILE
+      path = []; pendingZone = null; hoverZone = null
+      root.classList.remove('flash'); void root.offsetWidth; root.classList.add('flash')
+    }
+
     const held = new Set()
     const KEYMAP = {
       ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0],
       w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0]
     }
-
     let overlayOpen = false
     on(window, 'keydown', (e) => {
       if (overlayOpen) return
-      if (KEYMAP[e.key]) { held.add(e.key); e.preventDefault() }
-      if (e.key === 'e' || e.key === 'E' || e.key === 'Enter' || e.key === ' ') interact()
+      if (KEYMAP[e.key]) { held.add(e.key); path = []; pendingZone = null; e.preventDefault() }
+      if (e.key === 'e' || e.key === 'E' || e.key === 'Enter' || e.key === ' ') interactFacing()
       if (e.key === 'q' || e.key === 'Q') openQuestLog()
       if (e.key === 'Escape') openPause()
     })
     on(window, 'keyup', (e) => held.delete(e.key))
 
-    // touch controls
-    const dpad = document.createElement('div')
-    dpad.className = 'v-dpad'
-    dpad.innerHTML = `<span></span><button data-k="ArrowUp">▲</button><span></span>
-      <button data-k="ArrowLeft">◀</button><span></span><button data-k="ArrowRight">▶</button>
-      <span></span><button data-k="ArrowDown">▼</button><span></span>`
-    document.body.appendChild(dpad)
-    dpad.querySelectorAll('button').forEach(b => {
-      on(b, 'pointerdown', () => held.add(b.dataset.k))
-      on(b, 'pointerup', () => held.delete(b.dataset.k))
-      on(b, 'pointerleave', () => held.delete(b.dataset.k))
+    // ---- click / tap to move ----
+    function bfsPath(from, to) {
+      const key = (x, y) => `${x},${y}`
+      const prev = new Map([[key(from.x, from.y), null]])
+      const q = [[from.x, from.y]]
+      while (q.length) {
+        const [x, y] = q.shift()
+        if (x === to.x && y === to.y) break
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = x + dx, ny = y + dy
+          if (!scene.isWalkable(nx, ny) || prev.has(key(nx, ny))) continue
+          prev.set(key(nx, ny), [x, y])
+          q.push([nx, ny])
+        }
+      }
+      if (!prev.has(key(to.x, to.y))) return null
+      const steps = []
+      let cur = [to.x, to.y]
+      while (cur && !(cur[0] === from.x && cur[1] === from.y)) {
+        steps.unshift({ x: cur[0], y: cur[1] })
+        cur = prev.get(key(cur[0], cur[1]))
+      }
+      return steps
+    }
+    on(canvas, 'pointerdown', (e) => {
+      if (overlayOpen) return
+      const t = renderer.screenToTile(e.clientX, e.clientY)
+      const zone = scene.zoneAt(t.x, t.y)
+      let goal = null
+      if (zone) {
+        // walk to the nearest open side of the object, then use it
+        const options = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+          .map(([dx, dy]) => ({ x: t.x + dx, y: t.y + dy }))
+          .filter(p => scene.isWalkable(p.x, p.y))
+          .map(p => ({ p, path: bfsPath({ x: player.tx, y: player.ty }, p) }))
+          .filter(o => o.path)
+          .sort((a, b) => a.path.length - b.path.length)
+        if (options[0]) { goal = options[0]; pendingZone = { id: zone, x: t.x, y: t.y } }
+      } else if (scene.isWalkable(t.x, t.y)) {
+        const p = bfsPath({ x: player.tx, y: player.ty }, t)
+        if (p) { goal = { path: p }; pendingZone = null }
+      }
+      if (goal) { held.clear(); path = goal.path }
     })
-    const interactBtn = document.createElement('button')
-    interactBtn.className = 'v-interact'
-    interactBtn.textContent = 'E'
-    document.body.appendChild(interactBtn)
-    on(interactBtn, 'click', () => interact())
-    cleanup.push(() => { dpad.remove(); interactBtn.remove() })
 
-    // movement: tile-to-tile with smooth pixels
-    const SPEED = 90 // px/s
+    // hover: pointer cursor + name label
+    let hoverZone = null
+    on(canvas, 'pointermove', (e) => {
+      const t = renderer.screenToTile(e.clientX, e.clientY)
+      hoverZone = scene.zoneAt(t.x, t.y)
+      canvas.style.cursor = hoverZone ? 'pointer' : 'default'
+    })
+    on(canvas, 'pointerleave', () => { hoverZone = null; canvas.style.cursor = 'default' })
+
+    // ---- movement ----
+    const SPEED = 110
     function step(dt) {
       const targetX = player.tx * TILE, targetY = player.ty * TILE
       const dx = targetX - player.px, dy = targetY - player.py
@@ -163,21 +218,43 @@ export function mountVillage({ onExit, onClassic } = {}) {
         return
       }
       player.moving = false
+      // arrived on an exit? leave the room
+      const exit = scene.exitAt(player.tx, player.ty)
+      if (exit) { goScene('town', RETURN_SPOTS[sceneName]); return }
+      // keyboard first
       for (const k of held) {
         const d = KEYMAP[k]
         if (!d) continue
         player.dir = d
         const nx = player.tx + d[0], ny = player.ty + d[1]
-        if (isWalkable(nx, ny)) { player.tx = nx; player.ty = ny }
-        break
+        if (scene.isWalkable(nx, ny)) { player.tx = nx; player.ty = ny }
+        return
+      }
+      // then any click-path
+      if (path.length) {
+        const next = path.shift()
+        player.dir = [Math.sign(next.x - player.tx), Math.sign(next.y - player.ty)]
+        player.tx = next.x; player.ty = next.y
+        return
+      }
+      // path finished — use the thing we walked to
+      if (pendingZone) {
+        player.dir = [Math.sign(pendingZone.x - player.tx), Math.sign(pendingZone.y - player.ty)]
+        const z = pendingZone; pendingZone = null
+        useZone(z.id)
       }
     }
 
-    // ---------- interactions ----------
+    function interactFacing() {
+      if (overlayOpen) return
+      const z = scene.zoneAt(player.tx + player.dir[0], player.ty + player.dir[1])
+      if (z) useZone(z)
+    }
+
+    // ---------- overlays ----------
     const overlayHost = document.createElement('div')
     document.body.appendChild(overlayHost)
     cleanup.push(() => overlayHost.remove())
-
     function openOverlay(html, wire) {
       overlayOpen = true
       overlayHost.innerHTML = `<div class="v-overlay">${html}</div>`
@@ -192,13 +269,17 @@ export function mountVillage({ onExit, onClassic } = {}) {
         if (e.target === overlayHost.firstElementChild) closeOverlay()
       })
       const esc = (e) => { if (e.key === 'Escape') { e.stopPropagation(); closeOverlay() } }
+      if (overlayHost._esc) window.removeEventListener('keydown', overlayHost._esc, true)
       window.addEventListener('keydown', esc, true)
       overlayHost._esc = esc
       wire?.(panel)
       close.focus()
     }
     function closeOverlay() {
-      window.removeEventListener('keydown', overlayHost._esc, true)
+      if (overlayHost._esc) window.removeEventListener('keydown', overlayHost._esc, true)
+      overlayHost._esc = null
+      overlayHost._arcadeStop?.()
+      overlayHost._arcadeStop = null
       overlayHost.innerHTML = ''
       overlayOpen = false
     }
@@ -212,44 +293,71 @@ export function mountVillage({ onExit, onClassic } = {}) {
       holder.innerHTML = ui.dialogueBox(speaker, lines[i], i < lines.length - 1)
       const box = holder.firstElementChild
       document.body.appendChild(box)
-      const dismiss = () => box.remove()
-      box.addEventListener('click', dismiss)
-      setTimeout(() => box.isConnected && dismiss(), 6000)
+      box.addEventListener('click', () => box.remove())
+      setTimeout(() => box.isConnected && box.remove(), 6000)
     }
 
-    function interact() {
-      if (overlayOpen) return
-      const fx = player.tx + player.dir[0], fy = player.ty + player.dir[1]
-      const zone = zoneAt(fx, fy)
-      if (!zone) return
-      if (zone === 'school') openOverlay(ui.storiesPanel('SCHOOL DAYS', village.school, 'Chalk dust and beginnings.'))
-      if (zone === 'home') openOverlay(ui.storiesPanel('HOME', village.home, 'The personal shelf.'))
-      if (zone === 'lab') openOverlay(ui.labPanel(works.filter(w => w.status === 'ongoing' || w.status === 'paused')))
-      if (zone === 'library') openLibrary()
-      if (zone === 'mailbox') openLetter()
-      if (zone === 'arcade') openArcade()
-      if (zone === 'coffee') { questToast('coffee'); toastNow('☕ the hidden coffee machine gurgles approvingly') }
-      if (zone === 'npc1') talk('villager', 'VILLAGER')
-      if (zone === 'npc2') talk('librarian', 'LIBRARIAN')
+    // ---------- what each thing does ----------
+    function useZone(id) {
+      // town
+      if (['home', 'school', 'lab', 'library'].includes(id) && sceneName === 'town') return goScene(id)
+      if (id === 'mailbox') return openLetter()
+      if (id === 'arcade') return openArcade()
+      if (id === 'npc1') return talk('villager', 'VILLAGER')
+      if (id === 'npc2') return talk('librarian', 'LIBRARIAN')
+      // home
+      if (id === 'worldmap') return openOverlay(ui.worldmapPanel(village.home.worldmap))
+      if (id === 'memory') return openMemory()
+      if (id === 'jerseys') return openOverlay(ui.jerseysPanel(village.home.jerseys))
+      if (id === 'musicbox') return openOverlay(ui.musicboxPanel(village.home.musicbox))
+      if (village.home[id]) return openOverlay(ui.objectPanel(village.home[id].title, village.home[id].text))
+      // school + lab
+      const school = village.schools.find(s => s.id === id)
+      if (school) return openOverlay(ui.objectPanel(school.name, school.text))
+      const table = village.lab.find(l => l.id === id)
+      if (table) return openOverlay(ui.objectPanel(table.name, table.text))
+      // library
+      if (id === 'docs') return openOverlay(ui.docsPanel(village.library.documents))
+      if (id === 'quiz') return startQuiz(0, 0)
     }
 
-    function openLibrary() {
-      const shelf = works.filter(w => w.status === 'published' || w.status === 'review')
-      openOverlay(ui.libraryPanel(shelf, writings), (panel) => {
-        panel.querySelector('[data-quiz]')?.addEventListener('click', () => startQuiz(0, 0))
+    function openMemory() {
+      if (quests.isDone('memory')) {
+        return openOverlay(ui.objectPanel(village.home.memory.title, village.home.memory.text))
+      }
+      openOverlay(ui.memoryGate(village.home.memory.question), (panel) => {
+        const input = panel.querySelector('.v-answer')
+        const tryIt = () => {
+          const guess = input.value.trim().toLowerCase()
+          const ok = village.home.memory.answers.some(a => a.toLowerCase() === guess)
+          if (ok) {
+            closeOverlay()
+            questToast('memory')
+            openOverlay(ui.objectPanel(village.home.memory.title, village.home.memory.text))
+          } else {
+            panel.querySelector('.v-nudge2').hidden = false
+            input.value = ''
+            input.focus()
+          }
+        }
+        panel.querySelector('[data-try-memory]').addEventListener('click', tryIt)
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryIt() })
+        input.focus()
       })
     }
+
     function startQuiz(index, correct) {
-      if (index >= village.quiz.length) {
+      const qz = village.library.quiz
+      if (index >= qz.length) {
         closeOverlay()
-        if (correct === village.quiz.length) { questToast('library'); toastNow('the librarian beams — perfect score') }
-        else toastNow(`the librarian smiles — ${correct}/${village.quiz.length}. try again sometime`)
+        if (correct === qz.length) { questToast('quiz'); openOverlay(ui.prizePanel()) }
+        else toastNow(`the librarian smiles — ${correct}/${qz.length}. try again sometime`)
         return
       }
-      openOverlay(ui.quizQuestion(village.quiz, index), (panel) => {
+      openOverlay(ui.quizQuestion(qz, index), (panel) => {
         panel.querySelectorAll('[data-answer]').forEach(btn => {
           btn.addEventListener('click', () => {
-            const right = Number(btn.dataset.answer) === village.quiz[index].answer
+            const right = Number(btn.dataset.answer) === qz[index].answer
             startQuiz(index + 1, correct + (right ? 1 : 0))
           })
         })
@@ -260,8 +368,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
       openOverlay(ui.letterPanel(profile.email), (panel) => {
         panel.querySelector('[data-send]').addEventListener('click', () => {
           const text = panel.querySelector('.v-letter').value.trim()
-          const mail = `mailto:${profile.email}?subject=${encodeURIComponent('A letter from the village')}&body=${encodeURIComponent(text || '(an empty but heartfelt letter)')}`
-          window.location.href = mail
+          window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent('A letter from the village')}&body=${encodeURIComponent(text || '(an empty but heartfelt letter)')}`
           questToast('letter')
           closeOverlay()
           toastNow('✉ the letter is on its way')
@@ -294,8 +401,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
           })
           movesEl.textContent = `${puzzle.moves()} moves`
         }
-        const tick = () => { if (startedAt) timerEl.textContent = ((performance.now() - startedAt) / 1000).toFixed(2) }
-        timerId = setInterval(tick, 50)
+        timerId = setInterval(() => { if (startedAt) timerEl.textContent = ((performance.now() - startedAt) / 1000).toFixed(2) }, 50)
         const tryMove = (tile) => {
           if (!startedAt) startedAt = performance.now()
           if (!puzzle.move(tile)) return
@@ -306,17 +412,16 @@ export function mountVillage({ onExit, onClassic } = {}) {
           const tiles = puzzle.tiles()
           const hole = tiles.indexOf(0)
           let idx = -1
-          if (e.key === 'ArrowUp') idx = hole + 4      // tile below slides up
-          if (e.key === 'ArrowDown') idx = hole - 4    // tile above slides down
-          if (e.key === 'ArrowLeft') idx = hole + 1    // tile right slides left
-          if (e.key === 'ArrowRight') idx = hole - 1   // tile left slides right
+          if (e.key === 'ArrowUp') idx = hole + 4
+          if (e.key === 'ArrowDown') idx = hole - 4
+          if (e.key === 'ArrowLeft') idx = hole + 1
+          if (e.key === 'ArrowRight') idx = hole - 1
           if (idx >= 0 && idx < 16) { e.preventDefault(); tryMove(tiles[idx]) }
         }
         window.addEventListener('keydown', keys, true)
-        const stop = () => { clearInterval(timerId); window.removeEventListener('keydown', keys, true) }
-        overlayHost._arcadeStop = stop
+        overlayHost._arcadeStop = () => { clearInterval(timerId); window.removeEventListener('keydown', keys, true) }
         const finish = () => {
-          stop()
+          overlayHost._arcadeStop?.(); overlayHost._arcadeStop = null
           const timeMs = Math.round(performance.now() - startedAt)
           const beat = timeMs < RECORD_MS
           const best = Number(localStorage.getItem(BEST_KEY)) || Infinity
@@ -325,7 +430,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
           if (beat) questToast('record')
           closeOverlay()
           openOverlay(ui.arcadeWin({ timeMs, moves: puzzle.moves(), code, beat, email: profile.email }), (p2) => {
-            p2.querySelector('[data-again]')?.addEventListener('click', () => { runPuzzle() })
+            p2.querySelector('[data-again]')?.addEventListener('click', () => runPuzzle())
             p2.querySelector('[data-close-arcade]')?.addEventListener('click', closeOverlay)
           })
         }
@@ -333,15 +438,13 @@ export function mountVillage({ onExit, onClassic } = {}) {
       })
     }
 
-    // ---------- share card ----------
+    // ---------- share card, quest log, pause ----------
     showShare = () => {
       const png = drawShareCard(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))
       openOverlay(ui.shareCard(png), (panel) => {
         panel.querySelector('[data-close-share]').addEventListener('click', closeOverlay)
       })
     }
-
-    // ---------- quest log + pause ----------
     function openQuestLog() {
       openOverlay(ui.questLog(QUEST_IDS, QUEST_LABELS, (id) => quests.isDone(id)))
     }
@@ -364,15 +467,34 @@ export function mountVillage({ onExit, onClassic } = {}) {
         </p></div>`, (panel) => {
         panel.querySelector('[data-resume]').addEventListener('click', closeOverlay)
         panel.querySelector('[data-crt]').addEventListener('click', (e) => {
-          const on = root.classList.toggle('crt')
-          localStorage.setItem('davidworld:crt', on ? 'on' : 'off')
-          e.target.textContent = on ? 'CRT scanlines: ON' : 'CRT scanlines: off'
+          const on2 = root.classList.toggle('crt')
+          localStorage.setItem('davidworld:crt', on2 ? 'on' : 'off')
+          e.target.textContent = on2 ? 'CRT scanlines: ON' : 'CRT scanlines: off'
         })
         panel.querySelector('[data-leave]').addEventListener('click', () => { unmount(); onExit?.() })
       })
     }
 
-    // ---------- loop (pauses when the tab hides) ----------
+    // touch d-pad
+    const dpad = document.createElement('div')
+    dpad.className = 'v-dpad'
+    dpad.innerHTML = `<span></span><button data-k="ArrowUp">▲</button><span></span>
+      <button data-k="ArrowLeft">◀</button><span></span><button data-k="ArrowRight">▶</button>
+      <span></span><button data-k="ArrowDown">▼</button><span></span>`
+    document.body.appendChild(dpad)
+    dpad.querySelectorAll('button').forEach(b => {
+      on(b, 'pointerdown', () => held.add(b.dataset.k))
+      on(b, 'pointerup', () => held.delete(b.dataset.k))
+      on(b, 'pointerleave', () => held.delete(b.dataset.k))
+    })
+    const interactBtn = document.createElement('button')
+    interactBtn.className = 'v-interact'
+    interactBtn.textContent = 'E'
+    document.body.appendChild(interactBtn)
+    on(interactBtn, 'click', () => interactFacing())
+    cleanup.push(() => { dpad.remove(); interactBtn.remove() })
+
+    // ---------- loop ----------
     let raf = 0
     let last = performance.now()
     const loop = (now) => {
@@ -380,7 +502,12 @@ export function mountVillage({ onExit, onClassic } = {}) {
       const dt = Math.min((now - last) / 1000, 0.05)
       last = now
       step(dt)
-      renderer.draw(player, Math.floor(now / 400) % 2 === 0, now / 1000)
+      let label = null
+      if (!overlayOpen) {
+        const id = scene.zoneAt(player.tx + player.dir[0], player.ty + player.dir[1]) || hoverZone
+        if (id) label = { id, text: LABELS[id] || id.toUpperCase() }
+      }
+      renderer.draw(scene, player, Math.floor(now / 400) % 2 === 0, now / 1000, label)
     }
     const onVis = () => {
       cancelAnimationFrame(raf)
@@ -393,10 +520,22 @@ export function mountVillage({ onExit, onClassic } = {}) {
     if (localStorage.getItem('davidworld:crt') === 'on') root.classList.add('crt')
     if (audio.soundOn()) audio.startProfile('village')
 
-    return { player }
+    // always-visible way home (the lock screen has its own)
+    const exitBtn = document.createElement('button')
+    exitBtn.id = 'village-exit'
+    exitBtn.className = 'corner-btn'
+    exitBtn.textContent = '⌫ back to the desk'
+    on(exitBtn, 'click', () => { unmount(); onExit?.() })
+    document.body.appendChild(exitBtn)
+    cleanup.push(() => exitBtn.remove())
+
+    return {
+      player,
+      scene: () => sceneName,
+      go: (name, at) => goScene(name, at)
+    }
   }
 
-  // classic escape hatch (spec: every world has one)
   const classicBtn = document.createElement('button')
   classicBtn.id = 'village-classic'
   classicBtn.className = 'corner-btn'
@@ -414,6 +553,8 @@ export function mountVillage({ onExit, onClassic } = {}) {
 
   return {
     unmount,
-    get player() { return town?.player || null }
+    get player() { return world?.player || null },
+    get scene() { return world?.scene?.() || 'lock' },
+    go: (name, at) => world?.go(name, at)
   }
 }

@@ -37,12 +37,13 @@ try {
   await page.screenshot({ path: 'shots/desk-desktop.png' })
 
   const proxies = await page.$$('.hotspot-proxies button')
-  check(proxies.length === 7, `7 hotspot proxies present (got ${proxies.length})`)
+  check(proxies.length === 9, `9 hotspot proxies present (got ${proxies.length})`)
 
   // monitor + handheld are portals now — covered by e2e-galaxy / e2e-village
   const expectText = {
     tray: 'Curriculum',
-    frame: 'July 16', notes: 'p = 0.049', musicbox: 'music box'
+    frame: 'July 16', notes: 'Insomania Radio', musicbox: '静止',
+    plant: 'childhood', keyboard: 'wall'
   }
   // proxies are keyboard controls: activate via focus + Enter (the real a11y path)
   const pressProxy = async (id) => {
@@ -61,6 +62,17 @@ try {
     await page.waitForSelector('.card-backdrop', { state: 'detached', timeout: 6000 })
     await page.waitForTimeout(1200)
   }
+
+  // keyboard wall: typing sends words to the screen without errors
+  await pressProxy('keyboard')
+  await page.waitForSelector('.wall-input', { timeout: 9000 })
+  await page.fill('.wall-input', 'hello from the e2e ghost')
+  await page.click('[data-type-it]')
+  await page.waitForSelector('.card-backdrop', { state: 'detached', timeout: 4000 })
+  await page.waitForTimeout(1500)
+  const keptTyped = await page.evaluate(() => localStorage.getItem('davidworld:typed'))
+  check(keptTyped === 'hello from the e2e ghost', 'typed words reach the screen and are kept')
+  await page.waitForTimeout(800)
 
   // mug: no card, just the heart
   await pressProxy('mug')

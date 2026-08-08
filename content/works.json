@@ -14,8 +14,7 @@
     "type": "poster",
     "status": "published",
     "title": "A Human-in-the-Loop LLM Framework for Trustworthy Diabetes–Nutrition Knowledge Graph",
-    "year": 2026,
-    "venue": "STAI-X 2026 · Poster Track (accepted)",
+    "venue": "STAI-X 2026",
     "pdf": "",
     "description": "With Lin Tang, Xuezhou Zhang, and Huimin Cheng. Keeping humans in the loop so an LLM-built nutrition knowledge graph stays trustworthy enough for diabetes-care questions."
   },
@@ -23,8 +22,8 @@
     "id": "paper-cpg-clock",
     "type": "paper",
     "status": "ongoing",
-    "title": "Alcohol & the Epigenetic Clock — Alcohol–CpG Aging",
-    "description": "Advised by Prof. Chunyu Liu, BU Biostatistics. Does drinking show up in how fast our DNA-methylation clocks tick? Regression and mixed-effects models quantify alcohol-related epigenetic age acceleration."
+    "title": "Alcohol–CpG Aging Clock & Liver Disease",
+    "description": "Advised by Prof. Chunyu Liu, BU Biostatistics. Building an alcohol–CpG epigenetic clock to estimate liver-disease outcomes — aiming at signal beyond what GrimAge and PhenoAge capture."
   },
   {
     "id": "project-graphrag-agent",
@@ -38,13 +37,13 @@
     "type": "paper",
     "status": "paused",
     "title": "Spatially Variable Genes (SVG) Detection",
-    "description": "With Prof. Shariq Mohammed, BU School of Public Health. A detection algorithm for spatially variable genes with higher accuracy and clearer interpretability than the current benchmark. Paper-level work, paused — a matter of time, not interest."
+    "description": "With Prof. Shariq Mohammed, BU School of Public Health. An innovative smoothing-function detection algorithm for spatially variable genes, with higher accuracy and clearer interpretability than the current benchmark."
   },
   {
     "id": "paper-gnpc",
     "type": "paper",
     "status": "paused",
-    "title": "GNPC Hypergraph Modeling for Alzheimer's Subtypes",
-    "description": "With Prof. Selena Wang, Indiana University. Hypergraph models over Global Neurodegeneration Proteomics Consortium data to capture higher-order proteomic interactions and identify clinically meaningful Alzheimer's disease subtypes. Paused mid-flight, waiting for time."
+    "title": "GNPC Bayesian Hypergraph Modeling for Alzheimer's Subtypes",
+    "description": "With Prof. Selena Wang, Indiana University. Bayesian hypergraph models over Global Neurodegeneration Proteomics Consortium data to capture higher-order proteomic interactions and identify clinically meaningful Alzheimer's disease subtypes."
   }
 ]

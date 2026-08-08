@@ -70,26 +70,68 @@ export function validateWorks(list) {
   return errs
 }
 
+// Village content (2.0 shape — see validateVillage2 below)
 export function validateVillage(v) {
+  return validateVillage2(v)
+}
+
+export function validateWall(list) {
+  if (!Array.isArray(list)) return ['wall: must be an array']
+  const errs = []
+  list.forEach((m, i) => {
+    if (!filled(m?.text)) errs.push(`wall[${i}].text: required`)
+    for (const k of ['from', 'date'])
+      if (m?.[k] !== undefined && !isStr(m[k])) errs.push(`wall[${i}].${k}: must be a string`)
+  })
+  return errs
+}
+
+// Village 2.0 content shape
+export function validateVillage2(v) {
   if (!v || typeof v !== 'object') return ['village: not an object']
   const errs = []
-  for (const sec of ['school', 'home']) {
-    if (!Array.isArray(v[sec])) { errs.push(`village.${sec}: must be an array`); continue }
-    v[sec].forEach((s, i) => {
-      if (!filled(s?.title)) errs.push(`village.${sec}[${i}].title: required`)
-      if (!filled(s?.text)) errs.push(`village.${sec}[${i}].text: required`)
+  const HOME_KEYS = ['musicbox', 'tv', 'laptop', 'music_corner', 'shelves', 'board', 'toy', 'bigbook', 'worldmap', 'tape', 'memory', 'jerseys']
+  if (!v.home || typeof v.home !== 'object') errs.push('village.home: required object')
+  else {
+    for (const k of HOME_KEYS) {
+      const o = v.home[k]
+      if (!o || !filled(o.title) || !filled(o.text)) errs.push(`village.home.${k}: needs title + text`)
+    }
+    const m = v.home.memory
+    if (m && (!filled(m.question) || !Array.isArray(m.answers) || m.answers.length === 0 || !m.answers.every(filled)))
+      errs.push('village.home.memory: needs question + non-empty answers')
+    const jz = v.home.jerseys
+    if (jz && (!Array.isArray(jz.items) || jz.items.length === 0 ||
+      !jz.items.every(j => j && filled(j.team) && filled(j.name) && Number.isInteger(j.number) && j.number >= 0)))
+      errs.push('village.home.jerseys: items need team + name + non-negative integer number')
+    const mb = v.home.musicbox
+    if (mb) {
+      for (const key of ['genres', 'artists', 'loves'])
+        if (key in mb && (!Array.isArray(mb[key]) || mb[key].length === 0 || !mb[key].every(filled)))
+          errs.push(`village.home.musicbox.${key}: non-empty array of strings`)
+      if ('lyric' in mb && !filled(mb.lyric)) errs.push('village.home.musicbox.lyric: non-empty string')
+      if ('albums' in mb && (!Array.isArray(mb.albums) || !mb.albums.every(a => a && filled(a.img))))
+        errs.push('village.home.musicbox.albums: each album needs an img path')
+    }
+  }
+  for (const [sec, n] of [['schools', 3], ['lab', 3]]) {
+    if (!Array.isArray(v[sec]) || v[sec].length !== n) errs.push(`village.${sec}: exactly ${n} entries`)
+    else v[sec].forEach((s, i) => {
+      if (!filled(s?.id) || !filled(s?.name) || !filled(s?.text)) errs.push(`village.${sec}[${i}]: needs id/name/text`)
     })
   }
+  if (!v.library || !Array.isArray(v.library.documents) || v.library.documents.length === 0)
+    errs.push('village.library.documents: non-empty array required')
+  else v.library.documents.forEach((d, i) => { if (!filled(d?.title)) errs.push(`village.library.documents[${i}].title: required`) })
+  if (!v.library || !Array.isArray(v.library.quiz) || v.library.quiz.length !== 3) errs.push('village.library.quiz: exactly 3 questions')
+  else v.library.quiz.forEach((q, i) => {
+    if (!filled(q?.q)) errs.push(`village.library.quiz[${i}].q: required`)
+    if (!Array.isArray(q?.options) || q.options.length !== 4 || !q.options.every(filled))
+      errs.push(`village.library.quiz[${i}].options: exactly 4 non-empty strings`)
+    if (!Number.isInteger(q?.answer) || q.answer < 0 || q.answer > 3) errs.push(`village.library.quiz[${i}].answer: integer 0-3`)
+  })
   if (!v.npcs || typeof v.npcs !== 'object' || Array.isArray(v.npcs)) errs.push('village.npcs: must be an object')
   else for (const [k, lines] of Object.entries(v.npcs))
     if (!Array.isArray(lines) || !lines.every(filled)) errs.push(`village.npcs.${k}: must be non-empty strings`)
-  if (!Array.isArray(v.quiz)) errs.push('village.quiz: must be an array')
-  else v.quiz.forEach((q, i) => {
-    if (!filled(q?.q)) errs.push(`village.quiz[${i}].q: required`)
-    if (!Array.isArray(q?.options) || q.options.length !== 4 || !q.options.every(filled))
-      errs.push(`village.quiz[${i}].options: exactly 4 non-empty strings`)
-    if (!Number.isInteger(q?.answer) || q.answer < 0 || q.answer > 3)
-      errs.push(`village.quiz[${i}].answer: integer 0-3`)
-  })
   return errs
 }

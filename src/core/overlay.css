@@ -60,3 +60,31 @@
 .card-close:hover, .card-close:focus-visible { color: #fff; outline: none; }
 
 @media (max-width: 480px) { .card { padding: 20px 18px; } }
+
+/* about-card photos */
+.card .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.card .photos figure { margin: 0; }
+.card .photos img { width: 100%; border-radius: 10px; display: block; }
+.card .photos figcaption { color: #98a0b4; font-size: 11.5px; text-align: center; margin-top: 4px;
+  font-family: ui-monospace, Menlo, monospace; letter-spacing: .08em; }
+
+/* sticky notes */
+.card .notes { display: grid; gap: 10px; }
+.card .note { border-radius: 4px; padding: 12px 14px; font-size: 13.5px; line-height: 1.55;
+  transform: rotate(-.6deg); color: #4a3a10; box-shadow: 0 3px 10px rgba(0,0,0,.25); }
+.card .note.yellow { background: #ffe58a; }
+.card .note.pink { background: #ffb3c8; transform: rotate(.8deg); color: #4a1f2c; }
+.card .note.green { background: #a8e6b0; transform: rotate(-.3deg); color: #1c3a22; }
+.card .note a { color: inherit; font-weight: 650; word-break: break-all; }
+.card .note b { font-weight: 700; }
+
+/* the keyboard wall */
+.card .wall { border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 10px 12px;
+  margin-bottom: 12px; max-height: 170px; overflow: auto; }
+.card .wall-msg { font-size: 13.5px; color: #dde3f0; margin: 0 0 8px; }
+.card .wall-from { color: #8fa0ff; font-size: 12px; }
+.card .wall-input { width: 100%; box-sizing: border-box; background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.18); border-radius: 10px; color: #e8ecf4;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding: 10px 12px; margin-bottom: 12px; resize: vertical; }
+.card .wall-input:focus { outline: 1px solid #6be5ff; }

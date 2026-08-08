@@ -11,6 +11,7 @@ import '../core/overlay.css'
 import './galaxy.css'
 import works from '../../content/works.json'
 import ideas from '../../content/ideas.json'
+import profile from '../../content/profile.json'
 
 const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2
 
@@ -134,7 +135,7 @@ export function mountGalaxy({ onExit, onClassic, reducedMotion = false } = {}) {
   // ---- cards ----
   let backdrop = null
   function openCard(id) {
-    const html = id === 'secret' ? ideasCard(ideas) : workCard(bodies.registry[id].work)
+    const html = id === 'secret' ? ideasCard(ideas, profile.email) : workCard(bodies.registry[id].work)
     backdrop = document.createElement('div')
     backdrop.className = 'card-backdrop'
     backdrop.innerHTML = html
@@ -145,6 +146,13 @@ export function mountGalaxy({ onExit, onClassic, reducedMotion = false } = {}) {
     backdrop.querySelector('.card').appendChild(close)
     close.addEventListener('click', release)
     backdrop.addEventListener('click', (e) => { if (e.target === backdrop) release() })
+    backdrop.querySelectorAll('[data-send-idea]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const text = backdrop.querySelector('.idea-input')?.value.trim()
+        if (!text) return
+        location.href = `mailto:${btn.dataset.email}?subject=${encodeURIComponent('An idea for the nebula')}&body=${encodeURIComponent(text)}`
+      })
+    })
     document.body.appendChild(backdrop)
     close.focus()
   }

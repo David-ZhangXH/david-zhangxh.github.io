@@ -5,8 +5,9 @@ import { buildFurniture } from './furniture.js'
 import { makeScreenTexture, makeRain, makeSteam, lampFlicker } from './effects.js'
 import { createDeskState, HOTSPOTS } from './state.js'
 import { HOME, INTRO_START, POSES } from './poses.js'
-import { aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard } from './cards.js'
+import { aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard, plantCard, wallCard } from './cards.js'
 import * as audio from '../core/audio.js'
+import wall from '../../content/wall.json'
 import '../core/overlay.css'
 import './desk.css'
 import profile from '../../content/profile.json'
@@ -18,7 +19,9 @@ const CARD_FOR = {
   tray: () => cvCard() + contactCard(profile),
   frame: () => aboutCard(profile),
   notes: () => linksCard(profile),
-  musicbox: () => playlistCard(playlist, audio.soundOn())
+  musicbox: () => playlistCard(playlist, audio.soundOn()),
+  plant: () => plantCard(),
+  keyboard: () => wallCard(wall, profile)
 }
 
 const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2
@@ -50,7 +53,8 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     steam.update(dt, t)
     flicker(dt, t)
     screenClock += dt
-    if (screenClock > 0.4) { screenClock = 0; screenFx.update(t) }
+    // refresh fast while words are being typed, lazily otherwise
+    if (screenClock > (screenFx.typing() ? 0.05 : 0.4)) { screenClock = 0; screenFx.update(t) }
   })
 
   // ---- state + camera rig ----
@@ -212,6 +216,21 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     shell.querySelector('.card').appendChild(close)
     close.addEventListener('click', closeCard)
     backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeCard() })
+    backdrop.querySelectorAll('[data-type-it]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const text = backdrop.querySelector('.wall-input')?.value.trim()
+        if (!text) return
+        closeCard()
+        screenFx.typeText(text, worldTime)
+      })
+    })
+    backdrop.querySelectorAll('[data-send-wall]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const text = backdrop.querySelector('.wall-input')?.value.trim()
+        if (!text) return
+        location.href = `mailto:${btn.dataset.email}?subject=${encodeURIComponent('Pin to the wall')}&body=${encodeURIComponent(text)}`
+      })
+    })
     backdrop.querySelectorAll('[data-sound]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const on = audio.toggle('desk')

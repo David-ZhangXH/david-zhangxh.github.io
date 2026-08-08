@@ -1,69 +1,116 @@
-// The town grid: 40×24 tiles. Built in code (not ASCII art) so it can't drift.
-// Zones are solid objects you interact with by facing them.
+// Village 2.0 scenes: a one-screen town + four walkable interiors.
+// Each scene: {w, h, spawn, zones, exits, isWalkable, zoneAt, exitAt} plus
+// render hints (buildings, trees, kind).
 
-export const WIDTH = 40
-export const HEIGHT = 24
 export const TILE = 16
-export const SPAWN = { x: 19, y: 13 }
 
-export const BUILDINGS = [
-  { id: 'school', x: 3, y: 3, w: 10, h: 6 },
-  { id: 'home', x: 3, y: 14, w: 10, h: 5 },
-  { id: 'lab', x: 24, y: 3, w: 11, h: 6 },
-  { id: 'library', x: 24, y: 14, w: 11, h: 5 }
+function makeScene({ w, h, spawn, zones = [], exits = [], solidExtra = [], openBorder = [] }) {
+  const solid = new Set()
+  for (let x = 0; x < w; x++) { solid.add(`${x},0`); solid.add(`${x},${h - 1}`) }
+  for (let y = 0; y < h; y++) { solid.add(`0,${y}`); solid.add(`${w - 1},${y}`) }
+  for (const [x, y] of openBorder) solid.delete(`${x},${y}`)
+  for (const [x, y] of solidExtra) solid.add(`${x},${y}`)
+  const zoneMap = new Map()
+  for (const z of zones) { solid.add(`${z.x},${z.y}`); zoneMap.set(`${z.x},${z.y}`, z.id) }
+  const exitMap = new Map()
+  for (const e of exits) exitMap.set(`${e.x},${e.y}`, e.to)
+  return {
+    w, h, spawn, zones, exits,
+    isWalkable: (x, y) => x >= 0 && y >= 0 && x < w && y < h && !solid.has(`${x},${y}`),
+    zoneAt: (x, y) => zoneMap.get(`${x},${y}`) || null,
+    exitAt: (x, y) => exitMap.get(`${x},${y}`) || null
+  }
+}
+
+// ---------- TOWN (26×16 — fully visible at scale 3 on a laptop) ----------
+const TOWN_BUILDINGS = [
+  { id: 'school', x: 2, y: 1, w: 8, h: 5 },
+  { id: 'lab', x: 16, y: 1, w: 8, h: 5 },
+  { id: 'home', x: 2, y: 8, w: 8, h: 5 },
+  { id: 'library', x: 16, y: 8, w: 8, h: 5 }
 ]
-
-// interactables: door zones sit on the building's south wall; objects stand free
-export const ZONES = [
-  { id: 'school', x: 7, y: 8 },    // school door
-  { id: 'home', x: 7, y: 18 },     // home door
-  { id: 'lab', x: 28, y: 8 },      // lab door
-  { id: 'library', x: 28, y: 18 }, // library door
-  { id: 'arcade', x: 32, y: 9 },   // unmarked cabinet beside the lab
-  { id: 'coffee', x: 37, y: 6 },   // hidden behind the lab
-  { id: 'mailbox', x: 21, y: 12 },
-  { id: 'npc1', x: 16, y: 14 },    // villager
-  { id: 'npc2', x: 26, y: 19 }     // librarian
-]
-
-export const TREES = [
-  [1, 1], [14, 2], [22, 2], [37, 2], [1, 9], [15, 8], [1, 21], [9, 21],
-  [17, 21], [30, 21], [38, 20], [38, 12], [2, 12], [14, 17], [22, 17], [36, 15]
-]
-
-const solid = new Set()
-const zoneMap = new Map()
-
-// building footprints block
-for (const b of BUILDINGS)
+const TOWN_TREES = [[11, 2], [14, 2], [1, 6], [24, 6], [11, 11], [14, 11], [1, 14], [24, 14]]
+const townSolid = []
+for (const b of TOWN_BUILDINGS)
   for (let y = b.y; y < b.y + b.h; y++)
-    for (let x = b.x; x < b.x + b.w; x++) solid.add(`${x},${y}`)
-// trees block
-for (const [x, y] of TREES) solid.add(`${x},${y}`)
-// zones block (they're objects) and register
-for (const z of ZONES) { solid.add(`${z.x},${z.y}`); zoneMap.set(`${z.x},${z.y}`, z.id) }
-// border fence
-for (let x = 0; x < WIDTH; x++) { solid.add(`${x},0`); solid.add(`${x},${HEIGHT - 1}`) }
-for (let y = 0; y < HEIGHT; y++) { solid.add(`0,${y}`); solid.add(`${WIDTH - 1},${y}`) }
+    for (let x = b.x; x < b.x + b.w; x++) townSolid.push([x, y])
+for (const t of TOWN_TREES) townSolid.push(t)
 
-export function isWalkable(x, y) {
-  if (x < 0 || y < 0 || x >= WIDTH || y >= HEIGHT) return false
-  return !solid.has(`${x},${y}`)
+const town = makeScene({
+  w: 26, h: 16,
+  spawn: { x: 12, y: 13 },
+  zones: [
+    { id: 'school', x: 5, y: 5 },    // doors sit on the south wall
+    { id: 'lab', x: 19, y: 5 },
+    { id: 'home', x: 5, y: 12 },
+    { id: 'library', x: 19, y: 12 },
+    { id: 'arcade', x: 14, y: 4 },   // the unmarked cabinet, beside the lab
+    { id: 'mailbox', x: 12, y: 8 },
+    { id: 'npc1', x: 10, y: 10 },
+    { id: 'npc2', x: 15, y: 10 }
+  ],
+  solidExtra: townSolid
+})
+town.kind = 'town'
+town.buildings = TOWN_BUILDINGS
+town.trees = TOWN_TREES
+
+// ---------- interiors (14×10; wall band across y=0..1; exit door at bottom) ----------
+function interior({ zones, spawn = { x: 7, y: 7 }, wallRow = [] }) {
+  const solidExtra = []
+  for (let x = 1; x < 13; x++) solidExtra.push([x, 1]) // wall depth
+  for (const s of wallRow) solidExtra.push(s)
+  const sc = makeScene({
+    w: 14, h: 10, spawn, zones,
+    exits: [{ x: 7, y: 8, to: 'town' }],
+    solidExtra,
+    openBorder: []
+  })
+  return sc
 }
 
-export function zoneAt(x, y) {
-  return zoneMap.get(`${x},${y}`) || null
-}
+// Home layout, spread for legibility (multi-tile zones share an id):
+//   top wall:   musicbox · TV (2w) · laptop · jersey wall (3w) · tape
+//   left wall:  world map (2h) · picture board
+//   right wall: book-shelves (2h) · memory placard
+//   floor:      toy · big book · music corner (3w, bottom)
+const home = interior({
+  zones: [
+    { id: 'musicbox', x: 2, y: 2 },
+    { id: 'tv', x: 4, y: 2 }, { id: 'tv', x: 5, y: 2 },
+    { id: 'laptop', x: 7, y: 2 },
+    { id: 'jerseys', x: 9, y: 2 }, { id: 'jerseys', x: 10, y: 2 }, { id: 'jerseys', x: 11, y: 2 },
+    { id: 'tape', x: 12, y: 2 },
+    { id: 'worldmap', x: 1, y: 4 }, { id: 'worldmap', x: 1, y: 5 },
+    { id: 'board', x: 1, y: 7 },
+    { id: 'shelves', x: 12, y: 4 }, { id: 'shelves', x: 12, y: 5 },
+    { id: 'memory', x: 12, y: 7 },
+    { id: 'toy', x: 4, y: 5 }, { id: 'bigbook', x: 9, y: 5 },
+    { id: 'music_corner', x: 3, y: 7 }, { id: 'music_corner', x: 4, y: 7 }, { id: 'music_corner', x: 5, y: 7 }
+  ],
+  spawn: { x: 7, y: 7 }
+})
+home.kind = 'home'
 
-export function allZones() {
-  return ZONES.slice()
-}
+const school = interior({
+  zones: [{ id: 'yuying', x: 3, y: 2 }, { id: 's101', x: 7, y: 2 }, { id: 'bu', x: 11, y: 2 }]
+})
+school.kind = 'school'
 
-// path tiles are cosmetic (walkable either way) — the renderer uses this
-export function isPath(x, y) {
-  const horiz = (y === 11 || y === 12) && x >= 1 && x <= 38
-  const vert = (x === 19 || x === 20) && y >= 1 && y <= 22
-  const doorSpurs = (x === 7 && (y === 9 || y === 10)) || (x === 28 && (y === 9 || y === 10)) ||
-    (x === 7 && y >= 13 && y <= 17) || (x === 28 && y >= 13 && y <= 17)
-  return horiz || vert || doorSpurs
+const lab = interior({
+  zones: [{ id: 'bio', x: 3, y: 3 }, { id: 'chem', x: 7, y: 3 }, { id: 'env', x: 11, y: 3 }]
+})
+lab.kind = 'lab'
+
+const library = interior({
+  zones: [{ id: 'docs', x: 4, y: 2 }, { id: 'quiz', x: 11, y: 4 }]
+})
+library.kind = 'library'
+
+export const SCENES = { town, home, school, lab, library }
+
+// where you reappear in town after leaving each building
+export const RETURN_SPOTS = {
+  home: { x: 5, y: 13 }, school: { x: 5, y: 6 },
+  lab: { x: 19, y: 6 }, library: { x: 19, y: 13 }
 }

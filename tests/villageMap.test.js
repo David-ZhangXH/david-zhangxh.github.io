@@ -1,45 +1,63 @@
 import { describe, it, expect } from 'vitest'
-import { WIDTH, HEIGHT, SPAWN, isWalkable, zoneAt, allZones } from '../src/village/map.js'
+import { SCENES, TILE } from '../src/village/map.js'
 
-describe('village map', () => {
-  it('has sane dimensions and a walkable spawn', () => {
-    expect(WIDTH).toBe(40)
-    expect(HEIGHT).toBe(24)
-    expect(isWalkable(SPAWN.x, SPAWN.y)).toBe(true)
-  })
-  it('defines all nine interact zones exactly once', () => {
-    const found = {}
-    for (let y = 0; y < HEIGHT; y++) for (let x = 0; x < WIDTH; x++) {
-      const z = zoneAt(x, y)
-      if (z) found[z] = (found[z] || 0) + 1
+const bfs = (scene, from) => {
+  const seen = new Set([`${from.x},${from.y}`])
+  const q = [[from.x, from.y]]
+  while (q.length) {
+    const [x, y] = q.shift()
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const k = `${x + dx},${y + dy}`
+      if (!seen.has(k) && scene.isWalkable(x + dx, y + dy)) { seen.add(k); q.push([x + dx, y + dy]) }
     }
-    expect(Object.keys(found).sort()).toEqual(
-      ['arcade', 'coffee', 'home', 'lab', 'library', 'mailbox', 'npc1', 'npc2', 'school'])
-    expect(Object.values(found).every(n => n === 1)).toBe(true)
-    expect(allZones().length).toBe(9)
+  }
+  return seen
+}
+
+describe('village scenes', () => {
+  it('town is compact enough to see whole on a laptop at scale 3', () => {
+    expect(SCENES.town.w * TILE * 3).toBeLessThanOrEqual(1280)
+    expect(SCENES.town.h * TILE * 3).toBeLessThanOrEqual(820)
   })
-  it('zones are solid but each is adjacent to a tile reachable from spawn (BFS)', () => {
-    const seen = new Set([`${SPAWN.x},${SPAWN.y}`])
-    const queue = [[SPAWN.x, SPAWN.y]]
-    while (queue.length) {
-      const [x, y] = queue.shift()
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const nx = x + dx, ny = y + dy
-        const k = `${nx},${ny}`
-        if (nx < 0 || ny < 0 || nx >= WIDTH || ny >= HEIGHT || seen.has(k)) continue
-        if (isWalkable(nx, ny)) { seen.add(k); queue.push([nx, ny]) }
+  it('every scene: spawn walkable, all zones adjacent-reachable, exits walkable', () => {
+    for (const [name, s] of Object.entries(SCENES)) {
+      expect(s.isWalkable(s.spawn.x, s.spawn.y), `${name} spawn`).toBe(true)
+      const reach = bfs(s, s.spawn)
+      for (const z of s.zones) {
+        expect(s.isWalkable(z.x, z.y), `${name}:${z.id} solid`).toBe(false)
+        const near = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => reach.has(`${z.x + dx},${z.y + dy}`))
+        expect(near, `${name}:${z.id} reachable`).toBe(true)
+      }
+      for (const e of s.exits || []) expect(s.isWalkable(e.x, e.y), `${name} exit`).toBe(true)
+    }
+  })
+  it('town has the four doors + mailbox + arcade + npcs; no coffee anywhere', () => {
+    const ids = SCENES.town.zones.map(z => z.id).sort()
+    expect(ids).toEqual(['arcade', 'home', 'lab', 'library', 'mailbox', 'npc1', 'npc2', 'school'])
+    for (const s of Object.values(SCENES))
+      expect(s.zones.some(z => /coffee/.test(z.id))).toBe(false)
+  })
+  it('home interior holds all twelve of David\'s objects (multi-tile allowed)', () => {
+    const ids = [...new Set(SCENES.home.zones.map(z => z.id))].sort()
+    expect(ids).toEqual(['bigbook', 'board', 'jerseys', 'laptop', 'memory', 'music_corner', 'musicbox', 'shelves', 'tape', 'toy', 'tv', 'worldmap'])
+  })
+  it('multi-tile objects are contiguous groups', () => {
+    for (const s of Object.values(SCENES)) {
+      const byId = {}
+      for (const z of s.zones) (byId[z.id] ||= []).push(z)
+      for (const [id, tiles] of Object.entries(byId)) {
+        if (tiles.length === 1) continue
+        // every tile touches another tile of the same group
+        for (const t of tiles) {
+          const touching = tiles.some(o => o !== t && Math.abs(o.x - t.x) + Math.abs(o.y - t.y) === 1)
+          expect(touching, `${id} tile ${t.x},${t.y} contiguous`).toBe(true)
+        }
       }
     }
-    for (const { id, x, y } of allZones()) {
-      expect(isWalkable(x, y)).toBe(false)
-      const near = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen.has(`${x + dx},${y + dy}`))
-      expect(near, `${id} must be reachable`).toBe(true)
-    }
   })
-  it('building interiors block movement', () => {
-    expect(isWalkable(7, 5)).toBe(false)   // school
-    expect(isWalkable(7, 16)).toBe(false)  // home
-    expect(isWalkable(28, 5)).toBe(false)  // lab
-    expect(isWalkable(28, 16)).toBe(false) // library
+  it('school has three stations, lab three tables, library shelves + quiz', () => {
+    expect(SCENES.school.zones.map(z => z.id).sort()).toEqual(['bu', 's101', 'yuying'])
+    expect(SCENES.lab.zones.map(z => z.id).sort()).toEqual(['bio', 'chem', 'env'])
+    expect(SCENES.library.zones.map(z => z.id).sort()).toEqual(['docs', 'quiz'])
   })
 })

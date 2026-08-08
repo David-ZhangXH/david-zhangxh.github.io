@@ -29,3 +29,12 @@ describe('real content files', () => {
     }
   })
 })
+
+describe('wall.json', () => {
+  it('is valid', async () => {
+    const { validateWall } = await import('../src/core/validate.js')
+    const { readFileSync } = await import('node:fs')
+    const wall = JSON.parse(readFileSync(new URL('../content/wall.json', import.meta.url), 'utf8'))
+    expect(validateWall(wall)).toEqual([])
+  })
+})

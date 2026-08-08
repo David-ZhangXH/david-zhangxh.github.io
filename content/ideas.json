@@ -1,15 +1,20 @@
 [
   {
-    "topic": "Placeholder topic A (replace me)",
+    "topic": "AI-simulated Cell–Organ–Body for future experiments",
     "ideas": [
-      { "title": "An idea title goes here", "note": "One-paragraph sketch of the idea — what it is, why it might matter." },
-      { "title": "Another idea title", "note": "Rough thought, safe here in the dark until it's ready." }
+      {
+        "title": "The sketch",
+        "note": "Build a layered digital twin — cell, then organ, then whole body — trained on multi-omic and clinical data, so experiments can run in silico first: perturb a pathway, dose a virtual liver, and watch the effect propagate upward through the layers. Wet-lab time then goes only to the candidates that survive simulation, and every real result feeds back to sharpen the twin. The statistics is the hard part, and the interesting part: calibration, uncertainty, and knowing exactly when the simulation deserves to be trusted."
+      }
     ]
   },
   {
-    "topic": "Placeholder topic B (replace me)",
+    "topic": "A Self-Evolving AI for Automated Signal Discovery",
     "ideas": [
-      { "title": "A third idea", "note": "David will replace all of these with his real idea archive." }
+      {
+        "title": "The sketch",
+        "note": "A closed loop where AI does the whole job: propose a hypothesis, run the analysis, judge the evidence, refine the question — do, learn, refine, again and again through the night, with humans auditing the trail instead of driving every step. The open problem is honesty at machine scale: multiplicity control and calibrated skepticism, so a system that tests a million hypotheses can't fool itself — or us."
+      }
     ]
   }
 ]

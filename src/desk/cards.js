@@ -17,13 +17,16 @@ const card = (title, body, cls = '') => `
 
 export function aboutCard(profile) {
   return card('About me', `
+  <div class="photos">
+    <figure><img src="photos/then.jpg" alt="Xiaohang as a child, beside a snow rabbit"><figcaption>then</figcaption></figure>
+    <figure><img src="photos/now.jpg" alt="Xiaohang now, blue hair, autumn hills behind"><figcaption>now</figcaption></figure>
+  </div>
   <p class="bio">${esc(profile.bio)}</p>
   <dl class="facts">
     <dt>Goes by</dt><dd>David</dd>
     <dt>Birthday</dt><dd>${esc(formatBirthday(profile.birthday))}</dd>
-    <dt>Field</dt><dd>${esc(profile.tagline || '')}</dd>
-  </dl>
-  <p class="hint">Some dates matter more than they look. ✦</p>`, 'about')
+    <dt>Into</dt><dd>${esc(profile.tagline || '')}</dd>
+  </dl>`, 'about')
 }
 
 export function cvCard() {
@@ -45,22 +48,45 @@ export function contactCard(profile) {
 }
 
 export function linksCard(profile) {
-  const links = Object.entries(profile.links || {})
-    .filter(([, url]) => url && url.trim())
-    .map(([k, url]) => `<a class="btn ghost" href="${esc(url)}" target="_blank" rel="noopener">${esc(LINK_LABELS[k] || k)}</a>`)
+  const li = profile.links?.linkedin
   return card('Sticky notes', `
-  ${links.length ? `<p class="actions">${links.join(' ')}</p>` : '<p>Links coming soon — the notes are still being written.</p>'}
-  <p class="joke">One note just says <em>p = 0.049</em>. It seems important to him.</p>`, 'links')
+  <div class="notes">
+    <div class="note yellow">Follow my music account on bilibili — <b>“Insomania Radio”</b> 😊<br>
+      ${li ? `LinkedIn: <a href="${esc(li)}" target="_blank" rel="noopener">${esc(li.replace('https://www.', ''))}</a>` : ''}</div>
+    <div class="note pink">Unlock the phone to explore more contents.</div>
+    <div class="note green">能力越大，睡的越香 😴<br><b>MBTI: INSLEEP</b></div>
+  </div>`, 'links')
 }
 
 export function playlistCard(list, soundOn = false) {
   const rows = list.map(t => `<li>${t.link ? `<a href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.title)}</a>` : esc(t.title)}
     <span class="artist">${esc(t.artist)}</span></li>`).join('\n')
   return card('The music box', `
-  <p>What plays while the models fit:</p>
   <ol class="playlist">${rows}</ol>
   <p class="actions"><button class="btn ghost" data-sound>${soundOn ? '🔇 let the box rest' : '🎶 wind the box'}</button></p>
   <p class="hint">winding it starts the rain and a little melody — everywhere in the world.</p>`, 'playlist')
+}
+
+export function plantCard() {
+  return card('The mint', `
+  <p>Mint — a stubborn little herb that grows back no matter how often it's cut,
+  and quietly makes everything around it smell like morning.</p>
+  <p class="hint">— to my childhood, and the pots of mint I raised at home. ✦</p>`, 'plant')
+}
+
+export function wallCard(messages, profile) {
+  const pinned = messages.map(m => `
+    <div class="wall-msg">“${esc(m.text)}”${m.from ? ` <span class="wall-from">— ${esc(m.from)}</span>` : ''}</div>`).join('')
+  return card('The keyboard', `
+  <p>Type something. Watch it appear on the screen, letter by letter — this desk
+  keeps a wall of words visitors have left.</p>
+  ${pinned ? `<div class="wall">${pinned}</div>` : ''}
+  <textarea class="wall-input" rows="3" maxlength="280" placeholder="say anything — it's your keyboard now" aria-label="Your message"></textarea>
+  <p class="actions">
+    <button class="btn" data-type-it>type it on the screen</button>
+    <button class="btn ghost" data-send-wall data-email="${esc(profile.email)}">pin it to the wall</button>
+  </p>
+  <p class="joke">“Pin it” sends your words to David, who adds them here for everyone. Typing on the screen is just between you and the desk.</p>`, 'wall')
 }
 
 export function teaserCard(kind) {

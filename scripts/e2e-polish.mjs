@@ -59,26 +59,30 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
     const page = await ctx.newPage()
     await page.goto('http://localhost:4173/', { waitUntil: 'domcontentloaded' })
-    // preset: unlocked, 4 of 5 quests done
+    // preset: unlocked, 4 of 5 quests done — the memory placard is the last one
     await page.evaluate(() => {
       localStorage.setItem('davidworld:unlocked', 'yes')
-      localStorage.setItem('davidworld:quests', JSON.stringify(['passcode', 'record', 'library', 'letter']))
+      localStorage.setItem('davidworld:quests', JSON.stringify(['passcode', 'record', 'quiz', 'letter']))
     })
     await page.reload({ waitUntil: 'domcontentloaded' })
     await page.waitForSelector('#desk-root canvas', { timeout: 6000 })
     await page.keyboard.press('Enter')
     await page.focus('.hotspot-proxies button[data-hotspot="handheld"]')
     await page.keyboard.press('Enter')
-    await page.waitForSelector('#village-root canvas', { timeout: 9000 })
+    await page.waitForSelector('#village-root canvas', { timeout: 15000 })
     await page.waitForTimeout(400)
-    // stand before the coffee machine, face it, and interact via a real event
-    // (keyboard plumbing is proven by e2e-village; this test targets the card)
+    // walk into HOME, face the placard (right wall), answer the nickname
+    await page.evaluate(() => window.__village.go('home'))
+    await page.waitForTimeout(300)
     await page.evaluate(() => {
       const v = window.__village.player
-      v.tx = 37; v.ty = 7; v.px = 37 * 16; v.py = 7 * 16
-      v.dir = [0, -1]
+      v.tx = 11; v.ty = 7; v.px = 11 * 16; v.py = 7 * 16
+      v.dir = [1, 0]
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'e' }))
     })
+    await page.waitForSelector('.v-answer', { timeout: 5000 })
+    await page.fill('.v-answer', 'huahua')
+    await page.click('[data-try-memory]')
     const share = await page.waitForSelector('.v-panel.win-all', { timeout: 8000 }).catch(() => null)
     if (share) {
       const dl = await page.$eval('.v-panel.win-all a[download]', el => el.href.slice(0, 22))
@@ -86,9 +90,10 @@ try {
       await page.screenshot({ path: 'shots/village-sharecard.png' })
       await page.click('[data-close-share]')
     } else check(false, 'share card appears after the final quest')
-    // CRT toggle
-    await page.keyboard.press('Escape')
-    await page.waitForSelector('[data-crt]', { timeout: 3000 })
+    // CRT toggle (dispatch Escape directly — button-focus states vary headless)
+    await page.waitForTimeout(400)
+    await page.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })))
+    await page.waitForSelector('[data-crt]', { timeout: 5000 })
     await page.click('[data-crt]')
     const crt = await page.$eval('#village-root', el => el.classList.contains('crt'))
     check(crt, 'CRT scanlines toggle from the pause menu')

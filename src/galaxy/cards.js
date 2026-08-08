@@ -2,10 +2,10 @@
 import { esc } from '../core/html.js'
 
 const STATUS_LINE = {
-  review: (w) => `igniting star — ${esc(w.venue || 'under review')} · ${esc(w.year || '')}`,
-  published: (w) => `${esc(w.venue || 'published')}${w.year ? ' · ' + esc(w.year) : ''}`,
-  ongoing: () => 'in progress — still condensing',
-  paused: () => 'dormant nebula — paused for time, not interest'
+  review: (w) => `${esc(w.venue || 'under review')}${w.year ? ' · ' + esc(w.year) : ''}`,
+  published: (w) => esc(w.venue || w.year || 'published'),
+  ongoing: () => 'in progress',
+  paused: () => 'on hold'
 }
 
 export function workCard(w) {
@@ -22,7 +22,7 @@ export function workCard(w) {
 </div>`
 }
 
-export function ideasCard(topics) {
+export function ideasCard(topics, email) {
   const blocks = topics.map(t => `
   <details>
     <summary>${esc(t.topic)}</summary>
@@ -34,5 +34,8 @@ export function ideasCard(topics) {
   <h3>Where the unformed things drift</h3>
   <p>Ideas that aren't papers yet — some academic, some just sparks. Most visitors never see this place.</p>
   ${blocks}
+  <p class="idea-invite">Carrying an interesting academic idea of your own? Leave it here — it drifts straight to me.</p>
+  <textarea class="idea-input" rows="3" maxlength="600" placeholder="your idea, rough is fine" aria-label="Your idea"></textarea>
+  <p class="actions"><button class="btn" data-send-idea data-email="${esc(email || '')}">send it into the nebula</button></p>
 </div>`
 }

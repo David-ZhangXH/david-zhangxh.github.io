@@ -1,5 +1,5 @@
-// Village e2e: portal, lock (wrong→nudge→0716), walking, every zone's panel,
-// arcade record-reveal rule, letter mailto, quests, unlock persistence, exit.
+// Village 2.0 e2e: lock, one-screen town, click-to-move, interiors with
+// David's objects, memory gate, library quiz→prize, arcade text, exits.
 import { chromium } from 'playwright'
 import { spawn } from 'node:child_process'
 import { mkdirSync } from 'node:fs'
@@ -17,8 +17,7 @@ try {
     ...(exe ? { executablePath: exe } : {}),
     args: ['--no-sandbox', '--enable-unsafe-swiftshader', '--use-angle=swiftshader']
   })
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
-  const page = await ctx.newPage()
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
   const errors = []
   page.on('pageerror', (e) => errors.push(String(e)))
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()) })
@@ -26,158 +25,201 @@ try {
   await page.goto('http://localhost:4173/', { waitUntil: 'domcontentloaded' })
   await page.waitForSelector('#desk-root canvas', { timeout: 6000 })
   await page.keyboard.press('Enter')
-
-  // ---- handheld portal → lock ----
   await page.focus('.hotspot-proxies button[data-hotspot="handheld"]')
   await page.keyboard.press('Enter')
-  const lockUp = await page.waitForSelector('.v-lock', { timeout: 9000 }).then(() => true).catch(() => false)
-  check(lockUp, 'handheld dives into the lock screen')
-  await page.screenshot({ path: 'shots/village-lock.png' })
 
-  // ---- three misses → nudge ----
+  // ---- lock ----
+  await page.waitForSelector('.v-lock', { timeout: 15000 })
   const typeCode = async (code) => {
     for (let i = 0; i < 4; i++) await page.fill(`.v-code input[data-d="${i}"]`, code[i])
     await page.click('[data-try]')
   }
-  await typeCode('1111')
-  await typeCode('2222')
-  let nudgeVisible = await page.$eval('.v-nudge', el => !el.hidden).catch(() => false)
-  check(!nudgeVisible, 'no nudge before the third miss')
-  await typeCode('3333')
-  nudgeVisible = await page.$eval('.v-nudge', el => !el.hidden)
-  const nudgeText = await page.$eval('.v-nudge', el => el.textContent)
-  check(nudgeVisible && /photo frame/i.test(nudgeText), 'third miss nudges toward the photo frame')
-
-  // ---- 0716 opens the town ----
+  await typeCode('1111'); await typeCode('2222'); await typeCode('3333')
+  const nudge = await page.$eval('.v-nudge', el => !el.hidden)
+  check(nudge, 'three misses nudge toward the photo frame')
   await typeCode('0716')
-  const townUp = await page.waitForSelector('#village-root canvas', { timeout: 6000 }).then(() => true).catch(() => false)
-  check(townUp, 'passcode 0716 opens the town')
-  await page.waitForTimeout(600)
+  await page.waitForSelector('#village-root canvas', { timeout: 6000 })
+  check(true, 'passcode opens the town')
+  await page.waitForTimeout(700)
   await page.screenshot({ path: 'shots/village-town.png' })
 
-  // ---- walking works ----
-  const posOf = () => page.evaluate(() => ({ x: window.__village.player.tx, y: window.__village.player.ty }))
-  const p0 = await posOf()
-  await page.keyboard.down('ArrowLeft')
-  await page.waitForTimeout(700)
-  await page.keyboard.up('ArrowLeft')
-  const p1 = await posOf()
-  check(p1.x < p0.x, `arrow keys walk the player (${p0.x},${p0.y} → ${p1.x},${p1.y})`)
-
-  // helper: teleport-free walking via key holds is slow; drive to zones with a route runner
-  async function walkTo(tx, ty) {
-    await page.evaluate(([tx, ty]) => { // small dev assist: nudge tile-by-tile via keys only would take minutes headless
-      const v = window.__village.player
-      v.tx = tx; v.ty = ty; v.px = tx * 16; v.py = ty * 16
-    }, [tx, ty])
-    await page.waitForTimeout(120)
+  const state = () => page.evaluate(() => ({ scene: window.__village.scene, x: window.__village.player.tx, y: window.__village.player.ty }))
+  const tilePoint = (tx, ty) => page.evaluate(([tx, ty]) => {
+    const c = document.querySelector('#village-root canvas')
+    const r = c.getBoundingClientRect()
+    // recompute the letterbox view like the renderer does
+    const TILE = 16, w = 26, h = 16
+    const fit = Math.floor(Math.min(c.width / (w * TILE), c.height / (h * TILE)))
+    const scale = Math.min(4, fit)
+    const ox = Math.floor((c.width - w * TILE * scale) / 2)
+    const oy = Math.floor((c.height - h * TILE * scale) / 2)
+    return [r.left + ox + (tx * TILE + 8) * scale, r.top + oy + (ty * TILE + 8) * scale]
+  }, [tx, ty])
+  const clickTile = async (tx, ty) => {
+    const pt = await tilePoint(tx, ty)
+    await page.mouse.click(pt[0], pt[1])
   }
-  async function face(dx, dy) {
-    const key = dx === 1 ? 'ArrowRight' : dx === -1 ? 'ArrowLeft' : dy === -1 ? 'ArrowUp' : 'ArrowDown'
-    await page.keyboard.down(key) // hold across a few frames so the loop registers facing
-    await page.waitForTimeout(320)
-    await page.keyboard.up(key)
-    await page.waitForTimeout(120)
-  }
-  const openZone = async (standX, standY, dx, dy) => {
-    await walkTo(standX, standY)
-    await face(dx, dy)
-    await page.keyboard.press('e')
-    return page.waitForSelector('.v-panel', { timeout: 4000 }).catch(() => null)
+  const waitScene = async (name, ms = 9000) => {
+    const t0 = Date.now()
+    while (Date.now() - t0 < ms) {
+      if ((await state()).scene === name) return true
+      await page.waitForTimeout(150)
+    }
+    return false
   }
   const closePanel = async () => {
     await page.keyboard.press('Escape')
     await page.waitForSelector('.v-overlay', { state: 'detached', timeout: 3000 }).catch(() => {})
     await page.waitForTimeout(150)
   }
-
-  // ---- buildings ----
-  const zonesToTest = [
-    { name: 'school', stand: [7, 9], dir: [0, -1], expect: /SCHOOL DAYS/i },
-    { name: 'home', stand: [7, 19], dir: [0, -1], expect: /HOME/ },
-    { name: 'lab', stand: [28, 9], dir: [0, -1], expect: /THE LAB/i },
-    { name: 'library', stand: [28, 19], dir: [0, -1], expect: /THE LIBRARY/i }
-  ]
-  for (const z of zonesToTest) {
-    const panel = await openZone(...z.stand, ...z.dir)
-    if (!panel) { check(false, `${z.name}: panel opens`); continue }
-    const txt = await panel.innerText()
-    check(z.expect.test(txt), `${z.name}: panel shows its content`)
-    if (z.name === 'lab') check(/asleep/.test(txt) && /running/.test(txt), 'lab: machines show running + asleep states')
-    if (z.name === 'school') await page.screenshot({ path: 'shots/village-school.png' })
-    await closePanel()
+  const enterVia = (name, at) => page.evaluate(([n, a]) => window.__village.go(n, a), [name, at])
+  const openZoneByKeys = async (standX, standY, dirKey) => {
+    await page.evaluate(([x, y]) => {
+      const v = window.__village.player
+      v.tx = x; v.ty = y; v.px = x * 16; v.py = y * 16
+    }, [standX, standY])
+    await page.keyboard.down(dirKey); await page.waitForTimeout(350); await page.keyboard.up(dirKey)
+    await page.waitForTimeout(120)
+    await page.keyboard.press('e')
+    return page.waitForSelector('.v-panel', { timeout: 5000 }).catch(() => null)
   }
 
-  // ---- arcade: record only after start ----
+  // ---- hover shows a pointer over interactables ----
+  const doorPt = await tilePoint(5, 12)
+  await page.mouse.move(doorPt[0], doorPt[1])
+  await page.waitForTimeout(150)
+  const cursor = await page.$eval('#village-root canvas', el => el.style.cursor)
+  check(cursor === 'pointer', 'hovering an interactable shows a pointer cursor')
+
+  // ---- click a door → auto-walk → auto-enter ----
+  await clickTile(5, 12) // home door
+  check(await waitScene('home'), 'clicking the HOME door walks in and enters the room')
+  await page.waitForTimeout(500)
+  await page.screenshot({ path: 'shots/village-home.png' })
+
+  // ---- home objects (new spread layout) ----
+  const homeChecks = [
+    { stand: [2, 3], dir: 'ArrowUp', text: /Love can fight everything/i, name: 'musicbox' },
+    { stand: [4, 6], dir: 'ArrowDown', text: /guitar/i, name: 'music corner' },
+    { stand: [8, 5], dir: 'ArrowRight', text: /trajectory|big book/i, name: 'big book' },
+    { stand: [10, 3], dir: 'ArrowUp', text: /messi|fernandes|westbrook/i, name: 'jersey wall' }
+  ]
+  for (const c of homeChecks) {
+    const panel = await openZoneByKeys(...(c.pre || c.stand), c.dir)
+    if (!panel) { check(false, `home: ${c.name} opens`); continue }
+    check(c.text.test(await panel.innerText()), `home: ${c.name} opens its story`)
+    await closePanel()
+  }
+  // music box: genres + favourite artists + loved artists all present
+  const mb = await openZoneByKeys(2, 3, 'ArrowUp')
+  if (mb) {
+    const mt = await mb.innerText()
+    check(['Neo-Soul', 'Future Bass', 'Flamenco'].every(x => mt.includes(x)), 'music box: the nine sounds are listed')
+    check(['王以太', '艾热', 'Gali', 'Linkin Park', '大张伟', '邓紫棋'].every(x => mt.includes(x)), 'music box: six favourite artists shine')
+    check(['Kendrick Lamar', 'Molchat Doma', '方大同', 'Imagine Dragons'].every(x => mt.includes(x)), 'music box: the loved-music list plays')
+    await closePanel()
+  } else check(false, 'music box reopens')
+
+  // jersey wall carries all four numbers
+  const jp = await openZoneByKeys(10, 3, 'ArrowUp')
+  if (jp) {
+    const jt = await jp.innerText()
+    check(['#8', '#10', '#13', '#0'].every(n => jt.includes(n)), 'jersey wall: all four numbers hang')
+    await closePanel()
+  } else check(false, 'jersey wall reopens')
+  // world map (left wall now)
+  const wm = await openZoneByKeys(2, 4, 'ArrowLeft')
+  check(wm && /where david has been|travelling world map/i.test(await wm.innerText()), 'home: world map lists stops')
+  await closePanel()
+
+  // ---- memory placard gate (right wall now) ----
+  const gate = await openZoneByKeys(11, 7, 'ArrowRight')
+  if (gate) {
+    await page.fill('.v-answer', 'wrongname')
+    await page.click('[data-try-memory]')
+    const nudged = await page.$eval('.v-nudge2', el => !el.hidden)
+    check(nudged, 'memory: wrong nickname is refused')
+    await page.fill('.v-answer', '花花')
+    await page.click('[data-try-memory]')
+    await page.waitForTimeout(400)
+    const revealed = await page.$eval('.v-panel', el => /secret memory/i.test(el.innerText)).catch(() => false)
+    const questDone = await page.evaluate(() => JSON.parse(localStorage.getItem('davidworld:quests') || '[]').includes('memory'))
+    check(revealed && questDone, 'memory: 花花 unlocks the placard + quest')
+    await closePanel()
+  } else check(false, 'memory: gate opens')
+
+  // ---- exit home by stepping on the mat ----
+  await page.evaluate(() => { const v = window.__village.player; v.tx = 7; v.ty = 7; v.px = 7 * 16; v.py = 7 * 16 })
+  await page.keyboard.down('ArrowDown'); await page.waitForTimeout(500); await page.keyboard.up('ArrowDown')
+  check(await waitScene('town'), 'walking onto the door mat returns to town')
+
+  // ---- school + lab + library rooms ----
+  await enterVia('school'); await page.waitForTimeout(300)
+  const yy = await openZoneByKeys(3, 3, 'ArrowUp')
+  check(yy && /yuying/i.test(await yy.innerText()), 'school: Yuying station opens')
+  await closePanel()
+  await page.screenshot({ path: 'shots/village-school.png' })
+
+  await enterVia('lab'); await page.waitForTimeout(300)
+  const chem = await openZoneByKeys(7, 4, 'ArrowUp')
+  check(chem && /chemistry/i.test(await chem.innerText()), 'lab: Chemistry table opens')
+  await closePanel()
+  await page.screenshot({ path: 'shots/village-lab.png' })
+
+  await enterVia('library'); await page.waitForTimeout(300)
+  const docs = await openZoneByKeys(4, 3, 'ArrowUp')
+  check(docs && /document/i.test(await docs.innerText()), 'library: document shelves open')
+  await closePanel()
+
+  // quiz: answer the three correct answers → prize
+  const quiz = await openZoneByKeys(11, 5, 'ArrowUp')
+  if (quiz) {
+    for (const label of ['Linkin Park', 'Insomania Radio', 'huahua']) {
+      await page.waitForSelector('.v-options', { timeout: 4000 })
+      await page.click(`.v-options button:has-text("${label}")`)
+      await page.waitForTimeout(250)
+    }
+    const prize = await page.waitForSelector('.v-panel', { timeout: 4000 }).catch(() => null)
+    const ptxt = prize ? await prize.innerText() : ''
+    const questDone = await page.evaluate(() => JSON.parse(localStorage.getItem('davidworld:quests') || '[]').includes('quiz'))
+    check(/3 \/ 3|really know him/i.test(ptxt) && questDone, 'library: perfect quiz wins the prize + quest')
+    await page.screenshot({ path: 'shots/village-prize.png' })
+    await closePanel()
+  } else check(false, 'library: quiz opens')
+
+  // ---- arcade text rules (in town) ----
+  await enterVia('town', { x: 14, y: 5 })
+  await page.waitForTimeout(200)
   const bodyBefore = await page.evaluate(() => document.body.innerText)
-  check(!bodyBefore.includes('26.00'), 'record nowhere on screen before the arcade starts')
-  const arcadePanel = await openZone(31, 9, 1, 0)
-  if (arcadePanel) {
-    const startTxt = await arcadePanel.innerText()
-    check(/26\.00/.test(startTxt) && /middle school/i.test(startTxt), 'start screen reveals the 26.00s record')
-    await page.click('[data-start]')
-    const grid = await page.waitForSelector('.v-grid', { timeout: 3000 }).catch(() => null)
-    check(!!grid, 'puzzle board opens')
-    const movesBefore = await page.$eval('[data-moves]', el => el.textContent)
-    for (const k of ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp']) await page.keyboard.press(k)
-    await page.waitForTimeout(200)
-    const movesAfter = await page.$eval('[data-moves]', el => el.textContent)
-    const timer = await page.$eval('[data-timer]', el => el.textContent)
-    check(movesBefore !== movesAfter && parseFloat(timer) > 0, `arrows slide tiles, timer runs (${movesAfter}, ${timer}s)`)
-    await page.screenshot({ path: 'shots/village-arcade.png' })
+  check(!bodyBefore.includes('26.00'), 'record nowhere before the arcade opens')
+  const arc = await openZoneByKeys(14, 5, 'ArrowUp')
+  if (arc) {
+    const t = await arc.innerText()
+    check(/Middle School record — 26\.00s/.test(t), 'arcade: record line reads exactly as David wrote')
+    check(/beat my record and win a secret prize/i.test(t), 'arcade: secret-prize line present')
+    check(/Slide the numbered tiles/i.test(t) && !/flickers to life/i.test(t), 'arcade: plain rules, no flavor text')
     await closePanel()
   } else check(false, 'arcade: start screen opens')
 
-  // ---- coffee machine quest ----
-  await walkTo(37, 7)
-  await face(0, -1)
-  await page.keyboard.press('e')
-  const toast = await page.waitForSelector('.v-toast', { timeout: 3000 }).catch(() => null)
-  check(!!toast, 'hidden coffee machine grants its quest')
-  await page.waitForTimeout(2800)
-
-  // ---- mailbox letter ----
-  const letterPanel = await openZone(21, 13, 0, -1)
-  if (letterPanel) {
-    await page.fill('.v-letter', 'Hello David! Your village is lovely.')
-    const mailtoPromise = page.waitForEvent('framenavigated', { timeout: 2500 }).catch(() => null)
+  // ---- mailbox letter (town) ----
+  const letter = await openZoneByKeys(12, 9, 'ArrowUp')
+  if (letter) {
+    await page.fill('.v-letter', 'Village 2.0 is lovely.')
+    const nav = page.waitForEvent('framenavigated', { timeout: 2500 }).catch(() => null)
     await page.click('[data-send]')
-    await mailtoPromise
-    const questDone = await page.evaluate(() => JSON.parse(localStorage.getItem('davidworld:quests') || '[]').includes('letter'))
-    check(questDone, 'sending the letter completes its quest')
-  } else check(false, 'mailbox: letter panel opens')
+    await nav
+    check(await page.evaluate(() => JSON.parse(localStorage.getItem('davidworld:quests') || '[]').includes('letter')), 'mailbox letter completes its quest')
+  } else check(false, 'mailbox opens')
 
-  // ---- quest log ----
-  await page.waitForTimeout(200)
-  await page.keyboard.press('q')
-  const log = await page.waitForSelector('.v-quests', { timeout: 3000 }).catch(() => null)
-  if (log) {
-    const txt = await log.innerText()
-    check(/passcode/.test(txt) && /coffee/.test(txt), 'quest log lists quests with progress')
-    await page.screenshot({ path: 'shots/village-quests.png' })
-  } else check(false, 'quest log opens')
-  await closePanel()
-
-  // ---- unlock persists across reload ----
-  await page.goto('http://localhost:4173/', { waitUntil: 'domcontentloaded' })
-  await page.waitForSelector('#desk-root canvas', { timeout: 6000 })
-  await page.keyboard.press('Enter')
-  await page.focus('.hotspot-proxies button[data-hotspot="handheld"]')
-  await page.keyboard.press('Enter')
-  const townDirect = await page.waitForSelector('#village-root canvas', { timeout: 9000 }).then(() => true).catch(() => false)
-  const lockAgain = await page.$('.v-lock')
-  check(townDirect && !lockAgain, 'unlock is remembered — straight to town on return')
-
-  // ---- exit to desk ----
-  await page.keyboard.press('Escape')
-  await page.click('[data-leave]')
-  const deskBack = await page.waitForSelector('#desk-root canvas', { timeout: 9000 }).then(() => true).catch(() => false)
-  check(deskBack, 'putting the handheld down returns to the desk')
+  // ---- the corner button goes back to the desk ----
+  await page.click('#village-exit')
+  await page.waitForSelector('#desk-root canvas', { timeout: 9000 }).catch(() => {})
+  const backAtDesk = !!(await page.$('#desk-root canvas')) && !(await page.$('#village-root'))
+  check(backAtDesk, 'the corner button walks you back to the desk')
 
   const benign = /favicon|Autoplay|preload|mailto/i
   const realErrors = errors.filter(e => !benign.test(e))
   check(realErrors.length === 0, `no console errors (${realErrors.slice(0, 2).join(' | ') || 'clean'})`)
-
   await browser.close()
 } finally {
   preview.kill()

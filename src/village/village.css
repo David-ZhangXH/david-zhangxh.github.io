@@ -98,3 +98,40 @@
   width: 64px; height: 64px; border-radius: 50%; background: rgba(43, 53, 80, .85);
   color: #ffd93b; border: 3px solid #ffd93b; font: 700 16px ui-monospace, monospace; }
 @media (pointer: coarse) { .v-dpad { display: grid; } .v-interact { display: block; } }
+
+/* ---- music box ---- */
+.v-musicbox { max-width: 520px; }
+.v-lyric { font-style: italic; font-size: 14px; color: #b95d4d; text-align: center;
+  border-top: 2px dashed #d9cbb0; border-bottom: 2px dashed #d9cbb0; padding: 8px 0; margin: 10px 0; }
+.v-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.v-chip { background: #ede0c4; border: 2px solid #2b3550; border-radius: 3px;
+  padding: 3px 8px; font-size: 11px; }
+.v-chip.star { background: #ffd93b; font-weight: 700; }
+.v-loves { color: #4a4436; }
+.v-albums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.v-album { margin: 0; }
+.v-album img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+  border: 3px solid #2b3550; border-radius: 3px; box-shadow: 3px 3px 0 rgba(43, 53, 80, .4);
+  image-rendering: auto; }
+.v-album figcaption { font-size: 10px; color: #8a8272; margin-top: 3px; text-align: center; }
+
+/* ---- jersey wall ---- */
+.v-jerseys { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 10px; margin-top: 12px; }
+.v-jersey { text-align: center; }
+.v-jersey b { display: block; font-size: 12px; margin-top: 6px; }
+.v-jersey small { font-size: 10px; color: #8a8272; }
+.v-jshirt-wrap { display: block; filter: drop-shadow(2px 2px 0 rgba(43, 53, 80, .45)); }
+.v-jshirt { display: flex; align-items: center; justify-content: center;
+  width: 78px; height: 62px; margin: 0 auto; font: 800 24px ui-monospace, monospace;
+  font-style: normal; border-top: 5px solid; border-color: inherit; box-sizing: border-box;
+  clip-path: polygon(30% 0, 40% 6%, 60% 6%, 70% 0, 100% 20%, 88% 40%, 78% 31%, 78% 100%, 22% 100%, 22% 31%, 12% 40%, 0 20%); }
+
+/* ---- back to the desk ---- */
+#village-exit { position: fixed; bottom: 16px; right: 16px; }
+
+/* v2: room-change flash + answer input */
+#village-root.flash canvas { animation: vflash .35s; }
+@keyframes vflash { 0% { filter: brightness(3) } 100% { filter: brightness(1) } }
+.v-answer { width: 100%; box-sizing: border-box; font: 14px ui-monospace, monospace;
+  border: 2px solid #2b3550; border-radius: 3px; padding: 9px 10px; background: #fffdf6; }
+.v-nudge2 { color: #b95d4d; font-size: 12px; }
