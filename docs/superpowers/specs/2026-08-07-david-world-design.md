@@ -157,6 +157,7 @@ Content that isn't ready at a stage ships with clearly-marked placeholder copy a
 | Home legibility | every object redrawn around one signature detail (notes above the music box, antenna on the TV, RGB keys, keyhole on the plaque, open pages, polaroids, reels on the VHS) + floating name label when faced or hovered + pointer cursor | David: "it is so unclear about which is which" — the sprite carries the identity, the label removes all doubt |
 | Jersey wall | 4 shirts as data (`home.jerseys.items`): Man Utd #8 Bruno Fernandes, Argentina #10 Messi, OKC #13 Paul George, OKC #0 Russell Westbrook — numbered mini-jerseys on a rail in-room, tee-shaped cards in the panel | David listed exactly these four; data-driven so he can swap shirts by editing JSON |
 | Leaving the village | persistent "⌫ back to the desk" corner button (bottom-right) inside the world; lock screen keeps its own | David: there was no visible way back to the desk — Escape-menu-only was hidden knowledge |
+| Desk 2.5D studio | David's own redesign (adopted + refined): his generated night-studio artwork becomes the desk scene on a color-managed plane; live layers on top — animated wormhole monitor, rain, steam/heart, candle flicker, glow accents, HUD; his childhood photo night-graded and perspective-fitted into the painted frame (About card keeps the bright original) | David built this himself and asked us to keep it; concept art gives photographic fidelity no primitive build could reach |
 
 ## 11. Non-goals
 

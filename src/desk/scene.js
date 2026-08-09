@@ -4,34 +4,35 @@ import { createEngine } from '../core/engine.js'
 
 export function createScene(container) {
   const engine = createEngine(container, {
-    background: 0x0a0f1e,
-    fog: [0x0a0f1e, 3.5, 9],
-    fovFor: (aspect) => (aspect < 0.8 ? 62 : 42), // portrait phones see more desk
+    background: 0x05050a,
+    // At 16:9 the artwork fills the viewport. Narrower windows widen the
+    // vertical field of view enough to keep desktop compositions contained;
+    // phones use a legible close-up and pan across the wider studio.
+    fovFor: (aspect) => {
+      if (aspect < 0.8) return 64
+      const contain = THREE.MathUtils.radToDeg(2 * Math.atan(4 / (6 * aspect)))
+      return Math.max(41.1, contain)
+    },
     shadows: true
   })
-  const { scene, camera } = engine
-  camera.position.set(0, 1.35, 1.9)
-  camera.lookAt(0, 0.95, -0.2)
+  const { scene, camera, renderer } = engine
+  renderer.outputColorSpace = THREE.SRGBColorSpace
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1
+  camera.position.set(0, 0, 2)
+  camera.lookAt(0, 0, -1)
 
   // Illustration-style lighting: generous soft fill so nothing falls to black,
   // then warm/cool accents for mood — the concept-board color script.
-  scene.add(new THREE.HemisphereLight(0x3a5480, 0x4a3520, 1.25))
-  scene.add(new THREE.AmbientLight(0x26365c, 0.55))
-  const moon = new THREE.DirectionalLight(0xa8c8ff, 0.65)
-  moon.position.set(-2.5, 2.6, 1.2)
-  scene.add(moon)
+  // The concept image already contains its photographic lighting. A tiny
+  // practical light remains for the existing candle-flicker timing hook.
+  const lampLight = new THREE.PointLight(0xffb06d, 0.45, 1.2, 2)
+  lampLight.position.set(1.63, -0.4, -0.65)
+  scene.add(lampLight)
 
-  const screenGlow = new THREE.PointLight(0x6be5ff, 2.2, 3.2, 1.6)
-  screenGlow.position.set(0, 1.12, 0.05)
+  const screenGlow = new THREE.PointLight(0x756fff, 0.25, 1.5, 2)
+  screenGlow.position.set(-0.25, 0.34, -0.7)
   scene.add(screenGlow)
-
-  const lampLight = new THREE.SpotLight(0xffd9a0, 16, 4.5, Math.PI / 4.2, 0.9, 1.5)
-  lampLight.position.set(0.7, 1.32, -0.24)
-  lampLight.castShadow = true
-  lampLight.shadow.mapSize.set(1024, 1024)
-  lampLight.shadow.bias = -0.002
-  scene.add(lampLight, lampLight.target)
-  lampLight.target.position.set(0.15, 0.78, 0.12)
 
   return { ...engine, lampLight, screenGlow }
 }

@@ -27,6 +27,8 @@ const CARD_FOR = {
 const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2
 
 export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, onPortal } = {}) {
+  const previousOverflow = document.documentElement.style.overflow
+  document.documentElement.style.overflow = 'hidden'
   const root = document.createElement('div')
   root.id = 'desk-root'
   document.body.appendChild(root)
@@ -35,13 +37,20 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   const grade = document.createElement('div')
   grade.className = 'desk-grade'
   root.appendChild(grade)
+  const hud = document.createElement('div')
+  hud.className = 'desk-hud'
+  hud.innerHTML = `
+    <div class="desk-mark"><span class="desk-mark__eyebrow">DAVID / WORLD 01</span><strong>THE DESK</strong></div>
+    <div class="desk-weather"><span class="desk-weather__dot"></span>23:47 · RAIN OVER THE CITY<small>everything on the desk can be touched</small></div>
+    <div class="desk-hintline">drift with your mouse — click what glows</div>`
+  root.appendChild(hud)
   const { hotspots, screen, crank, mugTip, windowRegion } = buildFurniture(world.scene)
   if (audio.soundOn()) audio.startProfile('desk')
   world.onTick((dt) => { if (audio.soundOn()) crank.rotation.x += dt * 1.6 })
 
   // ---- effects ----
   const screenFx = makeScreenTexture()
-  screen.material = new THREE.MeshBasicMaterial({ map: screenFx.texture })
+  screen.material = new THREE.MeshBasicMaterial({ map: screenFx.texture, toneMapped: false })
   const rain = makeRain(windowRegion)
   world.scene.add(rain.object)
   const steam = makeSteam(mugTip)
@@ -53,8 +62,9 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     steam.update(dt, t)
     flicker(dt, t)
     screenClock += dt
-    // refresh fast while words are being typed, lazily otherwise
-    if (screenClock > (screenFx.typing() ? 0.05 : 0.4)) { screenClock = 0; screenFx.update(t) }
+    // The monitor is a living picture: smooth enough to notice, restrained
+    // enough to remain ambient while the rest of the desk is explored.
+    if (screenClock > 0.045) { screenClock = 0; screenFx.update(t) }
   })
 
   // ---- state + camera rig ----
@@ -82,8 +92,9 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
       if (t - tween.start >= tween.dur) { const fn = tween.then; tween = null; fn && fn() }
     }
     // parallax only at rest, damped
-    const px = state.get().mode === 'idle' && !tween ? mouse.x * 0.08 : 0
-    const py = state.get().mode === 'idle' && !tween ? mouse.y * 0.05 : 0
+    const portrait = root.clientWidth / root.clientHeight < 0.8
+    const px = state.get().mode === 'idle' && !tween ? mouse.x * (portrait ? 0.34 : 0.08) : 0
+    const py = state.get().mode === 'idle' && !tween ? mouse.y * (portrait ? 0.10 : 0.05) : 0
     cam.position.set(cur.pos.x + px, cur.pos.y - py, cur.pos.z)
     cam.lookAt(cur.look)
   })
@@ -139,6 +150,7 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     const id = state.get().mode === 'idle' ? pick(e.clientX, e.clientY) : null
     if (id !== hovered) {
       hovered = id
+      root.classList.toggle('is-discovering', !!id)
       root.style.cursor = id ? 'pointer' : 'default'
       tooltip.classList.toggle('on', !!id)
       if (id) tooltip.textContent = hotspots[id].label
@@ -150,8 +162,9 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     if (st.mode === 'intro') { endIntro(); return }
     if (id === 'mug') { steam.heartBurst(worldTime); return }
     if (st.mode !== 'idle') return
-    if (id === 'monitor' && onPortal) { dive('galaxy', POSES.monitor, { pos: [0, 1.205, -0.05], look: [0, 1.205, -0.2] }); return }
-    if (id === 'handheld' && onPortal) { dive('village', POSES.handheld, { pos: [0.55, 0.86, 0.28], look: [0.55, 0.8, 0.22] }); return }
+    root.classList.add('has-explored')
+    if (id === 'monitor' && onPortal) { dive('galaxy', POSES.monitor, { pos: [-0.18, 0.33, -0.48], look: [-0.18, 0.33, -1] }); return }
+    if (id === 'handheld' && onPortal) { dive('village', POSES.handheld, { pos: [1.26, -0.21, -0.48], look: [1.26, -0.21, -1] }); return }
     state.focus(id)
     tooltip.classList.remove('on')
     tweenTo(POSES[id], reducedMotion ? 0.01 : 0.7, () => openCard(id))
@@ -267,6 +280,7 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   world.start()
 
   function unmount() {
+    document.documentElement.style.overflow = previousOverflow
     audio.stopAll()
     window.removeEventListener('keydown', escKey)
     window.removeEventListener('keydown', introKey)

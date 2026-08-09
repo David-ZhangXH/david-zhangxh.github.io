@@ -7,13 +7,22 @@ const prand = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; retur
 
 export function makeScreenTexture() {
   const c = document.createElement('canvas')
-  c.width = 512; c.height = 320
+  c.width = 768; c.height = 480
   const g = c.getContext('2d')
-  const stars = Array.from({ length: 70 }, (_, i) => ({
-    x: prand(i) * 512, y: prand(i + 100) * 320, r: 0.6 + prand(i + 200) * 1.6, p: prand(i + 300)
+  const dust = Array.from({ length: 14 }, (_, i) => ({
+    x: prand(i) * c.width,
+    y: prand(i + 100) * c.height,
+    r: 0.35 + prand(i + 200) * 0.45,
+    p: prand(i + 300),
+    speed: 1.2 + prand(i + 400) * 2.4
   }))
+  const backdrop = new Image()
+  backdrop.decoding = 'async'
+  backdrop.src = 'images/galaxy-monitor.jpg'
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
+  tex.minFilter = THREE.LinearMipmapLinearFilter
+  tex.magFilter = THREE.LinearFilter
 
   // visitor words, typed across the screen (kept for their next visit)
   let typed = null // { text, start }
@@ -31,44 +40,104 @@ export function makeScreenTexture() {
   }
 
   function draw(t) {
-    const grad = g.createLinearGradient(0, 0, 0, 320)
-    grad.addColorStop(0, '#0b1a33'); grad.addColorStop(1, '#07101f')
-    g.fillStyle = grad; g.fillRect(0, 0, 512, 320)
-    const neb = (x, y, r, color) => {
-      const rg = g.createRadialGradient(x, y, 0, x, y, r)
-      rg.addColorStop(0, color); rg.addColorStop(1, 'rgba(0,0,0,0)')
-      g.fillStyle = rg; g.fillRect(x - r, y - r, r * 2, r * 2)
+    g.fillStyle = '#020713'
+    g.fillRect(0, 0, c.width, c.height)
+
+    if (backdrop.complete && backdrop.naturalWidth) {
+      const zoom = 1.075 + Math.sin(t * 0.34) * 0.012
+      const scale = Math.max(c.width / backdrop.naturalWidth, c.height / backdrop.naturalHeight) * zoom
+      const w = backdrop.naturalWidth * scale
+      const h = backdrop.naturalHeight * scale
+      const driftX = Math.sin(t * 0.28) * 15
+      const driftY = Math.cos(t * 0.19) * 8
+      const imageX = (c.width - w) / 2 + driftX
+      const imageY = (c.height - h) / 2 + driftY
+      g.drawImage(backdrop, imageX, imageY, w, h)
+
+      // The portal region breathes independently from the slow camera drift.
+      // The clipped second pass is intentionally subtle, like a living photo.
+      g.save()
+      g.beginPath()
+      g.ellipse(c.width * 0.63, c.height * 0.43, c.width * 0.28, c.height * 0.25, 0, 0, Math.PI * 2)
+      g.clip()
+      g.globalCompositeOperation = 'screen'
+      g.globalAlpha = 0.14 + Math.sin(t * 0.8) * 0.035
+      const breathe = 1.022 + Math.sin(t * 0.55) * 0.012
+      const liveW = w * breathe
+      const liveH = h * breathe
+      g.translate(c.width * 0.64, c.height * 0.43)
+      g.rotate(t * 0.012)
+      g.translate(-c.width * 0.64, -c.height * 0.43)
+      g.drawImage(backdrop, (c.width - liveW) / 2 + driftX * 1.35, (c.height - liveH) / 2 + driftY * 1.2, liveW, liveH)
+      g.restore()
+
+      const pulse = 0.13 + Math.sin(t * 1.05) * 0.035
+      const portal = g.createRadialGradient(c.width * 0.64, c.height * 0.43, 3, c.width * 0.64, c.height * 0.43, 92)
+      portal.addColorStop(0, `rgba(91,225,255,${pulse})`)
+      portal.addColorStop(0.42, `rgba(69,145,255,${(pulse * 0.45).toFixed(3)})`)
+      portal.addColorStop(1, 'rgba(44,70,190,0)')
+      g.fillStyle = portal
+      g.fillRect(0, 0, c.width, c.height)
+    } else {
+      const fallback = g.createRadialGradient(505, 245, 5, 505, 245, 310)
+      fallback.addColorStop(0, '#155b88')
+      fallback.addColorStop(0.32, '#101f50')
+      fallback.addColorStop(0.7, '#080d25')
+      fallback.addColorStop(1, '#020713')
+      g.fillStyle = fallback
+      g.fillRect(0, 0, c.width, c.height)
     }
-    neb(150, 120, 90, 'rgba(107,229,255,0.10)')
-    neb(390, 210, 80, 'rgba(255,107,213,0.09)')
-    for (const s of stars) {
-      const tw = 0.45 + 0.55 * Math.abs(Math.sin(t * 1.4 + s.p * 6.28))
-      g.fillStyle = `rgba(207,230,255,${tw.toFixed(2)})`
-      g.beginPath(); g.arc(s.x, s.y, s.r, 0, 7); g.fill()
+
+    // A few dim dust motes add life without turning the display into a
+    // screensaver-like field of bright dots.
+    for (const mote of dust) {
+      const twinkle = 0.10 + 0.18 * Math.abs(Math.sin(t * 0.7 + mote.p * 6.28))
+      g.fillStyle = `rgba(149,203,255,${twinkle.toFixed(2)})`
+      g.beginPath()
+      const liveX = (mote.x + t * mote.speed) % c.width
+      const liveY = mote.y + Math.sin(t * 0.35 + mote.p * 6.28) * 3
+      g.arc(liveX, liveY, mote.r, 0, Math.PI * 2)
+      g.fill()
     }
-    g.fillStyle = '#dff8ff'
-    g.beginPath(); g.arc(150, 118, 3.4, 0, 7); g.fill()
+
+    const vignette = g.createRadialGradient(c.width * 0.55, c.height * 0.46, 90, c.width * 0.5, c.height * 0.5, 520)
+    vignette.addColorStop(0, 'rgba(0,0,0,0)')
+    vignette.addColorStop(1, 'rgba(0,3,12,0.62)')
+    g.fillStyle = vignette
+    g.fillRect(0, 0, c.width, c.height)
+
+    const lowerShade = g.createLinearGradient(0, c.height * 0.62, 0, c.height)
+    lowerShade.addColorStop(0, 'rgba(2,7,19,0)')
+    lowerShade.addColorStop(1, 'rgba(2,7,19,0.72)')
+    g.fillStyle = lowerShade
+    g.fillRect(0, 0, c.width, c.height)
 
     if (typed) {
       const shown = typed.text.slice(0, Math.floor((t - typed.start) / 0.055))
-      g.font = '22px monospace'
+      g.font = '24px ui-monospace, monospace'
       g.fillStyle = 'rgba(223,248,255,0.95)'
-      wrap(shown).forEach((line, i) => g.fillText(line, 40, 150 + i * 28))
+      wrap(shown).forEach((line, i) => g.fillText(line, 60, 220 + i * 34))
       if (shown.length >= typed.text.length && t - typed.start > typed.text.length * 0.055 + 6) {
         typed = null // rest again after a while; the words stay kept
       }
     } else if (kept) {
-      g.font = '15px monospace'
+      g.font = '17px ui-monospace, monospace'
       g.fillStyle = 'rgba(159,196,255,0.5)'
-      g.fillText(wrap(kept, 48)[0] || '', 40, 44)
+      g.fillText(wrap(kept, 48)[0] || '', 54, 55)
     }
 
-    g.font = '20px monospace'
-    g.fillStyle = 'rgba(107,229,255,0.95)'
+    g.save()
+    g.textAlign = 'center'
+    g.font = '600 24px ui-monospace, monospace'
+    g.fillStyle = 'rgba(132,231,255,0.90)'
+    g.shadowColor = 'rgba(75,201,255,0.55)'
+    g.shadowBlur = 12
     const cursor = Math.floor(t * 2) % 2 ? '▌' : ' '
-    g.fillText(`enter the galaxy ↵ ${cursor}`, 130, 288)
+    g.fillText(`enter  ↵  ${cursor}`, c.width / 2, c.height - 45)
+    g.restore()
     tex.needsUpdate = true
   }
+  backdrop.addEventListener('load', () => draw(performance.now() / 1000), { once: true })
   draw(0)
   return {
     texture: tex,

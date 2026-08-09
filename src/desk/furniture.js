@@ -1,320 +1,223 @@
-// Builds every object on and around the desk from primitives — no external assets.
-// Returns { group, hotspots } where hotspots[id] = { hit, visual, label }.
+// High-fidelity 2.5D studio scene.
+// The approved concept art supplies the exact materials and room design;
+// live WebGL layers add depth, animation, camera movement, and interactions.
 import * as THREE from 'three'
 import { glowSprite } from '../core/glow.js'
 
-const DESK_TOP = 0.785
+const ART_W = 4
+const ART_H = 2.25
+const ART_Z = -1
 
-const std = (color, opts = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.75, ...opts })
-
-function box(w, h, d, mat, x = 0, y = 0, z = 0) {
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat)
-  m.position.set(x, y, z)
-  m.castShadow = m.receiveShadow = true
-  return m
-}
-
-function textTexture(text, { w = 128, h = 64, bg = '#ffe58a', fg = '#3a2a10', font = 'bold 28px monospace' } = {}) {
-  const c = document.createElement('canvas')
-  c.width = w; c.height = h
-  const g = c.getContext('2d')
-  g.fillStyle = bg; g.fillRect(0, 0, w, h)
-  g.fillStyle = fg; g.font = font
-  g.textAlign = 'center'; g.textBaseline = 'middle'
-  g.fillText(text, w / 2, h / 2)
-  const t = new THREE.CanvasTexture(c)
-  t.colorSpace = THREE.SRGBColorSpace
-  return t
-}
-
-function hitBox(w, h, d, x, y, z) {
-  const m = new THREE.Mesh(
-    new THREE.BoxGeometry(w, h, d),
+function hitPlane(w, h, x, y, z = ART_Z + 0.055) {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })
   )
-  m.position.set(x, y, z)
-  return m
+  mesh.position.set(x, y, z)
+  return mesh
+}
+
+function addGlow(group, color, size, opacity, x, y) {
+  const glow = glowSprite(color, size, opacity)
+  glow.position.set(x, y, ART_Z + 0.035)
+  group.add(glow)
+  return glow
+}
+
+function quadGeometry(points, uvs = [
+  0, 0,
+  1, 0,
+  1, 1,
+  0, 1
+]) {
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(points.flatMap(([x, y]) => [x, y, 0]), 3))
+  geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2))
+  geometry.setIndex([0, 1, 2, 0, 2, 3])
+  geometry.computeVertexNormals()
+  return geometry
+}
+
+const SCREEN_APERTURE = [
+  [-0.751, -0.063], // bottom-left
+  [0.397, 0.023],   // bottom-right
+  [0.397, 0.704],   // top-right
+  [-0.768, 0.699]   // top-left
+]
+
+const SCREEN_UNDER_GLASS = [
+  [-0.770, -0.082],
+  [0.416, 0.004],
+  [0.416, 0.723],
+  [-0.787, 0.718]
+]
+
+function ringGeometry(outer, inner) {
+  const positions = []
+  const indices = []
+  for (let edge = 0; edge < 4; edge++) {
+    const next = (edge + 1) % 4
+    const quad = [outer[edge], outer[next], inner[next], inner[edge]]
+    const base = positions.length / 3
+    positions.push(...quad.flatMap(([x, y]) => [x, y, 0]))
+    indices.push(base, base + 1, base + 2, base, base + 2, base + 3)
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  geometry.setIndex(indices)
+  geometry.computeVertexNormals()
+  return geometry
 }
 
 export function buildFurniture(scene) {
   const group = new THREE.Group()
   const hotspots = {}
 
-  // ---- room (illustration palette: navy walls that stay readable) ----
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), std(0x121a2e, { roughness: 1 }))
-  floor.rotation.x = -Math.PI / 2
-  floor.receiveShadow = true
-  group.add(floor)
-  const backWall = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), std(0x18223d, { roughness: 1 }))
-  backWall.position.set(0, 2.5, -1.6)
-  backWall.receiveShadow = true
-  group.add(backWall)
-  const sideWall = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), std(0x151e36, { roughness: 1 }))
-  sideWall.rotation.y = -Math.PI / 2
-  sideWall.position.set(2.6, 2.5, 0)
-  group.add(sideWall)
+  // Exact approved artwork, presented as a color-managed, unlit scene surface.
+  const loader = new THREE.TextureLoader()
+  const artTexture = loader.load('images/studio-desk.jpg')
+  artTexture.colorSpace = THREE.SRGBColorSpace
+  artTexture.minFilter = THREE.LinearMipmapLinearFilter
+  artTexture.magFilter = THREE.LinearFilter
+  artTexture.anisotropy = 8
 
-  // ---- window (back-left) with moon ----
-  const winW = 0.9, winH = 0.85, winX = -0.95, winY = 1.55, winZ = -1.58
-  // dusk-gradient night sky, like the concept board
-  const skyC = document.createElement('canvas')
-  skyC.width = 64; skyC.height = 128
-  const skyG = skyC.getContext('2d')
-  const grad2 = skyG.createLinearGradient(0, 0, 0, 128)
-  grad2.addColorStop(0, '#0a1130')
-  grad2.addColorStop(0.6, '#141c4a')
-  grad2.addColorStop(1, '#2a2a5e')
-  skyG.fillStyle = grad2
-  skyG.fillRect(0, 0, 64, 128)
-  const skyTex = new THREE.CanvasTexture(skyC)
-  skyTex.colorSpace = THREE.SRGBColorSpace
-  const night = new THREE.Mesh(new THREE.PlaneGeometry(winW, winH),
-    new THREE.MeshBasicMaterial({ map: skyTex }))
-  night.position.set(winX, winY, winZ)
-  group.add(night)
-  const moon = new THREE.Mesh(new THREE.CircleGeometry(0.09, 24),
-    new THREE.MeshBasicMaterial({ color: 0xeef3ff }))
-  moon.position.set(winX - 0.18, winY + 0.2, winZ + 0.005)
-  group.add(moon)
-  const moonGlow = glowSprite(0xbfd4ff, 0.6, 0.5)
-  moonGlow.position.set(winX - 0.18, winY + 0.2, winZ + 0.01)
-  group.add(moonGlow)
-  const frameMat = std(0x2a3654)
-  group.add(box(winW + 0.1, 0.05, 0.06, frameMat, winX, winY + winH / 2, winZ + 0.02))
-  group.add(box(winW + 0.1, 0.05, 0.06, frameMat, winX, winY - winH / 2, winZ + 0.02))
-  group.add(box(0.05, winH + 0.1, 0.06, frameMat, winX - winW / 2, winY, winZ + 0.02))
-  group.add(box(0.05, winH + 0.1, 0.06, frameMat, winX + winW / 2, winY, winZ + 0.02))
-  group.add(box(0.04, winH, 0.05, frameMat, winX, winY, winZ + 0.02))
-  group.add(box(winW, 0.04, 0.05, frameMat, winX, winY, winZ + 0.02))
+  const artMaterial = new THREE.MeshBasicMaterial({ map: artTexture, toneMapped: false })
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(ART_W, ART_H), artMaterial)
+  art.position.z = ART_Z
+  group.add(art)
 
-  // ---- desk (warmer, brighter wood — board palette) ----
-  const wood = std(0x7d5838, { roughness: 0.85 })
-  const top = box(1.8, 0.05, 0.9, wood, 0, 0.76, 0)
-  group.add(top)
-  for (const [lx, lz] of [[-0.85, -0.4], [0.85, -0.4], [-0.85, 0.4], [0.85, 0.4]])
-    group.add(box(0.06, 0.735, 0.06, std(0x5a3d24, { roughness: 0.9 }), lx, 0.3675, lz))
+  // The monitor remains alive over the painted bezel. Its proportions and
+  // placement match the exact screen rectangle in the approved artwork.
+  const screen = new THREE.Mesh(
+    quadGeometry(SCREEN_UNDER_GLASS),
+    new THREE.MeshBasicMaterial({ color: 0x080d1a, toneMapped: false })
+  )
+  screen.position.z = ART_Z + 0.025
+  group.add(screen)
 
-  // ---- monitor ----
-  const monitor = new THREE.Group()
-  monitor.add(box(0.24, 0.02, 0.16, std(0x1a2233), 0, DESK_TOP + 0.01, 0))
-  monitor.add(box(0.045, 0.18, 0.045, std(0x1a2233), 0, DESK_TOP + 0.1, 0))
-  const bezel = box(0.72, 0.46, 0.035, std(0x0a121f, { roughness: 0.4 }), 0, DESK_TOP + 0.42, 0)
-  monitor.add(bezel)
-  // screen plane gets its live texture from effects.js
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.66, 0.40),
-    new THREE.MeshBasicMaterial({ color: 0x0d1626 }))
-  screen.position.set(0, DESK_TOP + 0.42, 0.019)
-  monitor.add(screen)
-  const screenHalo = glowSprite(0x6be5ff, 1.5, 0.22)
-  screenHalo.position.set(0, DESK_TOP + 0.42, 0.05)
-  monitor.add(screenHalo)
-  monitor.position.set(0, 0, -0.16)
-  monitor.rotation.x = -0.04
-  group.add(monitor)
-  const monitorHit = hitBox(0.78, 0.52, 0.12, 0, DESK_TOP + 0.42, -0.15)
-  group.add(monitorHit)
-  hotspots.monitor = { hit: monitorHit, visual: bezel, label: 'The monitor — enter the galaxy' }
+  // A real foreground bezel hides every edge of the animated surface. The
+  // screen extends underneath this ring, so resizing and texture filtering can
+  // never reveal the painted monitor image below it.
+  const screenBezel = new THREE.Mesh(
+    ringGeometry(SCREEN_UNDER_GLASS, SCREEN_APERTURE),
+    new THREE.MeshBasicMaterial({ color: 0x07070d, toneMapped: false, side: THREE.DoubleSide })
+  )
+  screenBezel.position.z = ART_Z + 0.038
+  group.add(screenBezel)
 
-  // ---- sticky notes on right bezel ----
-  const noteColors = [0xffe58a, 0xffb3c8, 0xa8e6b0]
-  const noteMarks = [
-    textTexture('♪', { bg: '#ffe58a', fg: '#6b5510', font: 'bold 26px monospace' }),
-    null,
-    textTexture('zzz', { bg: '#a8e6b0', fg: '#1c5a2a', font: 'bold 18px monospace' })
+  // David's childhood photo, night-graded to sit inside the painted room's
+  // light (photos/then-framed.jpg — the About card keeps the bright original).
+  // Corner positions are measured from the artwork's actual frame aperture.
+  const childhoodTexture = loader.load('photos/then-framed.jpg')
+  childhoodTexture.colorSpace = THREE.SRGBColorSpace
+  childhoodTexture.minFilter = THREE.LinearMipmapLinearFilter
+  childhoodTexture.magFilter = THREE.LinearFilter
+  const photoUnderMat = [
+    [-1.596, -0.387], // bottom-left
+    [-1.252, -0.309], // bottom-right
+    [-1.267, -0.051], // top-right
+    [-1.649, -0.116]  // top-left
   ]
-  const notesGroup = new THREE.Group()
-  noteColors.forEach((c, i) => {
-    const mat = noteMarks[i]
-      ? new THREE.MeshBasicMaterial({ map: noteMarks[i] })
-      : new THREE.MeshBasicMaterial({ color: c })
-    const n = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.05), mat)
-    n.position.set(0.315, DESK_TOP + 0.55 - i * 0.062, -0.135)
-    n.rotation.z = (i % 2 ? -1 : 1) * 0.08
-    n.rotation.x = -0.04
-    notesGroup.add(n)
-  })
-  group.add(notesGroup)
-  const notesHit = hitBox(0.09, 0.2, 0.08, 0.315, DESK_TOP + 0.49, -0.13)
-  group.add(notesHit)
-  hotspots.notes = { hit: notesHit, visual: notesGroup, label: 'Sticky notes — quick links' }
-
-  // ---- keyboard (a hotspot: the message wall) ----
-  const kb = box(0.5, 0.016, 0.16, std(0x1c2436, { roughness: 0.5 }), 0, DESK_TOP + 0.008, 0.16)
-  group.add(kb)
-  const keyboardHit = hitBox(0.54, 0.08, 0.2, 0, DESK_TOP + 0.03, 0.16)
-  group.add(keyboardHit)
-  hotspots.keyboard = { hit: keyboardHit, visual: kb, label: 'The keyboard — leave your words' }
-
-  // ---- nameplate ----
-  const plateTex = textTexture('XIAOHANG — DAVID', { w: 256, h: 52, bg: '#2b2216', fg: '#e8d9b0', font: '600 24px Georgia, serif' })
-  const plateMats = [
-    std(0x2b2216), std(0x2b2216), std(0x3a2f1c), std(0x1c1710),
-    new THREE.MeshBasicMaterial({ map: plateTex }), std(0x2b2216)
+  const photoAperture = [
+    [-1.583, -0.373], // bottom-left
+    [-1.267, -0.302], // bottom-right
+    [-1.281, -0.064], // top-right
+    [-1.632, -0.124]  // top-left
   ]
-  const plate = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.05, 0.016), plateMats)
-  plate.position.set(0.22, DESK_TOP + 0.028, 0.36)
-  plate.rotation.x = -0.3
-  plate.castShadow = true
-  group.add(plate)
+  const childhoodPhoto = new THREE.Mesh(
+    quadGeometry(photoUnderMat),
+    new THREE.MeshBasicMaterial({ map: childhoodTexture, toneMapped: false })
+  )
+  childhoodPhoto.position.z = ART_Z + 0.029
+  group.add(childhoodPhoto)
 
-  // ---- handheld console ----
-  const handheld = new THREE.Group()
-  const body = box(0.16, 0.026, 0.105, std(0x2c3452, { roughness: 0.45 }), 0, 0.013, 0)
-  handheld.add(body)
-  const hScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.05),
-    new THREE.MeshBasicMaterial({ map: textTexture('▶ START', { w: 128, h: 96, bg: '#0e2a16', fg: '#7dde6a', font: 'bold 22px monospace' }) }))
-  hScreen.rotation.x = -Math.PI / 2
-  hScreen.position.set(-0.028, 0.027, 0)
-  handheld.add(hScreen)
-  const dpad = box(0.012, 0.006, 0.036, std(0x171d30), 0.045, 0.016, 0)
-  handheld.add(dpad, box(0.036, 0.006, 0.012, std(0x171d30), 0.045, 0.016, 0))
-  const btnA = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.006, 12), std(0xc0506a))
-  btnA.position.set(0.065, 0.016, 0.03)
-  const btnB = btnA.clone(); btnB.material = std(0x4f7fbf); btnB.position.set(0.072, 0.016, 0.008)
-  handheld.add(btnA, btnB)
-  handheld.position.set(0.55, DESK_TOP, 0.22)
-  handheld.rotation.y = -0.35
-  group.add(handheld)
-  const handheldHit = hitBox(0.22, 0.1, 0.16, 0.55, DESK_TOP + 0.03, 0.22)
-  group.add(handheldHit)
-  hotspots.handheld = { hit: handheldHit, visual: body, label: 'The handheld — a sleeping village' }
+  // A slim near-black mat covers the photo edges just inside the painted
+  // frame lip, so alignment error hides in the frame's own inner shadow.
+  const photoMat = new THREE.Mesh(
+    ringGeometry(photoUnderMat, photoAperture),
+    new THREE.MeshBasicMaterial({ color: 0x0a0806, toneMapped: false, side: THREE.DoubleSide })
+  )
+  photoMat.position.z = ART_Z + 0.042
+  group.add(photoMat)
 
-  // ---- paper tray + CV tab ----
-  const tray = new THREE.Group()
-  ;[0xe8e4d8, 0xf2eee2, 0xffffff].forEach((c, i) => {
-    tray.add(box(0.24, 0.006, 0.17, std(c, { roughness: 0.9 }), (i % 2 ? 0.006 : -0.004), 0.006 + i * 0.008, (i % 2 ? -0.004 : 0.005)))
-  })
-  const tab = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.035),
-    new THREE.MeshBasicMaterial({ map: textTexture('CV', { w: 96, h: 48 }) }))
-  tab.rotation.x = -Math.PI / 2 + 0.15
-  tab.position.set(0.07, 0.032, 0.06)
-  tray.add(tab)
-  tray.position.set(-0.6, DESK_TOP, 0.18)
-  tray.rotation.y = 0.12
-  group.add(tray)
-  const trayHit = hitBox(0.3, 0.1, 0.24, -0.6, DESK_TOP + 0.03, 0.18)
-  group.add(trayHit)
-  hotspots.tray = { hit: trayHit, visual: tray, label: 'The paper tray — CV & contact' }
+  // Restrained light layers preserve the illustration while allowing the room
+  // to breathe: monitor bloom, magenta tube, cyan wall cells, and candle glow.
+  addGlow(group, 0x756fff, 1.25, 0.10, -0.18, 0.33)
+  addGlow(group, 0xdd4fff, 0.42, 0.24, -1.04, 0.52)
+  addGlow(group, 0xb64cff, 0.58, 0.18, 1.34, 0.78)
+  addGlow(group, 0x67cfff, 0.36, 0.16, 1.40, 0.64)
+  addGlow(group, 0xffa657, 0.20, 0.28, 1.64, -0.40)
 
-  // ---- photo frame ----
-  const frame = new THREE.Group()
-  frame.add(box(0.115, 0.095, 0.012, std(0x3a2c1c, { roughness: 0.5 }), 0, 0.0475, 0))
-  const photoCanvas = document.createElement('canvas')
-  photoCanvas.width = 128; photoCanvas.height = 96
-  const pg = photoCanvas.getContext('2d')
-  const grad = pg.createLinearGradient(0, 0, 0, 96)
-  grad.addColorStop(0, '#16233c'); grad.addColorStop(1, '#2a3a5c')
-  pg.fillStyle = grad; pg.fillRect(0, 0, 128, 96)
-  const photoTex = new THREE.CanvasTexture(photoCanvas)
-  photoTex.colorSpace = THREE.SRGBColorSpace
-  // the real photos: then + now, side by side, cover-cropped when they load
-  const cover = (g, img, x, y, w, h) => {
-    const s = Math.max(w / img.width, h / img.height)
-    const sw = w / s, sh = h / s
-    g.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, x, y, w, h)
+  // Hotspots are mapped directly to their painted objects. They stay invisible
+  // but participate in raycasting and keyboard navigation.
+  const definitions = {
+    monitor: {
+      rect: [1.20, 0.79, -0.18, 0.33],
+      visual: screen,
+      label: 'The monitor — enter'
+    },
+    handheld: {
+      rect: [0.52, 0.34, 1.26, -0.21],
+      visual: art,
+      label: 'The docked handheld — a sleeping village'
+    },
+    tray: {
+      rect: [1.03, 0.43, -1.39, -0.63],
+      visual: art,
+      label: 'The CV tray — résumé & contact'
+    },
+    frame: {
+      rect: [0.47, 0.35, -1.45, -0.20],
+      visual: art,
+      label: 'The childhood photo — about me'
+    },
+    mug: {
+      rect: [0.31, 0.34, -0.75, -0.49],
+      visual: art,
+      label: 'The red coffee mug — click it'
+    },
+    notes: {
+      rect: [0.22, 0.73, -1.20, 0.57],
+      visual: art,
+      label: 'The three notes — quick links'
+    },
+    musicbox: {
+      rect: [0.37, 0.64, -0.99, -0.03],
+      visual: art,
+      label: 'The studio speaker — work playlist'
+    },
+    plant: {
+      rect: [0.43, 0.81, -1.82, -0.22],
+      visual: art,
+      label: 'The houseplant — an old friend'
+    },
+    keyboard: {
+      rect: [0.96, 0.28, -0.03, -0.46],
+      visual: art,
+      label: 'The keyboard — leave your words'
+    }
   }
-  // the frame on the desk holds only the childhood photo;
-  // clicking it reveals both then and now in the card
-  const p1 = new Image()
-  p1.onload = () => { cover(pg, p1, 1, 1, 126, 94); photoTex.needsUpdate = true }
-  p1.src = 'photos/then.jpg'
-  const photo = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.07),
-    new THREE.MeshBasicMaterial({ map: photoTex }))
-  photo.position.set(0, 0.0475, 0.007)
-  frame.add(photo)
-  frame.position.set(-0.52, DESK_TOP, -0.28)
-  frame.rotation.y = 0.32
-  frame.rotation.x = -0.06
-  group.add(frame)
-  const frameHit = hitBox(0.16, 0.14, 0.08, -0.52, DESK_TOP + 0.05, -0.28)
-  group.add(frameHit)
-  hotspots.frame = { hit: frameHit, visual: frame, label: 'The photo frame — about me' }
 
-  // ---- mug ----
-  const mug = new THREE.Group()
-  const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.032, 0.09, 20), std(0xb8543f, { roughness: 0.4 }))
-  cup.position.y = 0.045
-  cup.castShadow = true
-  mug.add(cup)
-  const coffee = new THREE.Mesh(new THREE.CircleGeometry(0.03, 20),
-    new THREE.MeshBasicMaterial({ color: 0x2c150c }))
-  coffee.rotation.x = -Math.PI / 2
-  coffee.position.y = 0.091
-  mug.add(coffee)
-  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.006, 8, 16), std(0xb8543f, { roughness: 0.4 }))
-  handle.position.set(0.038, 0.05, 0)
-  mug.add(handle)
-  mug.position.set(0.33, DESK_TOP, 0.12)
-  group.add(mug)
-  const mugHit = hitBox(0.12, 0.14, 0.12, 0.33, DESK_TOP + 0.06, 0.12)
-  group.add(mugHit)
-  hotspots.mug = { hit: mugHit, visual: cup, label: 'The coffee mug — click it' }
+  for (const [id, definition] of Object.entries(definitions)) {
+    const [w, h, x, y] = definition.rect
+    const hit = hitPlane(w, h, x, y)
+    group.add(hit)
+    hotspots[id] = { hit, visual: definition.visual, label: definition.label }
+  }
 
-  // ---- music box ----
-  const musicbox = new THREE.Group()
-  musicbox.add(box(0.12, 0.05, 0.08, std(0x7a5a3a, { roughness: 0.5 }), 0, 0.025, 0))
-  musicbox.add(box(0.124, 0.008, 0.084, std(0x5d4128), 0, 0.054, 0))
+  // The audio loop expects a transform. It stays aligned with the single
+  // speaker that now represents the music interaction.
   const crank = new THREE.Group()
-  const crankArm = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.03, 8), std(0xc9a86a, { metalness: 0.5, roughness: 0.3 }))
-  crankArm.rotation.z = Math.PI / 2
-  crankArm.position.set(0.075, 0.03, 0)
-  crank.add(crankArm)
-  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.007, 10, 10), std(0xc9a86a, { metalness: 0.5, roughness: 0.3 }))
-  knob.position.set(0.09, 0.03, 0)
-  crank.add(knob)
-  musicbox.add(crank)
-  musicbox.position.set(-0.3, DESK_TOP, -0.02)
-  musicbox.rotation.y = -0.15
-  group.add(musicbox)
-  const musicboxHit = hitBox(0.18, 0.12, 0.14, -0.3, DESK_TOP + 0.04, -0.02)
-  group.add(musicboxHit)
-  hotspots.musicbox = { hit: musicboxHit, visual: musicbox, label: 'The music box — work playlist' }
-
-  // ---- lamp ----
-  const lamp = new THREE.Group()
-  const lampBase = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.02, 20), std(0x1c1710, { roughness: 0.4 }))
-  lampBase.position.y = 0.01
-  lamp.add(lampBase)
-  const arm1 = box(0.02, 0.3, 0.02, std(0x8a6a3a, { metalness: 0.4, roughness: 0.4 }), 0, 0.16, 0)
-  arm1.rotation.z = -0.25
-  lamp.add(arm1)
-  const arm2 = box(0.02, 0.24, 0.02, std(0x8a6a3a, { metalness: 0.4, roughness: 0.4 }), -0.09, 0.38, 0)
-  arm2.rotation.z = 0.9
-  lamp.add(arm2)
-  const shade = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.1, 20, 1, true),
-    std(0x8a5230, { side: THREE.DoubleSide, roughness: 0.7, emissive: 0x502a12, emissiveIntensity: 0.6 }))
-  shade.position.set(-0.2, 0.47, 0)
-  shade.rotation.z = 0.5
-  lamp.add(shade)
-  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.02, 10, 10),
-    new THREE.MeshBasicMaterial({ color: 0xffe9c4 }))
-  bulb.position.set(-0.21, 0.45, 0)
-  lamp.add(bulb)
-  const bulbGlow = glowSprite(0xffd9a0, 0.85, 0.5)
-  bulbGlow.position.set(-0.21, 0.44, 0)
-  lamp.add(bulbGlow)
-  lamp.position.set(0.72, DESK_TOP, -0.28)
-  group.add(lamp)
-
-  // ---- plant ----
-  const plant = new THREE.Group()
-  const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.032, 0.06, 14), std(0x5b3a26, { roughness: 0.8 }))
-  pot.position.y = 0.03
-  plant.add(pot)
-  const leafMat = std(0x4f9d5d, { side: THREE.DoubleSide, roughness: 0.8 })
-  for (let i = 0; i < 4; i++) {
-    const leaf = new THREE.Mesh(new THREE.PlaneGeometry(0.035, 0.14), leafMat)
-    leaf.position.y = 0.12
-    leaf.rotation.y = (i * Math.PI) / 2 + 0.4
-    leaf.rotation.z = 0.25 * (i % 2 ? 1 : -1)
-    plant.add(leaf)
-  }
-  plant.position.set(-0.78, DESK_TOP, -0.15)
-  group.add(plant)
-  const plantHit = hitBox(0.16, 0.24, 0.16, -0.78, DESK_TOP + 0.1, -0.15)
-  group.add(plantHit)
-  hotspots.plant = { hit: plantHit, visual: plant, label: 'The mint — an old friend' }
+  crank.position.set(-0.99, -0.03, ART_Z + 0.04)
+  group.add(crank)
 
   scene.add(group)
-  return { group, hotspots, screen, crank, mugTip: new THREE.Vector3(0.33, DESK_TOP + 0.1, 0.12), windowRegion: { x: winX, y: winY, z: winZ - 0.15, w: winW, h: winH } }
+  return {
+    group,
+    hotspots,
+    screen,
+    crank,
+    mugTip: new THREE.Vector3(-0.75, -0.34, ART_Z + 0.075),
+    windowRegion: { x: -1.72, y: 0.48, z: ART_Z + 0.06, w: 0.56, h: 1.43 }
+  }
 }
