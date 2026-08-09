@@ -314,6 +314,24 @@ F.tape = () => cv(20, 16, (g) => {
   O(g, 12, 8, 4, 4, '#e8e8e8'); R(g, 13, 9, 2, 2, P.outline) // reel R
   R(g, 9, 10, 2, 1, '#4a4a4a')                       // window
 })
+// go board on a low table, black + white stones mid-game
+F.go = () => cv(18, 16, (g) => {
+  O(g, 2, 4, 14, 9, '#d9b36c')
+  R(g, 3, 5, 12, 7, '#e6c684')
+  g.fillStyle = '#8a5a38'
+  for (let i = 0; i < 4; i++) { g.fillRect(4, 6 + i * 2, 10, 1) }
+  for (let i = 0; i < 5; i++) { g.fillRect(4 + i * 2.4, 6, 1, 7) }
+  R(g, 5, 7, 2, 2, '#1c1c1c'); R(g, 9, 9, 2, 2, '#1c1c1c'); R(g, 12, 6, 2, 2, '#1c1c1c')
+  R(g, 7, 6, 2, 2, '#f4f4f0'); R(g, 11, 10, 2, 2, '#f4f4f0'); R(g, 4, 10, 2, 2, '#f4f4f0')
+  R(g, 3, 13, 2, 3, P.woodDk); R(g, 13, 13, 2, 3, P.woodDk)
+})
+// a stack of board-game boxes
+F.games = () => cv(20, 18, (g) => {
+  O(g, 3, 12, 15, 5, '#b9484d'); R(g, 4, 13, 13, 1, '#d46a6e'); R(g, 6, 14, 8, 2, '#f2e4c8')
+  O(g, 2, 7, 15, 5, '#3f6fae'); R(g, 3, 8, 13, 1, '#5d8ac4'); R(g, 5, 9, 8, 2, '#ffd93b')
+  O(g, 4, 2, 12, 5, '#d9a441'); R(g, 5, 3, 10, 1, '#e8bc6a'); R(g, 6, 4, 6, 2, '#2b3550')
+})
+
 // jersey wall: wooden rail, four hanging numbered shirts
 function miniJersey(g, x, y, { body, body2, trim, numColor, number }) {
   // sleeve nubs
@@ -364,6 +382,86 @@ F.quiz = () => cv(26, 24, (g) => {
   R(g, 17, 4, 5, 5, '#ffd93b')
 })
 
+// ---------- the three house cats (side view, 2-frame walk) ----------
+// Readable pixel cats: pointed ears, round head, upright curved tail, four legs.
+function catFrames(draw, w, h) {
+  return [cv(w, h, (g) => draw(g, 0)), cv(w, h, (g) => draw(g, 1))]
+}
+
+// Twizzler — middle, black tortoiseshell (orange mottling)
+function catTortoiseshell() {
+  const B = '#2b2118', HI = '#3d2e20', OR = '#c97a3d'
+  return catFrames((g, step) => {
+    // upright curved tail (rear-left)
+    R(g, 2, 2, 2, 2, P.outline); R(g, 1, 3, 2, 3, P.outline); R(g, 2, 6, 2, 3, P.outline)
+    R(g, 2, 3, 1, 1, B); R(g, 2, 4, 1, 2, B); R(g, 3, 6, 1, 2, B)
+    // body
+    O(g, 4, 8, 9, 5, B); R(g, 5, 9, 3, 2, HI)
+    // orange tortoiseshell patches
+    R(g, 6, 8, 2, 1, OR); R(g, 10, 11, 2, 1, OR); R(g, 4, 10, 1, 2, OR)
+    // head
+    O(g, 11, 3, 6, 5, B)
+    // ears
+    R(g, 11, 1, 1, 2, P.outline); R(g, 12, 2, 1, 1, B)
+    R(g, 15, 1, 1, 2, P.outline); R(g, 14, 2, 1, 1, B)
+    R(g, 12, 3, 1, 1, OR) // orange over one brow
+    // face
+    R(g, 13, 5, 1, 1, '#ffd93b')      // eye
+    R(g, 16, 6, 1, 1, '#e8a0a8')      // nose
+    // legs (trot)
+    if (step === 0) { R(g, 5, 13, 2, 2, P.outline); R(g, 10, 13, 2, 2, P.outline) }
+    else { R(g, 6, 13, 2, 2, P.outline); R(g, 9, 13, 2, 2, P.outline) }
+  }, 18, 15)
+}
+
+// Huahua — small grey with WHITE spots
+function catGrey() {
+  const B = '#8a8f9c', W2 = '#f2f2ee'
+  return catFrames((g, step) => {
+    R(g, 1, 2, 2, 2, P.outline); R(g, 1, 4, 2, 3, P.outline)  // tail up
+    R(g, 2, 3, 1, 3, B)
+    O(g, 3, 6, 7, 4, B)
+    R(g, 4, 8, 2, 2, W2); R(g, 8, 6, 2, 1, W2)                 // white spots
+    O(g, 9, 2, 5, 4, B)
+    R(g, 9, 0, 1, 2, P.outline); R(g, 10, 1, 1, 1, B)          // ears
+    R(g, 12, 0, 1, 2, P.outline); R(g, 12, 1, 1, 1, W2)        // one white ear
+    R(g, 11, 3, 1, 1, '#2b3550')                               // eye
+    R(g, 13, 4, 1, 1, '#e8a0a8')                               // nose
+    R(g, 9, 5, 2, 1, W2)                                       // white chin
+    if (step === 0) { R(g, 4, 10, 2, 2, P.outline); R(g, 8, 10, 2, 2, P.outline) }
+    else { R(g, 5, 10, 2, 2, P.outline); R(g, 7, 10, 2, 2, P.outline) }
+  }, 15, 12)
+}
+
+// Little guy — big fluffy white Maine Coon with BLACK spots
+function catWhite() {
+  const B = '#f2f0e8', SH = '#dcd9cf', BK = '#2b2b2b'
+  return catFrames((g, step) => {
+    // big bushy tail
+    R(g, 2, 1, 3, 2, P.outline); R(g, 1, 3, 3, 4, P.outline); R(g, 2, 7, 3, 3, P.outline)
+    R(g, 3, 2, 1, 1, BK)                                       // black tail tip
+    R(g, 2, 3, 2, 3, B); R(g, 3, 6, 2, 3, B)
+    // body, chest ruff
+    O(g, 5, 9, 12, 6, B)
+    R(g, 6, 13, 10, 1, SH)
+    R(g, 14, 9, 2, 2, SH)                                      // ruff shading
+    // black spots
+    R(g, 8, 9, 3, 2, BK); R(g, 6, 11, 2, 1, BK)
+    // head
+    O(g, 14, 3, 7, 6, B)
+    // tufted ears
+    R(g, 14, 0, 1, 3, P.outline); R(g, 15, 2, 1, 1, B)
+    R(g, 19, 0, 1, 3, P.outline); R(g, 18, 2, 1, 1, BK)        // black ear patch
+    R(g, 18, 3, 2, 2, BK)                                      // black over one eye
+    // face
+    R(g, 16, 5, 1, 1, '#4f7fbf')                               // blue eye
+    R(g, 20, 6, 1, 1, '#e8a0a8')                               // nose
+    R(g, 13, 6, 1, 2, B)                                       // cheek fluff
+    if (step === 0) { R(g, 6, 15, 2, 2, P.outline); R(g, 13, 15, 2, 2, P.outline) }
+    else { R(g, 7, 15, 2, 2, P.outline); R(g, 12, 15, 2, 2, P.outline) }
+  }, 22, 17)
+}
+
 export function makeSprites() {
   const S = {}
   S.grass = Array.from({ length: 6 }, (_, i) => grassTile(i + 1))
@@ -381,6 +479,11 @@ export function makeSprites() {
   S.npc1 = person({ shirt: '#7a4f7f', shirtHi: '#96659b', hair: '#8a4a3b' })
   S.npc2 = person({ shirt: '#c05d5d', shirtHi: '#d47777', hair: '#5a5a5a', skirt: true })
   S.furniture = F
+  S.cats = {
+    tortoiseshell: catTortoiseshell(),
+    grey: catGrey(),
+    white: catWhite()
+  }
   S.wallColors = { home: P.wallHome, school: P.wallSchool, lab: P.wallLab, library: P.wallLib }
   S.floor = cv(16, 16, (g) => { R(g, 0, 0, 16, 16, P.floor); R(g, 0, 7, 16, 1, P.floorDk); R(g, 0, 15, 16, 1, P.floorDk); R(g, 8, 0, 1, 8, P.floorDk); R(g, 3, 8, 1, 8, P.floorDk) })
   S.rug = cv(48, 32, (g) => { O(g, 1, 1, 46, 30, P.rug); R(g, 4, 4, 40, 24, P.rugHi); R(g, 8, 8, 32, 16, P.rug) })

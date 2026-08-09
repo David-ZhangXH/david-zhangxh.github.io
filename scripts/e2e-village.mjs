@@ -100,9 +100,15 @@ try {
   // ---- home objects (new spread layout) ----
   const homeChecks = [
     { stand: [2, 3], dir: 'ArrowUp', text: /Love can fight everything/i, name: 'musicbox' },
-    { stand: [4, 6], dir: 'ArrowDown', text: /guitar/i, name: 'music corner' },
-    { stand: [8, 5], dir: 'ArrowRight', text: /trajectory|big book/i, name: 'big book' },
-    { stand: [10, 3], dir: 'ArrowUp', text: /messi|fernandes|westbrook/i, name: 'jersey wall' }
+    { stand: [4, 6], dir: 'ArrowDown', text: /rock star/i, name: 'music corner' },
+    { stand: [8, 5], dir: 'ArrowRight', text: /big book/i, name: 'big book' },
+    { stand: [10, 3], dir: 'ArrowUp', text: /messi|fernandes|westbrook/i, name: 'jersey wall' },
+    { stand: [4, 3], dir: 'ArrowUp', text: /Stranger Things/i, name: 'television' },
+    { stand: [7, 3], dir: 'ArrowUp', text: /Hearthstone rank 50/i, name: 'gaming laptop' },
+    { stand: [11, 4], dir: 'ArrowRight', text: /查理九世/i, name: 'book-shelves' },
+    { stand: [12, 3], dir: 'ArrowUp', text: /Insomania Radio/i, name: 'video tape' },
+    { stand: [9, 6], dir: 'ArrowDown', text: /骆驼大赛/i, name: 'table games' },
+    { stand: [10, 6], dir: 'ArrowDown', text: /围棋三段/i, name: 'go board' }
   ]
   for (const c of homeChecks) {
     const panel = await openZoneByKeys(...(c.pre || c.stand), c.dir)
@@ -123,6 +129,42 @@ try {
     await closePanel()
   } else check(false, 'music box reopens')
 
+  // clicking the jersey wall from the bottom row must NOT walk out the door
+  const homePoint = (tx, ty) => page.evaluate(([tx, ty]) => {
+    const c = document.querySelector('#village-root canvas')
+    const r = c.getBoundingClientRect()
+    const TILE = 16, w = 14, h = 10
+    const fit = Math.floor(Math.min(c.width / (w * TILE), c.height / (h * TILE)))
+    const scale = Math.min(4, fit)
+    const ox = Math.floor((c.width - w * TILE * scale) / 2)
+    const oy = Math.floor((c.height - h * TILE * scale) / 2)
+    return [r.left + ox + (tx * TILE + 8) * scale, r.top + oy + (ty * TILE + 8) * scale]
+  }, [tx, ty])
+  await page.evaluate(() => { const v = window.__village.player; v.tx = 6; v.ty = 8; v.px = 6 * 16; v.py = 8 * 16 })
+  const jpt = await homePoint(10, 2)
+  await page.mouse.click(jpt[0], jpt[1])
+  const jPanel = await page.waitForSelector('.v-panel', { timeout: 9000 }).catch(() => null)
+  const stillHome = (await state()).scene === 'home'
+  check(stillHome && !!jPanel, 'clicking the jersey wall never walks you out the door')
+  await closePanel()
+
+  // the three cats wander at home and answer to a click
+  const catInfo = await page.evaluate(() => window.__village.cats.map(c => ({ name: c.name, px: c.px, py: c.py })))
+  check(catInfo.length === 3, `three cats live here (got ${catInfo.length})`)
+  let catClicked = false
+  for (let attempt = 0; attempt < 4 && !catClicked; attempt++) {
+    const c = await page.evaluate(() => {
+      const k = window.__village.cats[0]
+      return { tx: Math.round(k.px / 16), ty: Math.round(k.py / 16) }
+    })
+    const pt = await homePoint(c.tx, c.ty)
+    await page.mouse.click(pt[0], pt[1])
+    const panel = await page.waitForSelector('.v-panel', { timeout: 2500 }).catch(() => null)
+    if (panel && /Tortoiseshell/i.test(await panel.innerText())) catClicked = true
+    if (panel) await closePanel()
+  }
+  check(catClicked, 'clicking Twizzler shows "Twizzler 2023.9, Tortoiseshell"')
+
   // jersey wall carries all four numbers
   const jp = await openZoneByKeys(10, 3, 'ArrowUp')
   if (jp) {
@@ -132,7 +174,8 @@ try {
   } else check(false, 'jersey wall reopens')
   // world map (left wall now)
   const wm = await openZoneByKeys(2, 4, 'ArrowLeft')
-  check(wm && /where david has been|travelling world map/i.test(await wm.innerText()), 'home: world map lists stops')
+  const wmText = wm ? await wm.innerText() : ''
+  check(/北京/.test(wmText) && /Next stop/.test(wmText) && !/pinned/i.test(wmText), 'home: world map lists his stops, ending with Next stop...')
   await closePanel()
 
   // ---- memory placard gate (right wall now) ----

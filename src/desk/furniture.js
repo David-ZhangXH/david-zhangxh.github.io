@@ -105,40 +105,11 @@ export function buildFurniture(scene) {
   screenBezel.position.z = ART_Z + 0.038
   group.add(screenBezel)
 
-  // David's childhood photo, night-graded to sit inside the painted room's
-  // light (photos/then-framed.jpg — the About card keeps the bright original).
-  // Corner positions are measured from the artwork's actual frame aperture.
-  const childhoodTexture = loader.load('photos/then-framed.jpg')
-  childhoodTexture.colorSpace = THREE.SRGBColorSpace
-  childhoodTexture.minFilter = THREE.LinearMipmapLinearFilter
-  childhoodTexture.magFilter = THREE.LinearFilter
-  const photoUnderMat = [
-    [-1.596, -0.387], // bottom-left
-    [-1.252, -0.309], // bottom-right
-    [-1.267, -0.051], // top-right
-    [-1.649, -0.116]  // top-left
-  ]
-  const photoAperture = [
-    [-1.583, -0.373], // bottom-left
-    [-1.267, -0.302], // bottom-right
-    [-1.281, -0.064], // top-right
-    [-1.632, -0.124]  // top-left
-  ]
-  const childhoodPhoto = new THREE.Mesh(
-    quadGeometry(photoUnderMat),
-    new THREE.MeshBasicMaterial({ map: childhoodTexture, toneMapped: false })
-  )
-  childhoodPhoto.position.z = ART_Z + 0.029
-  group.add(childhoodPhoto)
-
-  // A slim near-black mat covers the photo edges just inside the painted
-  // frame lip, so alignment error hides in the frame's own inner shadow.
-  const photoMat = new THREE.Mesh(
-    ringGeometry(photoUnderMat, photoAperture),
-    new THREE.MeshBasicMaterial({ color: 0x0a0806, toneMapped: false, side: THREE.DoubleSide })
-  )
-  photoMat.position.z = ART_Z + 0.042
-  group.add(photoMat)
+  // David's childhood photo is baked directly into the artwork itself
+  // (portrait-cropped, night-graded, perspective-warped into the painted
+  // frame's aperture with its inner shadow) — no separate layer means no
+  // parallax, no texture shear, no seams. The frame hotspot below still
+  // opens the About card with the bright original.
 
   // Restrained light layers preserve the illustration while allowing the room
   // to breathe: monitor bloom, magenta tube, cyan wall cells, and candle glow.
@@ -154,47 +125,62 @@ export function buildFurniture(scene) {
     monitor: {
       rect: [1.20, 0.79, -0.18, 0.33],
       visual: screen,
-      label: 'The monitor — enter'
+      label: 'The monitor'
     },
     handheld: {
       rect: [0.52, 0.34, 1.26, -0.21],
       visual: art,
-      label: 'The docked handheld — a sleeping village'
+      label: 'The docked handheld'
     },
     tray: {
       rect: [1.03, 0.43, -1.39, -0.63],
       visual: art,
-      label: 'The CV tray — résumé & contact'
+      label: 'The CV tray'
     },
     frame: {
       rect: [0.47, 0.35, -1.45, -0.20],
       visual: art,
-      label: 'The childhood photo — about me'
+      label: 'The childhood photo'
     },
     mug: {
       rect: [0.31, 0.34, -0.75, -0.49],
       visual: art,
-      label: 'The red coffee mug — click it'
+      label: 'The red coffee mug'
     },
     notes: {
       rect: [0.22, 0.73, -1.20, 0.57],
       visual: art,
-      label: 'The three notes — quick links'
+      label: 'The three notes'
     },
     musicbox: {
       rect: [0.37, 0.64, -0.99, -0.03],
       visual: art,
-      label: 'The studio speaker — work playlist'
+      label: 'The studio speaker'
     },
     plant: {
       rect: [0.43, 0.81, -1.82, -0.22],
       visual: art,
-      label: 'The houseplant — an old friend'
+      label: 'The houseplant'
     },
     keyboard: {
       rect: [0.96, 0.28, -0.03, -0.46],
       visual: art,
-      label: 'The keyboard — leave your words'
+      label: 'The keyboard'
+    },
+    mouse: {
+      rect: [0.30, 0.20, 0.62, -0.40],
+      visual: art,
+      label: 'The mouse'
+    },
+    candle: {
+      rect: [0.28, 0.44, 1.73, -0.26],
+      visual: art,
+      label: 'The candle'
+    },
+    shelf: {
+      rect: [0.54, 0.50, 1.02, 0.39],
+      visual: art,
+      label: 'The bookshelves'
     }
   }
 

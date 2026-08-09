@@ -68,7 +68,7 @@ export function createRenderer(canvas, sprites) {
     (x >= 10 && x <= 15 && y >= 6 && y <= 14) ||
     ((x === 5 || x === 19) && (y === 6 || y === 7))
 
-  function draw(scene, player, npcBob, t, label) {
+  function draw(scene, player, npcBob, t, label, actors = []) {
     computeView(scene, player)
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.fillStyle = '#1c2a1c'
@@ -115,6 +115,11 @@ export function createRenderer(canvas, sprites) {
       }
     }
 
+    // wandering actors (the cats), bottom-anchored, before the player
+    for (const a of [...actors].sort((x, y) => x.py - y.py)) {
+      ctx.drawImage(a.img, Math.round(a.px) + (TILE - a.img.width) / 2, Math.round(a.py) + TILE - a.img.height)
+    }
+
     // player
     const frame = player.moving ? (Math.floor(t * 8) % 2) : 0
     ctx.drawImage(sprites.player[frame], Math.round(player.px) + 1, Math.round(player.py) - 6)
@@ -122,12 +127,16 @@ export function createRenderer(canvas, sprites) {
 
     // floating name label over the faced / hovered thing
     if (label) {
-      const grp = groupsFor(scene).find(g => g.id === label.id)
+      const grp = label.tx != null
+        ? { x0: label.tx, x1: label.tx, y0: label.ty, y1: label.ty }
+        : groupsFor(scene).find(g => g.id === label.id)
       if (grp) {
-        const img = furnitureFor(grp.id)
-        const topWorld = scene.kind === 'town'
-          ? grp.y0 * TILE - 26
-          : (grp.y1 + 1) * TILE - (img ? img.height : TILE) - 8
+        const img = label.tx != null ? null : furnitureFor(grp.id)
+        const topWorld = label.tx != null
+          ? grp.y0 * TILE - 20
+          : scene.kind === 'town'
+            ? grp.y0 * TILE - 26
+            : (grp.y1 + 1) * TILE - (img ? img.height : TILE) - 8
         const sx = view.ox + (((grp.x0 + grp.x1 + 1) * TILE) / 2) * view.scale
         let sy = view.oy + topWorld * view.scale
         ctx.font = '700 11px ui-monospace, Menlo, monospace'

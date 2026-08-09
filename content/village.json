@@ -2,7 +2,7 @@
  "home": {
   "musicbox": {
    "title": "Music box",
-   "text": "Wind the little crank and everything David listens to spills out of it.",
+   "text": "",
    "lyric": "Love can fight everything.",
    "genres": [
     "R&B",
@@ -76,49 +76,120 @@
   },
   "tv": {
    "title": "Television",
-   "text": "Movies and shows David loves. (Placeholder — replace with your favorites and memories.)"
+   "text": "",
+   "shows": [
+    "Stranger Things",
+    "唐朝诡事录",
+    "Fight Club",
+    "白日梦想家",
+    "Friends",
+    "Iron Man",
+    "Coco",
+    "Who am I — KEIN SYSTEM IST SICHER"
+   ],
+   "footer": "Follow my Douban: 207128578"
   },
   "laptop": {
    "title": "Gaming laptop",
-   "text": "Where the games happen. (Placeholder — the games David plays and loves.)"
+   "text": "",
+   "favorites": [
+    "Total War: Warhammer",
+    "It Takes Two"
+   ],
+   "often": [
+    "Valorant",
+    "League of Legends",
+    "Hearthstone"
+   ],
+   "award": "Hearthstone rank 50"
   },
   "music_corner": {
-   "title": "Guitar · Bass · Piano · Microphone",
-   "text": "The music corner — instruments David plays and records with. (Placeholder — your musical story.)"
+   "title": "Music corner",
+   "text": "",
+   "items": [
+    {
+     "name": "Piano",
+     "note": "Played in primary school for 3 years."
+    },
+    {
+     "name": "Guitar & Bass",
+     "note": "Played in University for a year."
+    },
+    {
+     "name": "Microphone",
+     "note": "I want to be a rock star."
+    }
+   ]
   },
   "shelves": {
    "title": "Book-shelves",
-   "text": "Books that shaped him. (Placeholder — the shelf's best residents.)"
+   "text": "I am not really a book-lover, read randomly.",
+   "books": [
+    "查理九世"
+   ]
   },
   "board": {
    "title": "Picture board",
-   "text": "A board of pinned photographs. (Placeholder — pictures and captions to come.)"
+   "text": ""
   },
   "toy": {
    "title": "Toy",
-   "text": "An old toy that stayed. (Placeholder — its story.)"
+   "text": ""
   },
   "bigbook": {
    "title": "The Big Book",
-   "text": "A heavy book recording some of David's life trajectory — chapters to be written by David himself. (Placeholder.)"
+   "text": ""
   },
   "worldmap": {
    "title": "Travelling world map",
-   "text": "Where David has been, and when. Pictures pinned to places. (Placeholder — stops and photos to come.)",
+   "text": "",
    "stops": [
     {
-     "place": "Beijing",
+     "place": "北京",
      "when": "growing up"
     },
     {
+     "place": "合肥"
+    },
+    {
+     "place": "Singapore"
+    },
+    {
+     "place": "Bali Island"
+    },
+    {
+     "place": "New Zealand"
+    },
+    {
+     "place": "Honolulu"
+    },
+    {
      "place": "Boston",
-     "when": "2020 —"
+     "when": "School life"
+    },
+    {
+     "place": "Chicago"
+    },
+    {
+     "place": "Reykjavik"
+    },
+    {
+     "place": "Paris"
+    },
+    {
+     "place": "Tokyo"
+    },
+    {
+     "place": "Kyoto"
+    },
+    {
+     "place": "Next stop..."
     }
    ]
   },
   "tape": {
    "title": "Video-tape",
-   "text": "An unlabeled tape. (Placeholder — what's recorded on it?)"
+   "text": "Follow my Bilibili Account “Insomania Radio” with AI-show, and AI-remix music."
   },
   "memory": {
    "question": "What is my nickname?",
@@ -128,11 +199,11 @@
     "花花"
    ],
    "title": "Secret memory placard",
-   "text": "You know the nickname — so you may read this. (Placeholder — David's secret memory goes here.)"
+   "text": "You know the nickname — so you may read this."
   },
   "jerseys": {
    "title": "The jersey wall",
-   "text": "Four sport T-shirts on the wall — two pitches, one court. David checks this wall before every match day.",
+   "text": "",
    "items": [
     {
      "team": "Manchester United",
@@ -166,6 +237,51 @@
      "body": "#f4f6f8",
      "trim": "#007ac1",
      "numColor": "#007ac1"
+    }
+   ]
+  },
+  "cats": [
+   {
+    "id": "twizzler",
+    "name": "Twizzler",
+    "line": "Twizzler 2023.9, Tortoiseshell",
+    "kind": "tortoiseshell"
+   },
+   {
+    "id": "huahua",
+    "name": "Huahua",
+    "line": "Huahua 2017.9.21, American shorthair",
+    "kind": "grey"
+   },
+   {
+    "id": "littleguy",
+    "name": "Little guy",
+    "line": "Little guy, 2021.8.31, Maine",
+    "kind": "white"
+   }
+  ],
+  "go": {
+   "title": "围棋",
+   "text": "围棋三段。"
+  },
+  "games": {
+   "title": "Table games",
+   "text": "Inspired by my middle school math teacher.",
+   "games": [
+    {
+     "name": "马尼拉"
+    },
+    {
+     "name": "波多黎各"
+    },
+    {
+     "name": "纽约之王"
+    },
+    {
+     "name": "骆驼大赛"
+    },
+    {
+     "name": "山中小屋"
     }
    ]
   }

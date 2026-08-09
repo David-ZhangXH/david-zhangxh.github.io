@@ -135,3 +135,13 @@
 .v-answer { width: 100%; box-sizing: border-box; font: 14px ui-monospace, monospace;
   border: 2px solid #2b3550; border-radius: 3px; padding: 9px 10px; background: #fffdf6; }
 .v-nudge2 { color: #b95d4d; font-size: 12px; }
+
+/* ---- home content: stops, games, instrument rows ---- */
+.v-stops { columns: 2; column-gap: 18px; list-style: none; padding-left: 0; }
+.v-stops li { margin-bottom: 5px; break-inside: avoid; }
+.v-stop-img { width: 100%; border: 3px solid #2b3550; border-radius: 3px; margin-top: 6px; }
+.v-games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 10px; margin-top: 10px; }
+.v-game { margin: 0; text-align: center; }
+.v-game svg, .v-game img { width: 100%; aspect-ratio: 1; display: block;
+  border: 3px solid #2b3550; border-radius: 3px; box-shadow: 3px 3px 0 rgba(43, 53, 80, .4); object-fit: cover; }
+.v-game figcaption { font-size: 11px; margin-top: 4px; font-weight: 700; }

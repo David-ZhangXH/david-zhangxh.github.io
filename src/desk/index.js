@@ -5,7 +5,7 @@ import { buildFurniture } from './furniture.js'
 import { makeScreenTexture, makeRain, makeSteam, lampFlicker } from './effects.js'
 import { createDeskState, HOTSPOTS } from './state.js'
 import { HOME, INTRO_START, POSES } from './poses.js'
-import { aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard, plantCard, wallCard } from './cards.js'
+import { aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard, plantCard, wallCard, microCard } from './cards.js'
 import * as audio from '../core/audio.js'
 import wall from '../../content/wall.json'
 import '../core/overlay.css'
@@ -21,7 +21,10 @@ const CARD_FOR = {
   notes: () => linksCard(profile),
   musicbox: () => playlistCard(playlist, audio.soundOn()),
   plant: () => plantCard(),
-  keyboard: () => wallCard(wall, profile)
+  keyboard: () => wallCard(wall, profile),
+  mouse: () => microCard('The mouse', 'DPI 1600 * 0.23'),
+  candle: () => microCard('The candle', 'Le Labo 25'),
+  shelf: () => microCard('The bookshelves', 'nothing there...')
 }
 
 const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2
@@ -41,8 +44,7 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   hud.className = 'desk-hud'
   hud.innerHTML = `
     <div class="desk-mark"><span class="desk-mark__eyebrow">DAVID / WORLD 01</span><strong>THE DESK</strong></div>
-    <div class="desk-weather"><span class="desk-weather__dot"></span>23:47 · RAIN OVER THE CITY<small>everything on the desk can be touched</small></div>
-    <div class="desk-hintline">drift with your mouse — click what glows</div>`
+    <div class="desk-weather"><span class="desk-weather__dot"></span>23:47 · RAIN OVER THE CITY</div>`
   root.appendChild(hud)
   const { hotspots, screen, crank, mugTip, windowRegion } = buildFurniture(world.scene)
   if (audio.soundOn()) audio.startProfile('desk')

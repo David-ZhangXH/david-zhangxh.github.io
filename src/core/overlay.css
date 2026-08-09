@@ -88,3 +88,8 @@
   font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   padding: 10px 12px; margin-bottom: 12px; resize: vertical; }
 .card .wall-input:focus { outline: 1px solid #6be5ff; }
+
+/* tiny one-line prop cards */
+.card.micro { max-width: 300px; text-align: center; }
+.card.micro .micro { font: 500 17px ui-monospace, Menlo, monospace; letter-spacing: .05em;
+  opacity: .92; margin: 8px 0 4px; }

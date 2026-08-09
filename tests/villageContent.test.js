@@ -18,7 +18,7 @@ describe('validateVillage v2', () => {
 
 describe('David\'s specifics are honored', () => {
   it('home holds every object he listed', () => {
-    for (const key of ['musicbox', 'tv', 'laptop', 'music_corner', 'shelves', 'board', 'toy', 'bigbook', 'worldmap', 'tape', 'memory', 'jerseys'])
+    for (const key of ['musicbox', 'tv', 'laptop', 'music_corner', 'shelves', 'board', 'toy', 'bigbook', 'worldmap', 'tape', 'memory', 'jerseys', 'go', 'games'])
       expect(real.home[key], key).toBeTruthy()
   })
   it('jersey wall carries exactly his four shirts', () => {
@@ -41,6 +41,39 @@ describe('David\'s specifics are honored', () => {
       expect(mb.loves).toContain(a)
     expect(mb.lyric).toBe('Love can fight everything.')
     expect(Array.isArray(mb.albums)).toBe(true)
+  })
+  it("the home speaks in David's words only — no added flavor", () => {
+    for (const k of ['jerseys', 'board', 'toy', 'bigbook', 'worldmap', 'musicbox', 'tv', 'laptop', 'music_corner'])
+      expect(real.home[k].text, k).not.toMatch(/David/)
+  })
+  it('world map lists exactly his stops, ending with Next stop...', () => {
+    const places = real.home.worldmap.stops.map(s => s.place)
+    expect(places).toEqual(['北京', '合肥', 'Singapore', 'Bali Island', 'New Zealand', 'Honolulu',
+      'Boston', 'Chicago', 'Reykjavik', 'Paris', 'Tokyo', 'Kyoto', 'Next stop...'])
+    expect(real.home.worldmap.stops[0].when).toBe('growing up')
+    expect(real.home.worldmap.stops[6].when).toBe('School life')
+  })
+  it('laptop, tv, go, games carry his content', () => {
+    expect(real.home.laptop.award).toBe('Hearthstone rank 50')
+    expect(real.home.laptop.favorites).toContain('It Takes Two')
+    expect(real.home.tv.shows).toContain('唐朝诡事录')
+    expect(real.home.tv.footer).toBe('Follow my Douban: 207128578')
+    expect(real.home.go.text).toBe('围棋三段。')
+    expect(real.home.games.games.map(g => g.name)).toEqual(['马尼拉', '波多黎各', '纽约之王', '骆驼大赛', '山中小屋'])
+  })
+  it('three cats live at home, with David\'s exact lines', () => {
+    const cats = real.home.cats
+    expect(cats.map(c => c.name)).toEqual(['Twizzler', 'Huahua', 'Little guy'])
+    expect(cats.map(c => c.line)).toEqual([
+      'Twizzler 2023.9, Tortoiseshell',
+      'Huahua 2017.9.21, American shorthair',
+      'Little guy, 2021.8.31, Maine'
+    ])
+    expect(cats.map(c => c.kind)).toEqual(['tortoiseshell', 'grey', 'white'])
+  })
+  it('rejects a malformed cat', () => {
+    const bad = { ...real, home: { ...real.home, cats: [{ id: 'x', name: 'X' }] } }
+    expect(validateVillage(bad)).not.toEqual([])
   })
   it('rejects a malformed music box', () => {
     const bad = { ...real, home: { ...real.home, musicbox: { ...real.home.musicbox, genres: [''] } } }

@@ -90,12 +90,12 @@ export function validateWall(list) {
 export function validateVillage2(v) {
   if (!v || typeof v !== 'object') return ['village: not an object']
   const errs = []
-  const HOME_KEYS = ['musicbox', 'tv', 'laptop', 'music_corner', 'shelves', 'board', 'toy', 'bigbook', 'worldmap', 'tape', 'memory', 'jerseys']
+  const HOME_KEYS = ['musicbox', 'tv', 'laptop', 'music_corner', 'shelves', 'board', 'toy', 'bigbook', 'worldmap', 'tape', 'memory', 'jerseys', 'go', 'games']
   if (!v.home || typeof v.home !== 'object') errs.push('village.home: required object')
   else {
     for (const k of HOME_KEYS) {
       const o = v.home[k]
-      if (!o || !filled(o.title) || !filled(o.text)) errs.push(`village.home.${k}: needs title + text`)
+      if (!o || !filled(o.title) || !isStr(o.text)) errs.push(`village.home.${k}: needs title + text string (text may be empty)`)
     }
     const m = v.home.memory
     if (m && (!filled(m.question) || !Array.isArray(m.answers) || m.answers.length === 0 || !m.answers.every(filled)))
@@ -104,6 +104,20 @@ export function validateVillage2(v) {
     if (jz && (!Array.isArray(jz.items) || jz.items.length === 0 ||
       !jz.items.every(j => j && filled(j.team) && filled(j.name) && Number.isInteger(j.number) && j.number >= 0)))
       errs.push('village.home.jerseys: items need team + name + non-negative integer number')
+    const wm = v.home.worldmap
+    if (wm && (!Array.isArray(wm.stops) || wm.stops.length === 0 ||
+      !wm.stops.every(s2 => s2 && filled(s2.place))))
+      errs.push('village.home.worldmap.stops: each stop needs a place')
+    const gl = v.home.games
+    if (gl && (!Array.isArray(gl.games) || gl.games.length === 0 || !gl.games.every(g2 => g2 && filled(g2.name))))
+      errs.push('village.home.games.games: each game needs a name')
+    const mc = v.home.music_corner
+    if (mc && mc.items && !(Array.isArray(mc.items) && mc.items.every(i2 => i2 && filled(i2.name) && filled(i2.note))))
+      errs.push('village.home.music_corner.items: name + note required')
+    const cats = v.home.cats
+    if (cats && (!Array.isArray(cats) || cats.length === 0 ||
+      !cats.every(c => c && filled(c.id) && filled(c.name) && filled(c.line) && filled(c.kind))))
+      errs.push('village.home.cats: each cat needs id + name + line + kind')
     const mb = v.home.musicbox
     if (mb) {
       for (const key of ['genres', 'artists', 'loves'])

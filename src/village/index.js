@@ -26,6 +26,7 @@ const LABELS = {
   music_corner: 'MUSIC CORNER', shelves: 'BOOK-SHELVES', board: 'PICTURE BOARD',
   memory: 'SECRET MEMORY', toy: 'THE TOY', bigbook: 'THE BIG BOOK',
   worldmap: 'WORLD MAP', tape: 'VIDEO-TAPE', jerseys: 'JERSEY WALL',
+  go: '围棋 · GO', games: 'TABLE GAMES',
   yuying: 'YUYING', s101: '101 MIDDLE SCHOOL', bu: 'BOSTON UNIVERSITY',
   bio: 'BIOLOGY', chem: 'CHEMISTRY', env: 'ENVIRONMENTAL SCIENCE',
   docs: 'LIFE DOCUMENTS', quiz: "THE LIBRARIAN'S QUIZ"
@@ -162,6 +163,9 @@ export function mountVillage({ onExit, onClassic } = {}) {
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
           const nx = x + dx, ny = y + dy
           if (!scene.isWalkable(nx, ny) || prev.has(key(nx, ny))) continue
+          // never route THROUGH the door mat by accident — only onto it,
+          // and only when the mat itself is where you clicked
+          if (scene.exitAt(nx, ny) && !(nx === to.x && ny === to.y)) continue
           prev.set(key(nx, ny), [x, y])
           q.push([nx, ny])
         }
@@ -178,6 +182,8 @@ export function mountVillage({ onExit, onClassic } = {}) {
     on(canvas, 'pointerdown', (e) => {
       if (overlayOpen) return
       const t = renderer.screenToTile(e.clientX, e.clientY)
+      const cat = catAt(t.x, t.y)
+      if (cat) { openOverlay(ui.objectPanel(cat.name, cat.line)); return }
       const zone = scene.zoneAt(t.x, t.y)
       let goal = null
       if (zone) {
@@ -196,14 +202,63 @@ export function mountVillage({ onExit, onClassic } = {}) {
       if (goal) { held.clear(); path = goal.path }
     })
 
-    // hover: pointer cursor + name label
+    // ---- the three house cats: they live in HOME and wander ----
+    const catSpots = [[3, 4], [10, 6], [6, 6]]
+    const cats = (village.home.cats || []).map((c, i) => ({
+      ...c,
+      tx: catSpots[i % 3][0], ty: catSpots[i % 3][1],
+      px: catSpots[i % 3][0] * TILE, py: catSpots[i % 3][1] * TILE,
+      path: [], waitUntil: 1 + i * 2, moving: false
+    }))
+    const CAT_SPEED = 42
+    const catRand = (() => { let s = 12345; return () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff } })()
+    function catStep(dt, t) {
+      if (sceneName !== 'home') return
+      const home = SCENES.home
+      for (const c of cats) {
+        const targetX = c.tx * TILE, targetY = c.ty * TILE
+        const dx = targetX - c.px, dy = targetY - c.py
+        if (dx || dy) {
+          c.moving = true
+          const dist = CAT_SPEED * dt
+          c.px += Math.abs(dx) <= dist ? dx : Math.sign(dx) * dist
+          c.py += Math.abs(dy) <= dist ? dy : Math.sign(dy) * dist
+          continue
+        }
+        c.moving = false
+        if (c.path.length) {
+          const next = c.path.shift()
+          c.tx = next.x; c.ty = next.y
+          continue
+        }
+        if (t > c.waitUntil) {
+          // pick a nearby spot to saunter to (never the door mat)
+          for (let tries = 0; tries < 8; tries++) {
+            const nx = c.tx + Math.floor(catRand() * 7) - 3
+            const ny = c.ty + Math.floor(catRand() * 5) - 2
+            if (!home.isWalkable(nx, ny) || home.exitAt(nx, ny)) continue
+            if (nx === player.tx && ny === player.ty) continue
+            const p = bfsPath({ x: c.tx, y: c.ty }, { x: nx, y: ny })
+            if (p && p.length) { c.path = p; break }
+          }
+          c.waitUntil = t + 2.5 + catRand() * 5
+        }
+      }
+    }
+    const catAt = (tx, ty) => sceneName === 'home'
+      ? cats.find(c => Math.round(c.px / TILE) === tx && Math.round(c.py / TILE) === ty) || null
+      : null
+
+    // hover: pointer cursor + name label (cats first — they're alive)
     let hoverZone = null
+    let hoverCat = null
     on(canvas, 'pointermove', (e) => {
       const t = renderer.screenToTile(e.clientX, e.clientY)
-      hoverZone = scene.zoneAt(t.x, t.y)
-      canvas.style.cursor = hoverZone ? 'pointer' : 'default'
+      hoverCat = catAt(t.x, t.y)
+      hoverZone = hoverCat ? null : scene.zoneAt(t.x, t.y)
+      canvas.style.cursor = (hoverCat || hoverZone) ? 'pointer' : 'default'
     })
-    on(canvas, 'pointerleave', () => { hoverZone = null; canvas.style.cursor = 'default' })
+    on(canvas, 'pointerleave', () => { hoverZone = null; hoverCat = null; canvas.style.cursor = 'default' })
 
     // ---- movement ----
     const SPEED = 110
@@ -310,6 +365,11 @@ export function mountVillage({ onExit, onClassic } = {}) {
       if (id === 'memory') return openMemory()
       if (id === 'jerseys') return openOverlay(ui.jerseysPanel(village.home.jerseys))
       if (id === 'musicbox') return openOverlay(ui.musicboxPanel(village.home.musicbox))
+      if (id === 'tv') return openOverlay(ui.tvPanel(village.home.tv))
+      if (id === 'laptop') return openOverlay(ui.laptopPanel(village.home.laptop))
+      if (id === 'music_corner') return openOverlay(ui.itemsPanel(village.home.music_corner))
+      if (id === 'shelves') return openOverlay(ui.shelvesPanel(village.home.shelves))
+      if (id === 'games') return openOverlay(ui.gamesPanel(village.home.games))
       if (village.home[id]) return openOverlay(ui.objectPanel(village.home[id].title, village.home[id].text))
       // school + lab
       const school = village.schools.find(s => s.id === id)
@@ -502,12 +562,19 @@ export function mountVillage({ onExit, onClassic } = {}) {
       const dt = Math.min((now - last) / 1000, 0.05)
       last = now
       step(dt)
+      catStep(dt, now / 1000)
       let label = null
       if (!overlayOpen) {
-        const id = scene.zoneAt(player.tx + player.dir[0], player.ty + player.dir[1]) || hoverZone
-        if (id) label = { id, text: LABELS[id] || id.toUpperCase() }
+        if (hoverCat) label = { text: hoverCat.name.toUpperCase(), tx: Math.round(hoverCat.px / TILE), ty: Math.round(hoverCat.py / TILE) }
+        else {
+          const id = scene.zoneAt(player.tx + player.dir[0], player.ty + player.dir[1]) || hoverZone
+          if (id) label = { id, text: LABELS[id] || id.toUpperCase() }
+        }
       }
-      renderer.draw(scene, player, Math.floor(now / 400) % 2 === 0, now / 1000, label)
+      const actors = sceneName === 'home'
+        ? cats.map(c => ({ img: sprites.cats[c.kind][c.moving ? (Math.floor(now / 220) % 2) : 0], px: c.px, py: c.py }))
+        : []
+      renderer.draw(scene, player, Math.floor(now / 400) % 2 === 0, now / 1000, label, actors)
     }
     const onVis = () => {
       cancelAnimationFrame(raf)
@@ -532,7 +599,8 @@ export function mountVillage({ onExit, onClassic } = {}) {
     return {
       player,
       scene: () => sceneName,
-      go: (name, at) => goScene(name, at)
+      go: (name, at) => goScene(name, at),
+      cats
     }
   }
 
@@ -555,6 +623,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
     unmount,
     get player() { return world?.player || null },
     get scene() { return world?.scene?.() || 'lock' },
+    get cats() { return world?.cats || [] },
     go: (name, at) => world?.go(name, at)
   }
 }

@@ -85,8 +85,12 @@ export function wallCard(messages, profile) {
   <p class="actions">
     <button class="btn" data-type-it>type it on the screen</button>
     <button class="btn ghost" data-send-wall data-email="${esc(profile.email)}">pin it to the wall</button>
-  </p>
-  <p class="joke">“Pin it” sends your words to David, who adds them here for everyone. Typing on the screen is just between you and the desk.</p>`, 'wall')
+  </p>`, 'wall')
+}
+
+// tiny one-line cards for the desk's small props
+export function microCard(title, line) {
+  return card(title, `<p class="micro">${esc(line)}</p>`, 'micro')
 }
 
 export function teaserCard(kind) {

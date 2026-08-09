@@ -6,18 +6,77 @@ export function objectPanel(title, text) {
   return `
 <div class="v-panel">
   <h3>${esc(title)}</h3>
-  <p>${esc(text)}</p>
+  ${text ? `<p>${esc(text)}</p>` : ''}
+</div>`
+}
+
+// name + note rows (the music corner's instruments)
+export function itemsPanel(obj) {
+  const rows = (obj.items || []).map(i => `
+  <h4>${esc(i.name)}</h4><p>${esc(i.note)}</p>`).join('')
+  return `
+<div class="v-panel">
+  <h3>${esc(obj.title)}</h3>
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}${rows}
+</div>`
+}
+
+export function laptopPanel(obj) {
+  return `
+<div class="v-panel">
+  <h3>${esc(obj.title)}</h3>
+  <h4>FAVOURITE GAMES</h4><p>${obj.favorites.map(esc).join(' · ')}</p>
+  <h4>OFTEN PLAYED</h4><p>${obj.often.map(esc).join(' · ')}</p>
+  <h4>AWARD</h4><p>★ ${esc(obj.award)}</p>
+</div>`
+}
+
+export function tvPanel(obj) {
+  return `
+<div class="v-panel">
+  <h3>${esc(obj.title)}</h3>
+  <ul>${obj.shows.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+  ${obj.footer ? `<p class="v-dim">${esc(obj.footer)}</p>` : ''}
+</div>`
+}
+
+export function shelvesPanel(obj) {
+  return `
+<div class="v-panel">
+  <h3>${esc(obj.title)}</h3>
+  ${(obj.books || []).map(b => `<h4>${esc(b)}</h4>`).join('')}
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
+</div>`
+}
+
+// tiny pixel-style SVG covers until David hands over real box photos
+const GAME_COVERS = {
+  '马尼拉': `<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#3f6fae"/><rect y="16" width="24" height="8" fill="#2b4d80"/><path d="M4 16 L12 16 L10 20 L6 20 Z" fill="#8a5a38"/><rect x="7" y="8" width="1" height="8" fill="#4a3826"/><path d="M8 8 L14 12 L8 14 Z" fill="#f2e4c8"/><circle cx="19" cy="5" r="2" fill="#ffd93b"/></svg>`,
+  '波多黎各': `<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#5da05d"/><rect y="14" width="24" height="4" fill="#4c8a46"/><rect y="20" width="24" height="4" fill="#4c8a46"/><rect x="14" y="6" width="7" height="6" fill="#e8cfa8"/><path d="M13 6 L17.5 2 L22 6 Z" fill="#b95d4d"/><circle cx="5" cy="5" r="2.4" fill="#ffd93b"/></svg>`,
+  '纽约之王': `<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#1c2438"/><rect x="2" y="10" width="4" height="14" fill="#3d4a6b"/><rect x="8" y="6" width="4" height="18" fill="#2b3550"/><rect x="18" y="9" width="4" height="15" fill="#3d4a6b"/><rect x="12" y="10" width="6" height="14" rx="2" fill="#4f9d5d"/><circle cx="14" cy="13" r="1" fill="#ffd93b"/><circle cx="17" cy="13" r="1" fill="#ffd93b"/><path d="M12 10 L13 7 L14.5 9.5 L16 7 L17 10 Z" fill="#4f9d5d"/></svg>`,
+  '骆驼大赛': `<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#e8c88a"/><path d="M2 24 L10 10 L18 24 Z" fill="#d9a441"/><rect x="12" y="14" width="8" height="4" rx="1.6" fill="#c97a3d"/><rect x="13" y="10" width="8" height="4" rx="1.6" fill="#ffd93b"/><rect x="18" y="16" width="1.6" height="6" fill="#c97a3d"/><rect x="13.4" y="16" width="1.6" height="6" fill="#c97a3d"/><rect x="20" y="11" width="2.4" height="3" fill="#ffd93b"/></svg>`,
+  '山中小屋': `<svg viewBox="0 0 24 24"><rect width="24" height="24" fill="#141a2a"/><circle cx="19" cy="5" r="2.6" fill="#e8ecf4"/><path d="M0 24 L8 12 L16 24 Z" fill="#232c42"/><rect x="9" y="9" width="8" height="8" fill="#3a2c1c"/><path d="M8 9 L13 4 L18 9 Z" fill="#2b2118"/><rect x="12" y="12" width="2" height="2" fill="#ffd93b"/><rect x="12" y="14" width="2" height="3" fill="#1c1408"/></svg>`
+}
+export function gamesPanel(obj) {
+  const cards = (obj.games || []).map(g => `
+  <figure class="v-game">${g.img ? `<img src="${esc(g.img)}" alt="${esc(g.name)}" loading="lazy">` : (GAME_COVERS[g.name] || '')}<figcaption>${esc(g.name)}</figcaption></figure>`).join('')
+  return `
+<div class="v-panel">
+  <h3>${esc(obj.title)}</h3>
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
+  <div class="v-games">${cards}</div>
 </div>`
 }
 
 export function worldmapPanel(obj) {
-  const stops = (obj.stops || []).map(s => `<li><b>${esc(s.place)}</b> <span class="v-dim">${esc(s.when || '')}</span></li>`).join('')
+  const stops = (obj.stops || []).map(s => s.img
+    ? `<li><details><summary><b>${esc(s.place)}</b>${s.when ? ` <span class="v-dim">${esc(s.when)}</span>` : ''}</summary><img class="v-stop-img" src="${esc(s.img)}" alt="${esc(s.place)}" loading="lazy"></details></li>`
+    : `<li><b>${esc(s.place)}</b>${s.when ? ` <span class="v-dim">${esc(s.when)}</span>` : ''}</li>`).join('')
   return `
 <div class="v-panel">
   <h3>${esc(obj.title)}</h3>
-  <p>${esc(obj.text)}</p>
-  ${stops ? `<ul>${stops}</ul>` : ''}
-  <p class="v-dim">(pictures pinned to places — coming as David adds them)</p>
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
+  ${stops ? `<ul class="v-stops">${stops}</ul>` : ''}
 </div>`
 }
 
@@ -28,7 +87,7 @@ export function musicboxPanel(obj) {
   return `
 <div class="v-panel v-musicbox">
   <h3>${esc(obj.title)}</h3>
-  <p>${esc(obj.text)}</p>
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
   ${obj.lyric ? `<p class="v-lyric">♪ “${esc(obj.lyric)}”</p>` : ''}
   ${obj.genres?.length ? `<h4>THE SOUNDS</h4><div class="v-chips">${chips(obj.genres)}</div>` : ''}
   ${obj.artists?.length ? `<h4>FAVOURITE ARTISTS</h4><div class="v-chips">${chips(obj.artists, 'star')}</div>` : ''}
@@ -53,7 +112,7 @@ export function jerseysPanel(obj) {
   return `
 <div class="v-panel">
   <h3>${esc(obj.title)}</h3>
-  <p>${esc(obj.text)}</p>
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
   <div class="v-jerseys">${cards}</div>
 </div>`
 }

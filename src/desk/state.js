@@ -1,5 +1,5 @@
 // Desk world state machine. Pure logic — no DOM, no three.js.
-export const HOTSPOTS = new Set(['monitor', 'handheld', 'tray', 'frame', 'mug', 'notes', 'musicbox', 'plant', 'keyboard'])
+export const HOTSPOTS = new Set(['monitor', 'handheld', 'tray', 'frame', 'mug', 'notes', 'musicbox', 'plant', 'keyboard', 'mouse', 'candle', 'shelf'])
 
 export function createDeskState() {
   let mode = 'intro'

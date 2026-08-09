@@ -86,7 +86,8 @@ const home = interior({
     { id: 'shelves', x: 12, y: 4 }, { id: 'shelves', x: 12, y: 5 },
     { id: 'memory', x: 12, y: 7 },
     { id: 'toy', x: 4, y: 5 }, { id: 'bigbook', x: 9, y: 5 },
-    { id: 'music_corner', x: 3, y: 7 }, { id: 'music_corner', x: 4, y: 7 }, { id: 'music_corner', x: 5, y: 7 }
+    { id: 'music_corner', x: 3, y: 7 }, { id: 'music_corner', x: 4, y: 7 }, { id: 'music_corner', x: 5, y: 7 },
+    { id: 'games', x: 9, y: 7 }, { id: 'go', x: 10, y: 7 }
   ],
   spawn: { x: 7, y: 7 }
 })
