@@ -12,7 +12,7 @@ W, H = art.size
 NOTES = [  # (text area strictly inside each paper), text
     ((313, 106, 382, 163), 'Happy.'),
     ((295, 208, 372, 258), 'Love.'),
-    ((303, 304, 379, 359), 'Dream.')
+    ((303, 304, 379, 359), 'Dream &\nPassion.')
 ]
 FONT_PATH = '/usr/share/fonts/truetype/google-fonts/Lora-Italic-Variable.ttf'
 for (x0, y0, x1, y1), word in NOTES:
@@ -21,15 +21,20 @@ for (x0, y0, x1, y1), word in NOTES:
     region = region.filter(ImageFilter.GaussianBlur(1.2))
     art.paste(region, (x0, y0))
     d = ImageDraw.Draw(art)
-    size = 22
+    lines = word.split('\n')
+    size = 22 if len(lines) == 1 else 17
     while size > 10:
         font = ImageFont.truetype(FONT_PATH, size)
-        bb = d.textbbox((0, 0), word, font=font)
-        if bb[2] - bb[0] <= (x1 - x0) - 6: break
+        widest = max(d.textbbox((0, 0), ln, font=font)[2] - d.textbbox((0, 0), ln, font=font)[0] for ln in lines)
+        if widest <= (x1 - x0) - 6: break
         size -= 1
-    tw, th = bb[2] - bb[0], bb[3] - bb[1]
+    lh = size + 4
     cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-    d.text((cx - tw / 2 - bb[0], cy - th / 2 - bb[1]), word, font=font, fill=(52, 38, 34))
+    top = cy - (lh * len(lines)) / 2
+    for k, ln in enumerate(lines):
+        bb = d.textbbox((0, 0), ln, font=font)
+        tw = bb[2] - bb[0]
+        d.text((cx - tw / 2 - bb[0], top + k * lh - bb[1] + 2), ln, font=font, fill=(52, 38, 34))
 
 # ---- 2. photo bake (v15) ----
 quad = [(152.0, 524.4), (294.8, 507.2), (309.4, 601.6), (165.2, 622.0)]
@@ -70,6 +75,6 @@ sh = sh.resize((W, H), Image.LANCZOS).filter(ImageFilter.GaussianBlur(1.3))
 sh = Image.composite(sh, Image.new('L', (W, H), 0), mask)
 art = Image.composite(Image.new('RGB', (W, H), (6, 5, 9)), art, sh)
 
-art.save('public/images/studio-desk.jpg', 'JPEG', quality=88, optimize=True)
+art.save('src/assets/studio-desk.jpg', 'JPEG', quality=88, optimize=True)
 art.crop((270, 50, 420, 390)).resize((300, 680), Image.LANCZOS).save('/tmp/notes-new.png')
-print('saved', os.path.getsize('public/images/studio-desk.jpg') // 1024, 'KB')
+print('saved', os.path.getsize('src/assets/studio-desk.jpg') // 1024, 'KB')

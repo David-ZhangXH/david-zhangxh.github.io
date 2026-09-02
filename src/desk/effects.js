@@ -1,6 +1,7 @@
 // Living details: the monitor's starfield, rain behind the window, mug steam
 // (with the heart easter egg), and lamp flicker.
 import * as THREE from 'three'
+import galaxyMonitorUrl from '../assets/galaxy-monitor.jpg'
 
 // deterministic pseudo-random (stable scenes, resumable renders)
 const prand = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x) }
@@ -18,7 +19,7 @@ export function makeScreenTexture() {
   }))
   const backdrop = new Image()
   backdrop.decoding = 'async'
-  backdrop.src = 'images/galaxy-monitor.jpg'
+  backdrop.src = galaxyMonitorUrl
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
   tex.minFilter = THREE.LinearMipmapLinearFilter

@@ -3,6 +3,9 @@
 // live WebGL layers add depth, animation, camera movement, and interactions.
 import * as THREE from 'three'
 import { glowSprite } from '../core/glow.js'
+// imported as a module asset so its filename carries a content hash —
+// browsers can never show a stale artwork after an update
+import studioDeskUrl from '../assets/studio-desk.jpg'
 
 const ART_W = 4
 const ART_H = 2.25
@@ -75,7 +78,7 @@ export function buildFurniture(scene) {
 
   // Exact approved artwork, presented as a color-managed, unlit scene surface.
   const loader = new THREE.TextureLoader()
-  const artTexture = loader.load('images/studio-desk.jpg')
+  const artTexture = loader.load(studioDeskUrl)
   artTexture.colorSpace = THREE.SRGBColorSpace
   artTexture.minFilter = THREE.LinearMipmapLinearFilter
   artTexture.magFilter = THREE.LinearFilter
