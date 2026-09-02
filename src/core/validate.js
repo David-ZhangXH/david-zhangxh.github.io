@@ -90,7 +90,7 @@ export function validateWall(list) {
 export function validateVillage2(v) {
   if (!v || typeof v !== 'object') return ['village: not an object']
   const errs = []
-  const HOME_KEYS = ['musicbox', 'tv', 'laptop', 'music_corner', 'shelves', 'board', 'toy', 'bigbook', 'worldmap', 'tape', 'memory', 'jerseys', 'go', 'games']
+  const HOME_KEYS = ['musicbox', 'tv', 'laptop', 'music_corner', 'shelves', 'board', 'toy', 'bigbook', 'worldmap', 'tape', 'memory', 'jerseys', 'go', 'games', 'poster']
   if (!v.home || typeof v.home !== 'object') errs.push('village.home: required object')
   else {
     for (const k of HOME_KEYS) {
@@ -114,6 +114,12 @@ export function validateVillage2(v) {
     const mc = v.home.music_corner
     if (mc && mc.items && !(Array.isArray(mc.items) && mc.items.every(i2 => i2 && filled(i2.name) && filled(i2.note))))
       errs.push('village.home.music_corner.items: name + note required')
+    const bb2 = v.home.bigbook
+    if (bb2 && bb2.lines && !(Array.isArray(bb2.lines) && bb2.lines.length > 0 && bb2.lines.every(filled)))
+      errs.push('village.home.bigbook.lines: non-empty strings')
+    const dog = v.home.dog
+    if (dog && !(filled(dog.id) && filled(dog.name) && filled(dog.kind) && isStr(dog.line)))
+      errs.push('village.home.dog: needs id + name + kind (line may be empty)')
     const cats = v.home.cats
     if (cats && (!Array.isArray(cats) || cats.length === 0 ||
       !cats.every(c => c && filled(c.id) && filled(c.name) && filled(c.line) && filled(c.kind))))
@@ -132,6 +138,8 @@ export function validateVillage2(v) {
     if (!Array.isArray(v[sec]) || v[sec].length !== n) errs.push(`village.${sec}: exactly ${n} entries`)
     else v[sec].forEach((s, i) => {
       if (!filled(s?.id) || !filled(s?.name) || !filled(s?.text)) errs.push(`village.${sec}[${i}]: needs id/name/text`)
+      if (s?.photos !== undefined && !(Array.isArray(s.photos) && s.photos.every(filled))) errs.push(`village.${sec}[${i}].photos: array of paths`)
+      if (s?.footer !== undefined && !isStr(s.footer)) errs.push(`village.${sec}[${i}].footer: string`)
     })
   }
   if (!v.library || !Array.isArray(v.library.documents) || v.library.documents.length === 0)

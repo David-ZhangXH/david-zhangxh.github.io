@@ -26,7 +26,7 @@ const LABELS = {
   music_corner: 'MUSIC CORNER', shelves: 'BOOK-SHELVES', board: 'PICTURE BOARD',
   memory: 'SECRET MEMORY', toy: 'THE TOY', bigbook: 'THE BIG BOOK',
   worldmap: 'WORLD MAP', tape: 'VIDEO-TAPE', jerseys: 'JERSEY WALL',
-  go: '围棋 · GO', games: 'TABLE GAMES',
+  go: '围棋 · GO', games: 'TABLE GAMES', poster: 'IRON MAN POSTER',
   yuying: 'YUYING', s101: '101 MIDDLE SCHOOL', bu: 'BOSTON UNIVERSITY',
   bio: 'BIOLOGY', chem: 'CHEMISTRY', env: 'ENVIRONMENTAL SCIENCE',
   docs: 'LIFE DOCUMENTS', quiz: "THE LIBRARIAN'S QUIZ"
@@ -203,11 +203,12 @@ export function mountVillage({ onExit, onClassic } = {}) {
     })
 
     // ---- the three house cats: they live in HOME and wander ----
-    const catSpots = [[3, 4], [10, 6], [6, 6]]
-    const cats = (village.home.cats || []).map((c, i) => ({
+    const catSpots = [[3, 4], [10, 6], [6, 6], [8, 4]]
+    const PET_DEFS = [...(village.home.cats || []), ...(village.home.dog ? [village.home.dog] : [])]
+    const cats = PET_DEFS.map((c, i) => ({
       ...c,
-      tx: catSpots[i % 3][0], ty: catSpots[i % 3][1],
-      px: catSpots[i % 3][0] * TILE, py: catSpots[i % 3][1] * TILE,
+      tx: catSpots[i % 4][0], ty: catSpots[i % 4][1],
+      px: catSpots[i % 4][0] * TILE, py: catSpots[i % 4][1] * TILE,
       path: [], waitUntil: 1 + i * 2, moving: false
     }))
     const CAT_SPEED = 42
@@ -370,10 +371,20 @@ export function mountVillage({ onExit, onClassic } = {}) {
       if (id === 'music_corner') return openOverlay(ui.itemsPanel(village.home.music_corner))
       if (id === 'shelves') return openOverlay(ui.shelvesPanel(village.home.shelves))
       if (id === 'games') return openOverlay(ui.gamesPanel(village.home.games))
+      if (id === 'bigbook') return openOverlay(ui.linesPanel(village.home.bigbook))
       if (village.home[id]) return openOverlay(ui.objectPanel(village.home[id].title, village.home[id].text))
       // school + lab
       const school = village.schools.find(s => s.id === id)
-      if (school) return openOverlay(ui.objectPanel(school.name, school.text))
+      if (school) {
+        if (!school.photos?.length) return openOverlay(ui.objectPanel(school.name, school.text))
+        return openOverlay(ui.stationPanel(school), (panel) => {
+          panel.querySelectorAll('[data-zoom]').forEach(img => img.addEventListener('click', () => {
+            const big = img.closest('.v-photo').classList.toggle('big')
+            panel.querySelectorAll('.v-photo').forEach(f => { if (f !== img.closest('.v-photo')) f.classList.remove('big') })
+            if (big) img.scrollIntoView({ block: 'nearest' })
+          }))
+        })
+      }
       const table = village.lab.find(l => l.id === id)
       if (table) return openOverlay(ui.objectPanel(table.name, table.text))
       // library
@@ -383,7 +394,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
 
     function openMemory() {
       if (quests.isDone('memory')) {
-        return openOverlay(ui.objectPanel(village.home.memory.title, village.home.memory.text))
+        return openOverlay(ui.memoryReveal(village.home.memory))
       }
       openOverlay(ui.memoryGate(village.home.memory.question), (panel) => {
         const input = panel.querySelector('.v-answer')
@@ -393,7 +404,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
           if (ok) {
             closeOverlay()
             questToast('memory')
-            openOverlay(ui.objectPanel(village.home.memory.title, village.home.memory.text))
+            openOverlay(ui.memoryReveal(village.home.memory))
           } else {
             panel.querySelector('.v-nudge2').hidden = false
             input.value = ''

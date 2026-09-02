@@ -332,6 +332,20 @@ F.games = () => cv(20, 18, (g) => {
   O(g, 4, 2, 12, 5, '#d9a441'); R(g, 5, 3, 10, 1, '#e8bc6a'); R(g, 6, 4, 6, 2, '#2b3550')
 })
 
+// Iron Man poster on the wall
+F.poster = () => cv(18, 26, (g) => {
+  O(g, 1, 1, 16, 23, '#7a1f24')                      // poster sheet
+  R(g, 2, 2, 14, 21, '#8f262c')
+  R(g, 2, 2, 14, 3, '#5d181d')
+  // the helmet
+  R(g, 5, 7, 8, 10, '#c0392b')                       // red shell
+  R(g, 6, 9, 6, 7, '#e8b23a')                        // gold faceplate
+  R(g, 6, 11, 2, 1, '#bfe9ff'); R(g, 10, 11, 2, 1, '#bfe9ff') // glowing eyes
+  R(g, 8, 13, 2, 2, '#c0392b')
+  R(g, 6, 19, 6, 1, '#e8b23a')                       // title bar
+  R(g, 5, 21, 8, 1, '#5d181d')
+})
+
 // jersey wall: wooden rail, four hanging numbered shirts
 function miniJersey(g, x, y, { body, body2, trim, numColor, number }) {
   // sleeve nubs
@@ -386,6 +400,39 @@ F.quiz = () => cv(26, 24, (g) => {
 // Readable pixel cats: pointed ears, round head, upright curved tail, four legs.
 function catFrames(draw, w, h) {
   return [cv(w, h, (g) => draw(g, 0)), cv(w, h, (g) => draw(g, 1))]
+}
+
+// 伯爵 — the white toy poodle. Dog, not cat: forward snout with a black
+// nose, one big FLOPPY ear drooping past the jaw, thick red collar,
+// pom tail, taller legs with white paws.
+function dogPoodle() {
+  const W2 = '#f4f2ec', SH = '#dcd8cf', COL = '#d9383e'
+  return catFrames((g, step) => {
+    // pom tail (back, up)
+    O(g, 1, 5, 4, 4, W2); R(g, 2, 6, 2, 2, SH)
+    // fluffy body
+    O(g, 4, 8, 10, 5, W2)
+    R(g, 5, 7, 2, 1, W2); R(g, 8, 7, 2, 1, W2); R(g, 11, 7, 2, 1, W2)   // fluff bumps
+    R(g, 5, 11, 8, 1, SH)
+    // head
+    O(g, 13, 2, 6, 5, W2)
+    R(g, 14, 2, 4, 1, SH)                                    // top-knot shading
+    // snout forward + black nose + mouth
+    O(g, 18, 4, 3, 2, W2)
+    R(g, 20, 4, 1, 1, '#1c1408')
+    R(g, 19, 6, 1, 1, '#e8a0a8')
+    // one big floppy ear, drooping past the jaw (the dog giveaway)
+    O(g, 11, 3, 3, 5, W2); R(g, 12, 5, 1, 2, SH)
+    // eye
+    R(g, 15, 3, 1, 1, P.outline)
+    // thick red collar between head and body
+    R(g, 13, 7, 5, 2, COL); R(g, 15, 8, 1, 1, '#ffd93b')     // tag
+    // taller legs + white paws
+    if (step === 0) { R(g, 5, 13, 2, 3, P.outline); R(g, 11, 13, 2, 3, P.outline) }
+    else { R(g, 6, 13, 2, 3, P.outline); R(g, 10, 13, 2, 3, P.outline) }
+    R(g, 8, 13, 2, 2, P.outline)
+    if (step === 0) { R(g, 5, 15, 2, 1, W2); R(g, 11, 15, 2, 1, W2) } else { R(g, 6, 15, 2, 1, W2); R(g, 10, 15, 2, 1, W2) }
+  }, 22, 17)
 }
 
 // Twizzler — middle, black tortoiseshell (orange mottling)
@@ -482,7 +529,8 @@ export function makeSprites() {
   S.cats = {
     tortoiseshell: catTortoiseshell(),
     grey: catGrey(),
-    white: catWhite()
+    white: catWhite(),
+    poodle: dogPoodle()
   }
   S.wallColors = { home: P.wallHome, school: P.wallSchool, lab: P.wallLab, library: P.wallLib }
   S.floor = cv(16, 16, (g) => { R(g, 0, 0, 16, 16, P.floor); R(g, 0, 7, 16, 1, P.floorDk); R(g, 0, 15, 16, 1, P.floorDk); R(g, 8, 0, 1, 8, P.floorDk); R(g, 3, 8, 1, 8, P.floorDk) })

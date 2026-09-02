@@ -138,7 +138,15 @@
   },
   "bigbook": {
    "title": "The Big Book",
-   "text": ""
+   "text": "",
+   "lines": [
+    "Born in 2002 Beijing",
+    "02–08 洋桥",
+    "08–17 朱各庄",
+    "17–xx 天润福熙大道",
+    "2022.02.21 姥姥去世了",
+    "2025.12 伯爵去世了"
+   ]
   },
   "worldmap": {
    "title": "Travelling world map",
@@ -249,14 +257,14 @@
    },
    {
     "id": "huahua",
-    "name": "Huahua",
-    "line": "Huahua 2017.9.21, American shorthair",
+    "name": "小花",
+    "line": "小花 2017.9.21, American shorthair",
     "kind": "grey"
    },
    {
     "id": "littleguy",
-    "name": "Little guy",
-    "line": "Little guy, 2021.8.31, Maine",
+    "name": "小不点",
+    "line": "小不点, 2021.8.31, Maine",
     "kind": "white"
    }
   ],
@@ -284,13 +292,36 @@
      "name": "山中小屋"
     }
    ]
+  },
+  "dog": {
+   "id": "bojue",
+   "name": "伯爵",
+   "line": "",
+   "kind": "poodle"
+  },
+  "poster": {
+   "title": "Iron Man",
+   "text": "With great power comes great responsibility."
   }
  },
  "schools": [
   {
    "id": "yuying",
    "name": "Yuying",
-   "text": "Special memories from Yuying. (Placeholder — David will write these.)"
+   "text": "2008–2014 Primary School Class 13, 2014–2017 Middle School Class 9",
+   "photos": [
+    "school/yuying-01.jpg",
+    "school/yuying-02.jpg",
+    "school/yuying-03.jpg",
+    "school/yuying-04.jpg",
+    "school/yuying-05.jpg",
+    "school/yuying-06.jpg",
+    "school/yuying-07.jpg",
+    "school/yuying-08.jpg",
+    "school/yuying-09.jpg",
+    "school/yuying-10.jpg"
+   ],
+   "footer": "朱各庄联队, 12号院，卓展，紫金长安，华熙"
   },
   {
    "id": "s101",

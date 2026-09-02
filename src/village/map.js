@@ -77,6 +77,7 @@ function interior({ zones, spawn = { x: 7, y: 7 }, wallRow = [] }) {
 const home = interior({
   zones: [
     { id: 'musicbox', x: 2, y: 2 },
+    { id: 'poster', x: 1, y: 2 },
     { id: 'tv', x: 4, y: 2 }, { id: 'tv', x: 5, y: 2 },
     { id: 'laptop', x: 7, y: 2 },
     { id: 'jerseys', x: 9, y: 2 }, { id: 'jerseys', x: 10, y: 2 }, { id: 'jerseys', x: 11, y: 2 },

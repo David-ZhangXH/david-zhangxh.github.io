@@ -10,6 +10,38 @@ export function objectPanel(title, text) {
 </div>`
 }
 
+// a school station: story line, photo wall (tap a photo to enlarge), footer
+export function stationPanel(st) {
+  const photos = (st.photos || []).map((src, i) => `
+  <figure class="v-photo"><img src="${esc(src)}" alt="${esc(st.name)} ${i + 1}" loading="lazy" data-zoom></figure>`).join('')
+  return `
+<div class="v-panel v-station">
+  <h3>${esc(st.name)}</h3>
+  ${st.text ? `<p>${esc(st.text)}</p>` : ''}
+  ${photos ? `<div class="v-photos">${photos}</div>` : ''}
+  ${st.footer ? `<p class="v-footer">${esc(st.footer)}</p>` : ''}
+</div>`
+}
+
+// one line per row (the big book's pages)
+export function linesPanel(obj) {
+  return `
+<div class="v-panel">
+  <h3>${esc(obj.title)}</h3>
+  ${(obj.lines || []).map(l => `<p class="v-line">${esc(l)}</p>`).join('')}
+</div>`
+}
+
+// the secret memory, revealed — a red heart for those who truly know him
+export function memoryReveal(obj) {
+  return `
+<div class="v-panel v-memory-open">
+  <h3>${esc(obj.title)}</h3>
+  <div class="v-heart" aria-label="a red heart">❤</div>
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
+</div>`
+}
+
 // name + note rows (the music corner's instruments)
 export function itemsPanel(obj) {
   const rows = (obj.items || []).map(i => `

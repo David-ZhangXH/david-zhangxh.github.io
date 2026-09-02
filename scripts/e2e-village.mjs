@@ -101,7 +101,8 @@ try {
   const homeChecks = [
     { stand: [2, 3], dir: 'ArrowUp', text: /Love can fight everything/i, name: 'musicbox' },
     { stand: [4, 6], dir: 'ArrowDown', text: /rock star/i, name: 'music corner' },
-    { stand: [8, 5], dir: 'ArrowRight', text: /big book/i, name: 'big book' },
+    { stand: [8, 5], dir: 'ArrowRight', text: /Born in 2002/i, name: 'big book' },
+    { stand: [1, 3], dir: 'ArrowUp', text: /great power comes great responsibility/i, name: 'iron man poster' },
     { stand: [10, 3], dir: 'ArrowUp', text: /messi|fernandes|westbrook/i, name: 'jersey wall' },
     { stand: [4, 3], dir: 'ArrowUp', text: /Stranger Things/i, name: 'television' },
     { stand: [7, 3], dir: 'ArrowUp', text: /Hearthstone rank 50/i, name: 'gaming laptop' },
@@ -150,7 +151,7 @@ try {
 
   // the three cats wander at home and answer to a click
   const catInfo = await page.evaluate(() => window.__village.cats.map(c => ({ name: c.name, px: c.px, py: c.py })))
-  check(catInfo.length === 3, `three cats live here (got ${catInfo.length})`)
+  check(catInfo.length === 4, `three cats + 伯爵 wander here (got ${catInfo.length})`)
   let catClicked = false
   for (let attempt = 0; attempt < 4 && !catClicked; attempt++) {
     const c = await page.evaluate(() => {
@@ -190,7 +191,8 @@ try {
     await page.waitForTimeout(400)
     const revealed = await page.$eval('.v-panel', el => /secret memory/i.test(el.innerText)).catch(() => false)
     const questDone = await page.evaluate(() => JSON.parse(localStorage.getItem('davidworld:quests') || '[]').includes('memory'))
-    check(revealed && questDone, 'memory: 花花 unlocks the placard + quest')
+    const heart = !!(await page.$('.v-heart'))
+    check(revealed && questDone && heart, 'memory: 花花 unlocks the placard + quest + a red heart')
     await closePanel()
   } else check(false, 'memory: gate opens')
 
@@ -202,7 +204,13 @@ try {
   // ---- school + lab + library rooms ----
   await enterVia('school'); await page.waitForTimeout(300)
   const yy = await openZoneByKeys(3, 3, 'ArrowUp')
-  check(yy && /yuying/i.test(await yy.innerText()), 'school: Yuying station opens')
+  const yyText = yy ? await yy.innerText() : ''
+  check(/yuying/i.test(yyText) && /Primary School Class 13/.test(yyText) && /Middle School Class 9/.test(yyText), 'school: Yuying tells 2008–2017 in David\'s words')
+  check(/朱各庄联队, 12号院，卓展，紫金长安，华熙/.test(yyText), 'school: Yuying footer line exact')
+  await page.waitForTimeout(900)
+  const yyPhotos = await page.$$eval('.v-photo img', els => els.map(i => i.naturalWidth > 0))
+  check(yyPhotos.length === 10 && yyPhotos.every(Boolean), `school: all ten Yuying photos render (${yyPhotos.filter(Boolean).length}/10)`)
+  await page.screenshot({ path: 'shots/village-yuying.png' })
   await closePanel()
   await page.screenshot({ path: 'shots/village-school.png' })
 

@@ -8,10 +8,12 @@ export function createScene(container) {
     // At 16:9 the artwork fills the viewport. Narrower windows widen the
     // vertical field of view enough to keep desktop compositions contained;
     // phones use a legible close-up and pan across the wider studio.
+    // COVER fit: the artwork always fills the whole window (the shorter
+    // axis crops slightly instead of showing black bars at the sides).
     fovFor: (aspect) => {
       if (aspect < 0.8) return 64
-      const contain = THREE.MathUtils.radToDeg(2 * Math.atan(4 / (6 * aspect)))
-      return Math.max(41.1, contain)
+      const t = Math.min(1.125 / 3, 2 / (3 * aspect))
+      return THREE.MathUtils.radToDeg(2 * Math.atan(t))
     },
     shadows: true
   })

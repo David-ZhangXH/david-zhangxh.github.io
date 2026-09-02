@@ -145,3 +145,20 @@
 .v-game svg, .v-game img { width: 100%; aspect-ratio: 1; display: block;
   border: 3px solid #2b3550; border-radius: 3px; box-shadow: 3px 3px 0 rgba(43, 53, 80, .4); object-fit: cover; }
 .v-game figcaption { font-size: 11px; margin-top: 4px; font-weight: 700; }
+
+/* ---- big book lines + the secret heart ---- */
+.v-line { margin: 4px 0; }
+.v-memory-open { text-align: center; }
+.v-heart { font-size: 56px; line-height: 1; color: #e0343c; margin: 10px 0 6px;
+  text-shadow: 0 2px 0 rgba(43, 53, 80, .25); animation: vheart 1.2s ease-in-out infinite; }
+@keyframes vheart { 0%, 100% { transform: scale(1) } 50% { transform: scale(1.14) } }
+
+/* ---- school station photo wall ---- */
+.v-station { max-width: 560px; }
+.v-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.v-photo { margin: 0; cursor: zoom-in; }
+.v-photo img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block;
+  border: 3px solid #2b3550; border-radius: 3px; box-shadow: 3px 3px 0 rgba(43, 53, 80, .35); }
+.v-photo.big { grid-column: 1 / -1; cursor: zoom-out; }
+.v-photo.big img { aspect-ratio: auto; max-height: 60vh; object-fit: contain; background: #2b3550; }
+.v-footer { margin-top: 12px; padding-top: 8px; border-top: 2px dashed #d9cbb0; font-weight: 700; }

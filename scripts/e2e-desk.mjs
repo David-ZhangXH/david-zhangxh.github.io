@@ -37,14 +37,14 @@ try {
   await page.screenshot({ path: 'shots/desk-desktop.png' })
 
   const proxies = await page.$$('.hotspot-proxies button')
-  check(proxies.length === 12, `12 hotspot proxies present (got ${proxies.length})`)
+  check(proxies.length === 13, `13 hotspot proxies present (got ${proxies.length})`)
 
   // monitor + handheld are portals now — covered by e2e-galaxy / e2e-village
   const expectText = {
     tray: 'Curriculum',
     frame: 'July 16', notes: 'Insomania Radio', musicbox: '静止',
     plant: 'childhood', keyboard: 'wall',
-    mouse: 'DPI 1600 * 0.23', candle: 'Le Labo 25', shelf: 'nothing there'
+    mouse: 'DPI 1600 * 0.23', candle: 'Le Labo 25', shelf: 'nothing there', headphones: 'Volume: 001'
   }
   // proxies are keyboard controls: activate via focus + Enter (the real a11y path)
   const pressProxy = async (id) => {

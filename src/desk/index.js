@@ -24,7 +24,8 @@ const CARD_FOR = {
   keyboard: () => wallCard(wall, profile),
   mouse: () => microCard('The mouse', 'DPI 1600 * 0.23'),
   candle: () => microCard('The candle', 'Le Labo 25'),
-  shelf: () => microCard('The bookshelves', 'nothing there...')
+  shelf: () => microCard('The bookshelves', 'nothing there...'),
+  headphones: () => microCard('The headphones', 'Volume: 001')
 }
 
 const ease = (x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2

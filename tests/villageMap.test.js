@@ -39,7 +39,7 @@ describe('village scenes', () => {
   })
   it('home interior holds all twelve of David\'s objects (multi-tile allowed)', () => {
     const ids = [...new Set(SCENES.home.zones.map(z => z.id))].sort()
-    expect(ids).toEqual(['bigbook', 'board', 'games', 'go', 'jerseys', 'laptop', 'memory', 'music_corner', 'musicbox', 'shelves', 'tape', 'toy', 'tv', 'worldmap'])
+    expect(ids).toEqual(['bigbook', 'board', 'games', 'go', 'jerseys', 'laptop', 'memory', 'music_corner', 'musicbox', 'poster', 'shelves', 'tape', 'toy', 'tv', 'worldmap'])
   })
   it('multi-tile objects are contiguous groups', () => {
     for (const s of Object.values(SCENES)) {

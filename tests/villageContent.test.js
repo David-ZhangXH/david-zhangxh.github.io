@@ -63,13 +63,23 @@ describe('David\'s specifics are honored', () => {
   })
   it('three cats live at home, with David\'s exact lines', () => {
     const cats = real.home.cats
-    expect(cats.map(c => c.name)).toEqual(['Twizzler', 'Huahua', 'Little guy'])
+    expect(cats.map(c => c.name)).toEqual(['Twizzler', '小花', '小不点'])
     expect(cats.map(c => c.line)).toEqual([
       'Twizzler 2023.9, Tortoiseshell',
-      'Huahua 2017.9.21, American shorthair',
-      'Little guy, 2021.8.31, Maine'
+      '小花 2017.9.21, American shorthair',
+      '小不点, 2021.8.31, Maine'
     ])
     expect(cats.map(c => c.kind)).toEqual(['tortoiseshell', 'grey', 'white'])
+  })
+  it('伯爵 the poodle lives here, quietly (no introduction)', () => {
+    expect(real.home.dog).toEqual({ id: 'bojue', name: '伯爵', line: '', kind: 'poodle' })
+  })
+  it('the big book holds exactly his six lines; the poster speaks the line', () => {
+    expect(real.home.bigbook.lines).toHaveLength(6)
+    expect(real.home.bigbook.lines[0]).toBe('Born in 2002 Beijing')
+    expect(real.home.bigbook.lines[4]).toBe('2022.02.21 姥姥去世了')
+    expect(real.home.bigbook.lines[5]).toBe('2025.12 伯爵去世了')
+    expect(real.home.poster.text).toBe('With great power comes great responsibility.')
   })
   it('rejects a malformed cat', () => {
     const bad = { ...real, home: { ...real.home, cats: [{ id: 'x', name: 'X' }] } }
