@@ -47,7 +47,7 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     <div class="desk-mark"><span class="desk-mark__eyebrow">DAVID / WORLD 01</span><strong>THE DESK</strong></div>
     <div class="desk-weather"><span class="desk-weather__dot"></span>23:47 · RAIN OVER THE CITY</div>`
   root.appendChild(hud)
-  const { hotspots, screen, crank, mugTip, windowRegion } = buildFurniture(world.scene)
+  const { hotspots, screen, crank, mugTip, windowRegion, layers, cat, city, lightning, ledGlow, candleGlow } = buildFurniture(world.scene)
   if (audio.soundOn()) audio.startProfile('desk')
   world.onTick((dt) => { if (audio.soundOn()) crank.rotation.x += dt * 1.6 })
 
@@ -68,6 +68,67 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     // The monitor is a living picture: smooth enough to notice, restrained
     // enough to remain ambient while the rest of the desk is explored.
     if (screenClock > 0.045) { screenClock = 0; screenFx.update(t) }
+  })
+
+  // ---- the scene breathes: depth parallax, glows, weather, the cat ----
+  let hoveredId = null
+  let lastMouseMove = 0
+  let nextFlash = 14 + Math.random() * 10          // first lightning within ~20 s
+  let flashStart = -1, thunderDone = false
+  const lerp = (a, b, k) => a + (b - a) * k
+  const flashEnv = (p) => {                          // two strikes, then decay
+    if (p < 0) return 0
+    if (p < 0.06) return p / 0.06
+    if (p < 0.14) return 1 - (p - 0.06) / 0.08 * 0.7
+    if (p < 0.20) return 0.3 + (p - 0.14) / 0.06 * 0.6
+    if (p < 1.0) return 0.9 * (1 - (p - 0.20) / 0.80) ** 1.6
+    return 0
+  }
+  let tailNext = 4, tailFlick = -1
+  world.onTick((dt, t) => {
+    const k = Math.min(1, dt * 6)
+    // depth parallax: front objects travel further than the far ones
+    for (const m of layers) {
+      const d = m.userData.depth
+      m.position.x = lerp(m.position.x, m.userData.baseX + mouse.x * 0.05 * d, k)
+      m.position.y = lerp(m.position.y, m.userData.baseY - mouse.y * 0.022 * d, k)
+    }
+    // hover halos
+    for (const [id, h] of Object.entries(hotspots)) {
+      const target = id === hoveredId ? 0.42 : 0
+      h.glow.material.opacity = lerp(h.glow.material.opacity, target, Math.min(1, dt * 7))
+    }
+    // city lights twinkle
+    const col = city.points.geometry.attributes.color
+    for (let n = 0; n < city.phases.length; n++) {
+      const tw = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(t * (0.8 + (n % 5) * 0.23) + city.phases[n]))
+      col.array[n * 3] = city.base[n * 3] * tw; col.array[n * 3 + 1] = city.base[n * 3 + 1] * tw; col.array[n * 3 + 2] = city.base[n * 3 + 2] * tw
+    }
+    col.needsUpdate = true
+    // lightning over the city, every 40–90 s
+    if (t > nextFlash && flashStart < 0) { flashStart = t; thunderDone = false; nextFlash = t + 40 + Math.random() * 50 }
+    if (flashStart >= 0) {
+      const p = (t - flashStart) / 1.1
+      const e = flashEnv(p)
+      lightning.win.material.opacity = e * 0.85
+      lightning.room.material.opacity = e * 0.11
+      if (!thunderDone && p > 0.9) { thunderDone = true; if (audio.soundOn()) audio.thunder() }
+      if (p >= 1) { flashStart = -1; lightning.win.material.opacity = 0; lightning.room.material.opacity = 0 }
+    }
+    // LED strip breathing between magenta and violet; candle glow rides the flicker
+    const b = 0.5 + 0.5 * Math.sin(t * 0.45)
+    ledGlow.material.color.setRGB(lerp(0.87, 0.60, b), lerp(0.31, 0.36, b), lerp(1.0, 1.0, b))
+    ledGlow.material.opacity = 0.18 + 0.12 * b
+    candleGlow.material.opacity = 0.18 + (world.lampLight.intensity - 0.45) * 1.1 + 0.05 * Math.sin(t * 7.3)
+    // 小花's tail: a slow sway with an occasional flick
+    let rot = 0.04 * Math.sin(t * 0.9)
+    if (t > tailNext && tailFlick < 0) { tailFlick = t; tailNext = t + 5 + Math.random() * 6 }
+    if (tailFlick >= 0) {
+      const p = (t - tailFlick) / 0.75
+      if (p >= 1) tailFlick = -1
+      else rot += 0.32 * Math.sin(Math.PI * p) * (1 - p * 0.35)
+    }
+    cat.tail.rotation.z = rot
   })
 
   // ---- state + camera rig ----
@@ -96,9 +157,13 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     }
     // parallax only at rest, damped
     const portrait = root.clientWidth / root.clientHeight < 0.8
-    const px = state.get().mode === 'idle' && !tween ? mouse.x * (portrait ? 0.34 : 0.08) : 0
-    const py = state.get().mode === 'idle' && !tween ? mouse.y * (portrait ? 0.10 : 0.05) : 0
-    cam.position.set(cur.pos.x + px, cur.pos.y - py, cur.pos.z)
+    const idle = state.get().mode === 'idle' && !tween
+    const px = idle ? mouse.x * (portrait ? 0.34 : 0.08) : 0
+    const py = idle ? mouse.y * (portrait ? 0.10 : 0.05) : 0
+    // when the pointer rests, the camera breathes — very slowly
+    const still = idle && (t - lastMouseMove) > 1.5 ? Math.min(1, ((t - lastMouseMove) - 1.5) / 2) : 0
+    const dx = still * 0.014 * Math.sin(t * 0.33), dy = still * 0.008 * Math.cos(t * 0.26)
+    cam.position.set(cur.pos.x + px + dx, cur.pos.y - py + dy, cur.pos.z)
     cam.lookAt(cur.look)
   })
 
@@ -150,7 +215,9 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   root.addEventListener('pointermove', (e) => {
     mouse.x = (e.clientX / root.clientWidth) * 2 - 1
     mouse.y = (e.clientY / root.clientHeight) * 2 - 1
+    lastMouseMove = performance.now() / 1000
     const id = state.get().mode === 'idle' ? pick(e.clientX, e.clientY) : null
+    hoveredId = id
     if (id !== hovered) {
       hovered = id
       root.classList.toggle('is-discovering', !!id)
