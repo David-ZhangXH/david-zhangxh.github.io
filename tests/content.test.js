@@ -30,11 +30,13 @@ describe('real content files', () => {
   })
 })
 
-describe('wall.json', () => {
-  it('is valid', async () => {
-    const { validateWall } = await import('../src/core/validate.js')
+describe('board.json', () => {
+  it('is valid, and the validator rejects a half-configured Supabase board', async () => {
+    const { validateBoardConfig } = await import('../src/core/validate.js')
     const { readFileSync } = await import('node:fs')
-    const wall = JSON.parse(readFileSync(new URL('../content/wall.json', import.meta.url), 'utf8'))
-    expect(validateWall(wall)).toEqual([])
+    const cfg = JSON.parse(readFileSync(new URL('../content/board.json', import.meta.url), 'utf8'))
+    expect(validateBoardConfig(cfg)).toEqual([])
+    expect(validateBoardConfig({ provider: 'supabase', url: '', anonKey: '' })).not.toEqual([])
+    expect(validateBoardConfig({ provider: 'supabase', url: 'https://x.supabase.co', anonKey: 'k' })).toEqual([])
   })
 })

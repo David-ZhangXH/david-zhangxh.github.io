@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   formatBirthday, aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard,
-  plantCard, wallCard
+  plantCard, keyboardCard, boardCard
 } from '../src/desk/cards.js'
 
 const profile = {
@@ -34,7 +34,7 @@ describe('aboutCard', () => {
 
 describe('birthday appears in the photo frame only', () => {
   it('no other card leaks it', () => {
-    for (const html of [cvCard(), contactCard(profile), linksCard(profile), playlistCard(playlist), teaserCard('galaxy'), teaserCard('village'), plantCard(), wallCard([], profile)]) {
+    for (const html of [cvCard(), contactCard(profile), linksCard(profile), playlistCard(playlist), teaserCard('galaxy'), teaserCard('village'), plantCard(), keyboardCard(), boardCard([])]) {
       expect(html).not.toMatch(/july\s*16/i)
       expect(html).not.toContain('07-16')
     }
@@ -71,13 +71,23 @@ describe('cards content', () => {
     expect(html).toMatch(/mint/i)
     expect(html).toMatch(/childhood/i)
   })
-  it('wallCard shows pinned messages, a place to type, and honest sending', () => {
-    const html = wallCard([{ text: 'hello desk', from: 'a ghost' }], profile)
-    expect(html).toContain('hello desk')
-    expect(html).toContain('a ghost')
+  it('keyboardCard is a place to type that pins to the board — nothing goes to the screen', () => {
+    const html = keyboardCard()
     expect(html).toContain('<textarea')
-    expect(html).toContain('data-type-it')
-    expect(html).toContain('data-send-wall')
+    expect(html).toContain('data-pin-board')
+    expect(html).not.toContain('data-type-it')
+    expect(html).not.toContain('mailto')
+  })
+  it('boardCard lists anonymous messages newest-first with their time, and says when it is local-only', () => {
+    const html = boardCard([{ text: 'hello world', when: '2026-09-03 21:47' }, { text: '<b>x</b>', when: '2026-09-02 08:00' }], { shared: false })
+    expect(html).toContain('匿名：')
+    expect(html).toContain('hello world')
+    expect(html).toContain('—— 2026-09-03 21:47')
+    expect(html.indexOf('hello world')).toBeLessThan(html.indexOf('&lt;b&gt;x&lt;/b&gt;'))
+    expect(html).not.toContain('<b>x</b>')
+    expect(html).toContain('browser only')
+    expect(boardCard([], { shared: true })).toContain('Nothing pinned yet')
+    expect(boardCard([{ text: 'a', when: 'b' }], { shared: true })).not.toContain('browser only')
   })
   it('teaserCards name their worlds', () => {
     expect(teaserCard('galaxy')).toMatch(/galaxy/i)

@@ -5,9 +5,10 @@ import { buildFurniture } from './furniture.js'
 import { makeScreenTexture, makeRain, makeSteam, lampFlicker } from './effects.js'
 import { createDeskState, HOTSPOTS } from './state.js'
 import { HOME, INTRO_START, POSES } from './poses.js'
-import { aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard, plantCard, wallCard, microCard } from './cards.js'
+import { aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard, plantCard, keyboardCard, boardCard, microCard } from './cards.js'
+import { createBoard, formatWhen } from '../core/board.js'
+import boardConfig from '../../content/board.json'
 import * as audio from '../core/audio.js'
-import wall from '../../content/wall.json'
 import '../core/overlay.css'
 import './desk.css'
 import profile from '../../content/profile.json'
@@ -21,7 +22,8 @@ const CARD_FOR = {
   notes: () => linksCard(profile),
   musicbox: () => playlistCard(playlist, audio.soundOn()),
   plant: () => plantCard(),
-  keyboard: () => wallCard(wall, profile),
+  keyboard: () => keyboardCard(),
+  board: () => boardCard([], { loading: true }),
   mouse: () => microCard('The mouse', 'DPI 1600 * 0.23'),
   candle: () => microCard('The candle', 'Le Labo 25'),
   shelf: () => microCard('The bookshelves', 'nothing there...'),
@@ -52,6 +54,7 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   world.onTick((dt) => { if (audio.soundOn()) crank.rotation.x += dt * 1.6 })
 
   // ---- effects ----
+  const board = createBoard(boardConfig)
   const screenFx = makeScreenTexture()
   screen.material = new THREE.MeshBasicMaterial({ map: screenFx.texture, toneMapped: false })
   const rain = makeRain(windowRegion)
@@ -232,21 +235,31 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     shell.querySelector('.card').appendChild(close)
     close.addEventListener('click', closeCard)
     backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeCard() })
-    backdrop.querySelectorAll('[data-type-it]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const text = backdrop.querySelector('.wall-input')?.value.trim()
-        if (!text) return
+    backdrop.querySelectorAll('[data-pin-board]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const input = backdrop.querySelector('.wall-input')
+        const text = input?.value.trim()
+        if (!text) { input?.focus(); return }
+        btn.disabled = true
+        btn.textContent = 'pinning…'
+        await board.add(text)
         closeCard()
-        screenFx.typeText(text, worldTime)
+        toast('pinned to the board ✓')
       })
     })
-    backdrop.querySelectorAll('[data-send-wall]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const text = backdrop.querySelector('.wall-input')?.value.trim()
-        if (!text) return
-        location.href = `mailto:${btn.dataset.email}?subject=${encodeURIComponent('Pin to the wall')}&body=${encodeURIComponent(text)}`
+    if (id === 'board') {
+      const own = backdrop
+      board.list().then(({ messages, shared, offline }) => {
+        if (backdrop !== own) return
+        const cardEl = own.querySelector('.card')
+        if (!cardEl) return
+        const html = boardCard(messages.map(m => ({ ...m, when: formatWhen(m.at) })), { shared, offline })
+        const fresh = document.createElement('div'); fresh.innerHTML = html
+        const body = fresh.firstElementChild
+        cardEl.querySelectorAll(':scope > *:not(.card-close)').forEach(n => n.remove())
+        while (body.firstChild) cardEl.insertBefore(body.firstChild, cardEl.querySelector('.card-close'))
       })
-    })
+    }
     backdrop.querySelectorAll('[data-sound]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const on = audio.toggle('desk')
@@ -263,6 +276,15 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     })
     document.body.appendChild(backdrop)
     close.focus()
+  }
+  let toastTimer = 0
+  function toast(text) {
+    let el = root.querySelector('.desk-toast')
+    if (!el) { el = document.createElement('div'); el.className = 'desk-toast'; root.appendChild(el) }
+    el.textContent = text
+    el.classList.add('on')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => el.classList.remove('on'), 2200)
   }
   function closeCard() {
     backdrop?.remove(); backdrop = null

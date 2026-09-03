@@ -37,13 +37,13 @@ try {
   await page.screenshot({ path: 'shots/desk-desktop.png' })
 
   const proxies = await page.$$('.hotspot-proxies button')
-  check(proxies.length === 13, `13 hotspot proxies present (got ${proxies.length})`)
+  check(proxies.length === 14, `14 hotspot proxies present (got ${proxies.length})`)
 
   // monitor + handheld are portals now — covered by e2e-galaxy / e2e-village
   const expectText = {
     tray: 'Curriculum',
     frame: 'July 16', notes: 'Insomania Radio', musicbox: '静止',
-    plant: 'childhood', keyboard: 'wall',
+    plant: 'childhood', keyboard: 'board', board: 'message board',
     mouse: 'DPI 1600 * 0.23', candle: 'Le Labo 25', shelf: 'nothing there', headphones: 'Volume: 001'
   }
   // proxies are keyboard controls: activate via focus + Enter (the real a11y path)
@@ -64,16 +64,26 @@ try {
     await page.waitForTimeout(1200)
   }
 
-  // keyboard wall: typing sends words to the screen without errors
+  // keyboard → board: words are pinned, never typed onto the screen
   await pressProxy('keyboard')
   await page.waitForSelector('.wall-input', { timeout: 9000 })
   await page.fill('.wall-input', 'hello from the e2e ghost')
-  await page.click('[data-type-it]')
+  await page.click('[data-pin-board]')
   await page.waitForSelector('.card-backdrop', { state: 'detached', timeout: 4000 })
-  await page.waitForTimeout(1500)
-  const keptTyped = await page.evaluate(() => localStorage.getItem('davidworld:typed'))
-  check(keptTyped === 'hello from the e2e ghost', 'typed words reach the screen and are kept')
-  await page.waitForTimeout(800)
+  const toastShown = await page.waitForSelector('.desk-toast.on', { timeout: 3000 }).then(() => true).catch(() => false)
+  check(toastShown, 'pinning shows a small confirmation')
+  const nothingTyped = await page.evaluate(() => localStorage.getItem('davidworld:typed') === null)
+  check(nothingTyped, 'nothing is written onto the screen any more')
+  await page.waitForTimeout(1400)
+  await pressProxy('board')
+  await page.waitForSelector('.board-msg', { timeout: 9000 })
+  const boardText = await page.$eval('.card.boardcard', el => el.innerText)
+  const flat = boardText.replace(/\s+/g, ' ')
+  check(/匿名：\s?hello from the e2e ghost\s?—— \d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(flat), `the board shows 匿名：message —— time (${flat.slice(0, 90)})`)
+  await page.screenshot({ path: 'shots/desk-board.png' })
+  await page.keyboard.press('Escape')
+  await page.waitForSelector('.card-backdrop', { state: 'detached', timeout: 6000 })
+  await page.waitForTimeout(1200)
 
   // mug: no card, just the heart
   await pressProxy('mug')

@@ -74,18 +74,25 @@ export function plantCard() {
   <p class="hint">— to my childhood, and the pots of mint I raised at home. ✦</p>`, 'plant')
 }
 
-export function wallCard(messages, profile) {
-  const pinned = messages.map(m => `
-    <div class="wall-msg">“${esc(m.text)}”${m.from ? ` <span class="wall-from">— ${esc(m.from)}</span>` : ''}</div>`).join('')
+export function keyboardCard() {
   return card('The keyboard', `
-  <p>Type something. Watch it appear on the screen, letter by letter — this desk
-  keeps a wall of words visitors have left.</p>
-  ${pinned ? `<div class="wall">${pinned}</div>` : ''}
-  <textarea class="wall-input" rows="3" maxlength="280" placeholder="say anything — it's your keyboard now" aria-label="Your message"></textarea>
+  <textarea class="wall-input" rows="3" maxlength="280" placeholder="say anything — it goes on the board" aria-label="Your message"></textarea>
   <p class="actions">
-    <button class="btn" data-type-it>type it on the screen</button>
-    <button class="btn ghost" data-send-wall data-email="${esc(profile.email)}">pin it to the wall</button>
-  </p>`, 'wall')
+    <button class="btn" data-pin-board>pin it to the board</button>
+  </p>
+  <p class="hint">Anonymous. Read it on the board beside the monitor.</p>`, 'wall')
+}
+
+// the message board: every pinned word, newest first
+export function boardCard(messages, meta = {}) {
+  const rows = (messages || []).map(m => `
+    <li class="board-msg"><span class="board-who">匿名：</span><span class="board-text">${esc(m.text)}</span><span class="board-when">—— ${esc(m.when || '')}</span></li>`).join('')
+  const note = meta.loading ? '<p class="hint">opening the board…</p>'
+    : !rows ? '<p class="hint">Nothing pinned yet — the keyboard is right there.</p>'
+    : meta.shared ? '' : '<p class="hint board-scope">This board is kept in your browser only.</p>'
+  return card('The message board', `
+  ${rows ? `<ol class="board">${rows}</ol>` : ''}
+  ${note}`, 'boardcard')
 }
 
 // tiny one-line cards for the desk's small props

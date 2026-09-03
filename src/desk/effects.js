@@ -25,21 +25,6 @@ export function makeScreenTexture() {
   tex.minFilter = THREE.LinearMipmapLinearFilter
   tex.magFilter = THREE.LinearFilter
 
-  // visitor words, typed across the screen (kept for their next visit)
-  let typed = null // { text, start }
-  let kept = ''
-  try { kept = localStorage.getItem('davidworld:typed') || '' } catch {}
-
-  const wrap = (text, max = 34) => {
-    const words = text.split(/\s+/)
-    const lines = ['']
-    for (const w of words) {
-      if ((lines[lines.length - 1] + ' ' + w).trim().length > max) lines.push(w)
-      else lines[lines.length - 1] = (lines[lines.length - 1] + ' ' + w).trim()
-    }
-    return lines.slice(0, 5)
-  }
-
   function draw(t) {
     g.fillStyle = '#020713'
     g.fillRect(0, 0, c.width, c.height)
@@ -113,20 +98,6 @@ export function makeScreenTexture() {
     g.fillStyle = lowerShade
     g.fillRect(0, 0, c.width, c.height)
 
-    if (typed) {
-      const shown = typed.text.slice(0, Math.floor((t - typed.start) / 0.055))
-      g.font = '24px ui-monospace, monospace'
-      g.fillStyle = 'rgba(223,248,255,0.95)'
-      wrap(shown).forEach((line, i) => g.fillText(line, 60, 220 + i * 34))
-      if (shown.length >= typed.text.length && t - typed.start > typed.text.length * 0.055 + 6) {
-        typed = null // rest again after a while; the words stay kept
-      }
-    } else if (kept) {
-      g.font = '17px ui-monospace, monospace'
-      g.fillStyle = 'rgba(159,196,255,0.5)'
-      g.fillText(wrap(kept, 48)[0] || '', 54, 55)
-    }
-
     g.save()
     g.textAlign = 'center'
     g.font = '600 24px ui-monospace, monospace'
@@ -143,12 +114,7 @@ export function makeScreenTexture() {
   return {
     texture: tex,
     update: draw,
-    typing: () => !!typed,
-    typeText(text, t) {
-      typed = { text: text.slice(0, 160), start: t }
-      kept = typed.text
-      try { localStorage.setItem('davidworld:typed', kept) } catch {}
-    }
+    typing: () => false
   }
 }
 

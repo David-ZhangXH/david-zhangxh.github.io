@@ -189,6 +189,11 @@ export function buildFurniture(scene) {
       rect: [0.32, 0.42, 0.76, -0.07],
       visual: art,
       label: 'The headphones'
+    },
+    board: {
+      rect: [0.24, 0.55, 0.574, 0.444],
+      visual: art,
+      label: 'The message board'
     }
   }
 

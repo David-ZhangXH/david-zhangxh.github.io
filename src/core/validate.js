@@ -75,14 +75,15 @@ export function validateVillage(v) {
   return validateVillage2(v)
 }
 
-export function validateWall(list) {
-  if (!Array.isArray(list)) return ['wall: must be an array']
+export function validateBoardConfig(cfg) {
   const errs = []
-  list.forEach((m, i) => {
-    if (!filled(m?.text)) errs.push(`wall[${i}].text: required`)
-    for (const k of ['from', 'date'])
-      if (m?.[k] !== undefined && !isStr(m[k])) errs.push(`wall[${i}].${k}: must be a string`)
-  })
+  if (!cfg || typeof cfg !== 'object') return ['board: must be an object']
+  if (!['local', 'supabase'].includes(cfg.provider)) errs.push('board.provider: "local" or "supabase"')
+  if (cfg.provider === 'supabase') {
+    if (!filled(cfg.url) || !/^https:\/\//.test(cfg.url)) errs.push('board.url: https URL of the Supabase project')
+    if (!filled(cfg.anonKey)) errs.push('board.anonKey: the project anon key')
+  }
+  if (cfg.table !== undefined && !filled(cfg.table)) errs.push('board.table: non-empty string')
   return errs
 }
 
