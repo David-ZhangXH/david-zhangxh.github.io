@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { arcadeWin, docsPanel, worldmapView, boardGate, boardPanel } from '../src/village/panels.js'
+import { arcadeWin, docsPanel, worldmapView, boardGate, boardPanel, prizePanel } from '../src/village/panels.js'
 import { readFileSync } from 'node:fs'
 
 const real = JSON.parse(readFileSync(new URL('../content/village.json', import.meta.url), 'utf8'))
@@ -31,6 +31,19 @@ describe('world map + picture board', () => {
     expect(gate).not.toContain('0716')
     expect(gate.match(/<input /g)).toHaveLength(4)
     expect(boardPanel(real.home.board)).toContain('Photos coming.')
+  })
+})
+
+describe('the quiz prize flip-book', () => {
+  it('shows 我就sb! first, 我是花花我怕谁啊 second, one page at a time', () => {
+    const html = prizePanel(real.library.prize)
+    expect(real.library.prize.photos).toEqual(['prize/prize-01.jpg', 'prize/prize-02.jpg'])
+    expect(html).toContain('data-pages="2"')
+    expect(html).toContain('class="v-page on" data-i="0"')
+    expect(html).toContain('class="v-page" data-i="1"')
+    expect(html).toContain('data-page-next')
+    expect(html).toContain('1 / 2')
+    expect(prizePanel({})).toContain('claim ticket')
   })
 })
 

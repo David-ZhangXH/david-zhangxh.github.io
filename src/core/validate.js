@@ -157,6 +157,7 @@ export function validateVillage2(v) {
     if (d?.paragraphs !== undefined && !(Array.isArray(d.paragraphs) && d.paragraphs.every(filled))) errs.push(`village.library.documents[${i}].paragraphs: non-empty strings`)
   })
   if (v.library?.toBeContinued !== undefined && !isStr(v.library.toBeContinued)) errs.push('village.library.toBeContinued: string')
+  if (v.library?.prize !== undefined && !(v.library.prize && Array.isArray(v.library.prize.photos) && v.library.prize.photos.every(filled))) errs.push('village.library.prize.photos: array of paths')
   if (v.arcade !== undefined) {
     const L = v.arcade?.letter
     if (!L || !filled(L.greeting) || !Array.isArray(L.paragraphs) || L.paragraphs.length === 0 || !L.paragraphs.every(filled) || !filled(L.signoff) || !filled(L.signature))

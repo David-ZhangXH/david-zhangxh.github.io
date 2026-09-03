@@ -409,6 +409,33 @@ export function mountVillage({ onExit, onClassic } = {}) {
         render({})
       })
     }
+    // a flip-book: prev/next turn the page with a little flip
+    function wireBook(panel) {
+      const book = panel.querySelector('.v-book')
+      if (!book) return
+      const pages = [...book.querySelectorAll('.v-page')]
+      const prev = panel.querySelector('[data-page-prev]'), next = panel.querySelector('[data-page-next]')
+      const label = panel.querySelector('[data-page-label]')
+      let i = 0, busy = false
+      const go = (dir) => {
+        const j = i + dir
+        if (busy || j < 0 || j >= pages.length) return
+        busy = true
+        pages[i].classList.add(dir > 0 ? 'flip-out' : 'flip-back')
+        setTimeout(() => {
+          pages[i].className = 'v-page'
+          i = j
+          pages[i].classList.add('on', dir > 0 ? 'flip-in' : 'flip-in-back')
+          label.textContent = `${i + 1} / ${pages.length}`
+          prev.disabled = i === 0; next.disabled = i === pages.length - 1
+          setTimeout(() => { pages[i].classList.remove('flip-in', 'flip-in-back'); busy = false }, 260)
+        }, 240)
+      }
+      prev.addEventListener('click', () => go(-1))
+      next.addEventListener('click', () => go(1))
+      book.addEventListener('click', () => go(1))
+      panel.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1) })
+    }
     function wireZoom(scope) {
       scope.querySelectorAll('[data-zoom]').forEach(img => img.addEventListener('click', () => {
         const fig = img.closest('.v-photo')
@@ -470,7 +497,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
       const qz = village.library.quiz
       if (index >= qz.length) {
         closeOverlay()
-        if (correct === qz.length) { questToast('quiz'); openOverlay(ui.prizePanel()) }
+        if (correct === qz.length) { questToast('quiz'); openOverlay(ui.prizePanel(village.library.prize), wireBook) }
         else toastNow(`the librarian smiles — ${correct}/${qz.length}. try again sometime`)
         return
       }

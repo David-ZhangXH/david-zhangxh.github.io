@@ -623,7 +623,13 @@
         "answer": 1
       }
     ],
-    "toBeContinued": "....To be continued."
+    "toBeContinued": "....To be continued.",
+    "prize": {
+      "photos": [
+        "prize/prize-01.jpg",
+        "prize/prize-02.jpg"
+      ]
+    }
   },
   "npcs": {
     "villager": [

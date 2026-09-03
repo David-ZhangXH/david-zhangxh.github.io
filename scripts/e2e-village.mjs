@@ -301,7 +301,18 @@ try {
     const ptxt = prize ? await prize.innerText() : ''
     const questDone = await page.evaluate(() => JSON.parse(localStorage.getItem('davidworld:quests') || '[]').includes('quiz'))
     check(/3 \/ 3|really know him/i.test(ptxt) && questDone, 'library: perfect quiz wins the prize + quest')
+    await page.waitForTimeout(700)
+    const p1 = await page.$eval('.v-page.on img', i => ({ src: i.src, w: i.naturalWidth }))
+    check(/prize-01\.jpg$/.test(p1.src) && p1.w > 0, 'prize: page one is 我就sb!')
     await page.screenshot({ path: 'shots/village-prize.png' })
+    await page.click('[data-page-next]')
+    await page.waitForTimeout(700)
+    const p2 = await page.$eval('.v-page.on img', i => i.src)
+    const lbl = await page.$eval('[data-page-label]', el => el.textContent)
+    check(/prize-02\.jpg$/.test(p2) && lbl === '2 / 2', 'prize: next flips to 我是花花我怕谁啊！')
+    const onlyOne = await page.$$eval('.v-page.on', els => els.length)
+    check(onlyOne === 1, 'prize: pages never sit side by side')
+    await page.screenshot({ path: 'shots/village-prize-2.png' })
     await closePanel()
   } else check(false, 'library: quiz opens')
 

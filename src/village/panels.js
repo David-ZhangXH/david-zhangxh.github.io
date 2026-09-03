@@ -235,12 +235,29 @@ export function docsPanel(documents, toBeContinued = '') {
 </div>`
 }
 
-export function prizePanel() {
-  return `
+// the quiz prize: a little flip-book, one picture per page
+export function prizePanel(prize = {}) {
+  const photos = prize.photos || []
+  if (!photos.length) {
+    return `
 <div class="v-panel">
   <h3>★ 3 / 3 — YOU REALLY KNOW HIM ★</h3>
   <p>The librarian slides something across the desk: your prize picture.</p>
-  <p class="v-dim">(David is still choosing the picture — it will appear here. Consider this your claim ticket.)</p>
+  <p class="v-dim">(Consider this your claim ticket.)</p>
+</div>`
+  }
+  return `
+<div class="v-panel v-prize">
+  <h3>★ 3 / 3 — YOU REALLY KNOW HIM ★</h3>
+  <p>The librarian slides a little album across the desk.</p>
+  <div class="v-book" data-page="0" data-pages="${photos.length}">
+    ${photos.map((src, i) => `<figure class="v-page${i === 0 ? ' on' : ''}" data-i="${i}"><img src="${esc(src)}" alt="prize picture ${i + 1}" loading="eager"></figure>`).join('')}
+  </div>
+  <p class="v-actions v-book-nav">
+    <button class="v-btn ghost" data-page-prev disabled>‹ prev</button>
+    <span class="v-dim" data-page-label>1 / ${photos.length}</span>
+    <button class="v-btn" data-page-next${photos.length < 2 ? ' disabled' : ''}>next ›</button>
+  </p>
 </div>`
 }
 
