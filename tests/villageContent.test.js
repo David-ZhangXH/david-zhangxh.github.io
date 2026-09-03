@@ -53,18 +53,22 @@ describe('David\'s specifics are honored', () => {
     expect(stops.find(s => s.place === 'Iceland').photos).toHaveLength(41)
     expect(stops.find(s => s.place === 'Paris').photos).toHaveLength(26)
     expect(stops[1].places.find(p => p.place === 'Boston').photos).toHaveLength(15)
-    expect(real.home.pets.photos).toHaveLength(46)
+    const us = stops[1].places
+    expect(us.map(p => p.place)).toEqual(['Seattle', 'San Francisco', 'LA', 'San Diego & Irvine', 'Las Vegas', 'Death Valley', 'Zion', 'Grand Canyon', 'Antelope Canyon', 'Salt Lake City', 'Yellowstone & Grand Teton', 'Chicago', 'UIUC & Ann Arbor', 'Minneapolis', 'Boston', 'Providence', 'Connecticut', 'Maine', 'New York', 'Philadelphia', 'Baltimore', 'Washington', 'Pittsburgh', 'Rochester', 'Buffalo', 'Orlando', 'Honolulu'])
+    expect(us.every(p => p.photos.length > 0)).toBe(true)
+    expect(us.find(p => p.place === 'Honolulu').photos).toHaveLength(25)
+    expect(real.home.cats.map(c => c.photos.length)).toEqual([2, 35, 7])
     const cn = stops[0].places.map(p => p.place)
     expect(cn).toEqual(['北京', '合肥', '上海', '重庆', '成都', '厦门', '济南', '三亚', '广州', '武夷山', '新疆', '内蒙', '武汉', '西安', '苏州', '杭州', '长沙', '延边', '香港'])
     expect(stops[0].places[0].when).toBe('growing up')
-    const us = stops[1].places.map(p => p.place)
-    expect(us.slice(0, 20)).toEqual(['Seattle', 'San Francisco', 'LA', 'San Diego', 'Las Vegas', 'Zion', 'Grand Canyon', 'Antelope Canyon', 'Yellowstone', 'Chicago', 'Boston', 'Minneapolis', 'Pittsburgh', 'Rochester', 'Maine', 'New York', 'Philadelphia', 'Baltimore', 'Washington', 'Orlando'])
     expect(stops[1].places.find(p => p.place === 'Boston').when).toBe('School life')
     expect(stops.at(-1).later).toBe(true)
   })
   it('the picture board is locked behind the birthday hint, photos to come', () => {
     expect(real.home.board.hint).toBe('birthday-month-day')
-    expect(real.home.board.sections.map(s => s.title)).toEqual(['Middle School', 'High School', 'University', 'Life', 'Future....'])
+    expect(real.home.board.sections.map(s => s.title)).toEqual(['Middle School', 'High School', 'University', 'Life', 'Pet', 'Family & Friend', 'Future....'])
+    expect(real.home.board.sections[4].children.map(c => c.title)).toEqual(['Twizzler', '小花', '小不点', '伯爵'])
+    expect(real.home.board.sections[5].photos).toHaveLength(33)
     expect(real.home.board.sections[0].photos).toHaveLength(12)
     expect(real.home.board.sections[1].photos).toHaveLength(24)
     expect(real.home.board.sections[2].photos).toHaveLength(21)
@@ -91,7 +95,9 @@ describe('David\'s specifics are honored', () => {
     expect(cats.map(c => c.kind)).toEqual(['tortoiseshell', 'grey', 'white'])
   })
   it('伯爵 the poodle lives here, quietly (no introduction)', () => {
-    expect(real.home.dog).toEqual({ id: 'bojue', name: '伯爵', line: '', kind: 'poodle' })
+    const { photos, ...dog } = real.home.dog
+    expect(dog).toEqual({ id: 'bojue', name: '伯爵', line: '', kind: 'poodle' })
+    expect(photos).toHaveLength(2)
   })
   it('the big book holds exactly his six lines; the poster speaks the line', () => {
     expect(real.home.bigbook.lines).toHaveLength(6)

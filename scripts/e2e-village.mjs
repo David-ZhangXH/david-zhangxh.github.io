@@ -188,6 +188,18 @@ try {
     await page.click('.v-pb [data-pb-back]')
     await page.click('.v-pb [data-pb-section="3"]')
     check(/Photos coming/.test(await page.$eval('.v-pb', el => el.innerText)), 'picture board: Life waits for its photos')
+    await page.click('.v-pb [data-pb-back]')
+    await page.click('.v-pb [data-pb-section="4"]')
+    check(/Twizzler/.test(await page.$eval('.v-pb', el => el.innerText)) && /伯爵/.test(await page.$eval('.v-pb', el => el.innerText)), 'picture board: Pet opens into the four pets')
+    await page.click('.v-pb [data-pb-child="1"]')
+    await page.waitForFunction(() => [...document.querySelectorAll('.v-pb .v-photo img')].every(i => i.complete), null, { timeout: 15000 }).catch(() => {})
+    const hhPhotos = await page.$$eval('.v-pb .v-photo img', els => els.map(i => !i.complete || i.naturalWidth > 0))  // lazy ones below the fold may not have loaded yet
+    check(hhPhotos.length === 35 && hhPhotos.every(Boolean), `picture board: all 35 小花 photos present, none broken (${hhPhotos.filter(Boolean).length}/35)`)
+    await page.click('.v-pb [data-pb-back]')
+    await page.click('.v-pb [data-pb-section="5"]')
+    await page.waitForTimeout(1500)
+    const famPhotos = await page.$$eval('.v-pb .v-photo img', els => els.map(i => i.naturalWidth > 0))
+    check(famPhotos.length === 33 && famPhotos.every(Boolean), `picture board: all 33 Family & Friend photos render (${famPhotos.filter(Boolean).length}/33)`)
     await closePanel()
   } else check(false, 'picture board gate opens')
 

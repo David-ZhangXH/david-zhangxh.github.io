@@ -182,7 +182,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
       if (overlayOpen) return
       const t = renderer.screenToTile(e.clientX, e.clientY)
       const cat = catAt(t.x, t.y)
-      if (cat) { openOverlay(ui.petPanel(cat, village.home.pets), wireZoom); return }
+      if (cat) { openOverlay(ui.petPanel(cat), wireZoom); return }
       const zone = scene.zoneAt(t.x, t.y)
       let goal = null
       if (zone) {
@@ -451,7 +451,11 @@ export function mountVillage({ onExit, onClassic } = {}) {
       const render = (view) => {
         host.innerHTML = ui.boardView(b, view)
         host.querySelectorAll('[data-pb-back]').forEach(x => x.addEventListener('click', () => render({})))
-        host.querySelectorAll('[data-pb-section]').forEach(x => x.addEventListener('click', () => render({ section: Number(x.dataset.pbSection) })))
+        host.querySelectorAll('[data-pb-section]').forEach(x => x.addEventListener('click', () => {
+          const view = { section: Number(x.dataset.pbSection) }
+          if (x.dataset.pbChild != null) view.child = Number(x.dataset.pbChild)
+          render(view)
+        }))
         wireZoom(host)
       }
       render({})

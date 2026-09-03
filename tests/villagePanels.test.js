@@ -26,10 +26,16 @@ describe('world map + picture board', () => {
     expect(worldmapView(wm, { stop: 2 }).match(/<img /g)).toHaveLength(7)    // Singapore
     expect(worldmapView(wm, { group: 7 })).toContain('Nara')                     // Japan opens into three cities
     expect(worldmapView(wm, { group: 7, place: 0 }).match(/<img /g)).toHaveLength(9)
-    const pet = petPanel(real.home.cats[1], real.home.pets)
+    const pet = petPanel(real.home.cats[1])
     expect(pet).toContain('小花')
-    expect(pet.match(/<img /g)).toHaveLength(46)
-    expect(petPanel(real.home.dog, real.home.pets)).not.toContain('<p>')       // 伯爵: name + album, no line
+    expect(pet.match(/<img /g)).toHaveLength(35)                                // her own photos only
+    expect(petPanel(real.home.dog)).not.toContain('<p>')                        // 伯爵: name + photos, no line
+    expect(petPanel(real.home.dog).match(/<img /g)).toHaveLength(2)
+    const petSec = boardView(real.home.board, { section: 4 })
+    expect(petSec).toContain('小不点')
+    expect(petSec).not.toContain('<img')
+    expect(boardView(real.home.board, { section: 4, child: 1 }).match(/<img /g)).toHaveLength(35)
+    expect(boardView(real.home.board, { section: 5 }).match(/<img /g)).toHaveLength(33)
     const withPhotos = worldmapView({ stops: [{ place: 'Paris', photos: ['a.jpg', 'b.jpg'] }] }, { stop: 0 })
     expect(withPhotos.match(/<img /g)).toHaveLength(2)
   })

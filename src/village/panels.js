@@ -146,13 +146,13 @@ export function worldmapPanel(obj, view = {}) {
 </div>`
 }
 
-// a pet, clicked: its name, its line, and the family's shared album
-export function petPanel(pet, album) {
+// a pet, clicked: its name, its line, its own photos
+export function petPanel(pet) {
   return `
 <div class="v-panel v-station v-pet">
   <h3>${esc(pet.name)}</h3>
   ${pet.line ? `<p>${esc(pet.line)}</p>` : ''}
-  ${album && album.photos && album.photos.length ? `<h4>${esc(album.title || 'The pets')}</h4>${photoGrid(album.photos, album.title || 'pets')}` : ''}
+  ${pet.photos && pet.photos.length ? photoGrid(pet.photos, pet.name) : ''}
 </div>`
 }
 
@@ -173,11 +173,19 @@ export function boardGate(hint) {
 // the picture board, unlocked: sections → photos (Future.... stays shut)
 export function boardView(obj, view = {}) {
   const secs = obj.sections || []
+  const chips = (list, attr) => `<div class="v-chips">${list.map((x, i) => `<button class="v-chip v-place${x.later ? ' later' : ' group'}" ${attr}="${i}"${x.later ? ' disabled' : ''}>${esc(x.title)}</button>`).join('')}</div>`
   if (view.section != null) {
     const sec = secs[view.section]
+    if (sec.children) {
+      if (view.child != null) {
+        const ch = sec.children[view.child]
+        return `<p class="v-crumbs"><button class="v-link" data-pb-back>Board</button> › <button class="v-link" data-pb-section="${view.section}">${esc(sec.title)}</button> › <b>${esc(ch.title)}</b></p>${photoGrid(ch.photos, ch.title)}`
+      }
+      return `<p class="v-crumbs"><button class="v-link" data-pb-back>Board</button> › <b>${esc(sec.title)}</b></p>${chips(sec.children, `data-pb-section="${view.section}" data-pb-child`)}`
+    }
     return `<p class="v-crumbs"><button class="v-link" data-pb-back>Board</button> › <b>${esc(sec.title)}</b></p>${photoGrid(sec.photos, sec.title)}`
   }
-  return `<div class="v-chips">${secs.map((sec, i) => `<button class="v-chip v-place${sec.later ? ' later' : ' group'}" data-pb-section="${i}"${sec.later ? ' disabled' : ''}>${esc(sec.title)}</button>`).join('')}</div>`
+  return chips(secs, 'data-pb-section')
 }
 export function boardPanel(obj, view = {}) {
   return `
