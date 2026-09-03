@@ -172,7 +172,11 @@
             "board/high/17.jpg",
             "board/high/18.jpg",
             "board/high/19.jpg",
-            "board/high/20.jpg"
+            "board/high/20.jpg",
+            "board/high/21.jpg",
+            "board/high/22.jpg",
+            "board/high/23.jpg",
+            "board/high/24.jpg"
           ]
         },
         {
@@ -348,7 +352,19 @@
           "place": "Bali Island"
         },
         {
-          "place": "New Zealand"
+          "place": "New Zealand",
+          "photos": [
+            "map/new-zealand/01.jpg",
+            "map/new-zealand/02.jpg",
+            "map/new-zealand/03.jpg",
+            "map/new-zealand/04.jpg",
+            "map/new-zealand/05.jpg",
+            "map/new-zealand/06.jpg",
+            "map/new-zealand/07.jpg",
+            "map/new-zealand/08.jpg",
+            "map/new-zealand/09.jpg",
+            "map/new-zealand/10.jpg"
+          ]
         },
         {
           "place": "Reykjavik"

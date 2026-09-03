@@ -22,6 +22,7 @@ describe('world map + picture board', () => {
     const bj = worldmapView(wm, { group: 0, place: 0 })
     expect(bj).toContain('growing up')
     expect(bj).toContain('Photos coming.')
+    expect(worldmapView(wm, { stop: 4 }).match(/<img /g)).toHaveLength(10)   // New Zealand
     const withPhotos = worldmapView({ stops: [{ place: 'Paris', photos: ['a.jpg', 'b.jpg'] }] }, { stop: 0 })
     expect(withPhotos.match(/<img /g)).toHaveLength(2)
   })
@@ -36,7 +37,7 @@ describe('world map + picture board', () => {
     expect(root).not.toContain('<img')
     const mid = boardView(real.home.board, { section: 0 })
     expect(mid.match(/<img /g)).toHaveLength(12)
-    expect(boardView(real.home.board, { section: 1 }).match(/<img /g)).toHaveLength(20)
+    expect(boardView(real.home.board, { section: 1 }).match(/<img /g)).toHaveLength(24)
     expect(boardView(real.home.board, { section: 2 })).toContain('Photos coming.')
   })
 })
