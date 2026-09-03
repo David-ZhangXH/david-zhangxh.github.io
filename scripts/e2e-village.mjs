@@ -223,6 +223,10 @@ try {
   const bu = await openZoneByKeys(11, 3, 'ArrowUp')
   const buText = bu ? await bu.innerText() : ''
   check(/Minor in Chemistry, Biology, and Environmental Science/.test(buText) && /Mathematics & Statistics — B.A./.test(buText) && /Biostatistics — M.S. 2024 — 2026/.test(buText), 'school: BU tells minors + both degrees')
+  await page.waitForTimeout(1500)
+  const buPhotos = await page.$$eval('.v-photo img', els => els.map(i => i.naturalWidth > 0))
+  check(buPhotos.length === 16 && buPhotos.every(Boolean), `school: all sixteen BU photos render (${buPhotos.filter(Boolean).length}/16)`)
+  await page.screenshot({ path: 'shots/village-bu.png' })
   await closePanel()
   await page.screenshot({ path: 'shots/village-school.png' })
 
