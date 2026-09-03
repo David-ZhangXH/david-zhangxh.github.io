@@ -55,9 +55,9 @@ describe('village scenes', () => {
       }
     }
   })
-  it('school has three stations, lab three tables, library shelves + quiz', () => {
+  it('school has three stations, lab four tables, library shelves + quiz', () => {
     expect(SCENES.school.zones.map(z => z.id).sort()).toEqual(['bu', 's101', 'yuying'])
-    expect(SCENES.lab.zones.map(z => z.id).sort()).toEqual(['bio', 'chem', 'env'])
+    expect(SCENES.lab.zones.map(z => z.id).sort()).toEqual(['bio', 'chem', 'env', 'stats'])
     expect(SCENES.library.zones.map(z => z.id).sort()).toEqual(['docs', 'quiz'])
   })
 })

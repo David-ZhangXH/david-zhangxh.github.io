@@ -28,7 +28,7 @@ const LABELS = {
   worldmap: 'WORLD MAP', tape: 'VIDEO-TAPE', jerseys: 'JERSEY WALL',
   go: '围棋 · GO', games: 'TABLE GAMES', poster: 'IRON MAN POSTER',
   yuying: 'YUYING', s101: '101 MIDDLE SCHOOL', bu: 'BOSTON UNIVERSITY',
-  bio: 'BIOLOGY', chem: 'CHEMISTRY', env: 'ENVIRONMENTAL SCIENCE',
+  bio: 'BIOLOGY', chem: 'CHEMISTRY', env: 'ENVIRONMENTAL SCIENCE', stats: 'STATISTICS & BIOSTATISTICS',
   docs: 'LIFE DOCUMENTS', quiz: "THE LIBRARIAN'S QUIZ"
 }
 
@@ -385,7 +385,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
         })
       }
       const table = village.lab.find(l => l.id === id)
-      if (table) return openOverlay(ui.objectPanel(table.name, table.text))
+      if (table) return openOverlay(ui.labPanel(table))
       // library
       if (id === 'docs') return openOverlay(ui.docsPanel(village.library.documents))
       if (id === 'quiz') return startQuiz(0, 0)

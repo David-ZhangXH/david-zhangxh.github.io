@@ -15,7 +15,7 @@ export function createRenderer(canvas, sprites) {
     if (!img) {
       if (['yuying', 's101', 'bu'].includes(id))
         img = sprites.furniture.gate({ yuying: 'YUYING', s101: '101', bu: 'BU' }[id])
-      else if (['bio', 'chem', 'env'].includes(id)) img = sprites.furniture.table(id)
+      else if (['bio', 'chem', 'env', 'stats'].includes(id)) img = sprites.furniture.table(id)
     }
     fcache[id] = img
     return img

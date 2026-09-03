@@ -134,10 +134,13 @@ export function validateVillage2(v) {
         errs.push('village.home.musicbox.albums: each album needs an img path')
     }
   }
-  for (const [sec, n] of [['schools', 3], ['lab', 3]]) {
+  for (const [sec, n] of [['schools', 3], ['lab', 4]]) {
     if (!Array.isArray(v[sec]) || v[sec].length !== n) errs.push(`village.${sec}: exactly ${n} entries`)
     else v[sec].forEach((s, i) => {
-      if (!filled(s?.id) || !filled(s?.name) || !filled(s?.text)) errs.push(`village.${sec}[${i}]: needs id/name/text`)
+      if (!filled(s?.id) || !filled(s?.name) || !isStr(s?.text)) errs.push(`village.${sec}[${i}]: needs id/name/text`)
+      if (s?.courses !== undefined && !(Array.isArray(s.courses) && s.courses.length > 0 && s.courses.every(filled))) errs.push(`village.${sec}[${i}].courses: non-empty strings`)
+      if (s?.groups !== undefined && !(Array.isArray(s.groups) && s.groups.length > 0 && s.groups.every(g => g && filled(g.title) && Array.isArray(g.courses) && g.courses.length > 0 && g.courses.every(filled))))
+        errs.push(`village.${sec}[${i}].groups: each needs title + courses`)
       if (s?.photos !== undefined && !(Array.isArray(s.photos) && s.photos.every(filled))) errs.push(`village.${sec}[${i}].photos: array of paths`)
       if (s?.footer !== undefined && !isStr(s.footer)) errs.push(`village.${sec}[${i}].footer: string`)
       if (s?.lines !== undefined && !(Array.isArray(s.lines) && s.lines.every(filled))) errs.push(`village.${sec}[${i}].lines: non-empty strings`)

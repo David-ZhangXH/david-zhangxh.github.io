@@ -24,6 +24,20 @@ export function stationPanel(st) {
 </div>`
 }
 
+// a lab table: the courses taken in that field, as chips (optionally grouped)
+export function labPanel(t) {
+  const chips = (list) => `<div class="v-chips">${(list || []).map(c => `<span class="v-chip">${esc(c)}</span>`).join('')}</div>`
+  const body = t.groups
+    ? t.groups.map(g => `<h4>${esc(g.title)}</h4>${chips(g.courses)}`).join('')
+    : chips(t.courses)
+  return `
+<div class="v-panel v-lab">
+  <h3>${esc(t.name)}</h3>
+  ${t.text ? `<p>${esc(t.text)}</p>` : ''}
+  ${body}
+</div>`
+}
+
 // one line per row (the big book's pages)
 export function linesPanel(obj) {
   return `

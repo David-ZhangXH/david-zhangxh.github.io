@@ -94,9 +94,24 @@ describe('David\'s specifics are honored', () => {
   it('nickname gate accepts flower / huahua / 花花', () => {
     expect(real.home.memory.answers.map(a => a.toLowerCase())).toEqual(['flower', 'huahua', '花花'])
   })
-  it('three schools and three lab tables', () => {
+  it('three schools and four lab tables', () => {
     expect(real.schools.map(s => s.name)).toEqual(['Yuying', '101', 'BU'])
-    expect(real.lab.map(l => l.name)).toEqual(['Biology', 'Chemistry', 'Environmental Science'])
+    expect(real.lab.map(l => l.name)).toEqual(['Biology', 'Chemistry', 'Environmental Science', 'Statistics & Biostatistics'])
+  })
+  it('lab tables carry his courses; stats splits B.A. / M.S.', () => {
+    expect(real.lab[1].courses).toHaveLength(5)
+    expect(real.lab[1].courses[0]).toBe('AP Chemistry')
+    expect(real.lab[0].courses).toContain('Methods in Epidemiology')
+    expect(real.lab[2].courses).toContain('Climate & Earth Science')
+    const st = real.lab[3]
+    expect(st.groups.map(g => g.title)).toEqual(['B.A. level', 'M.S. level'])
+    expect(st.groups[0].courses).toHaveLength(8)
+    expect(st.groups[1].courses).toHaveLength(18)
+    expect(st.groups[1].courses).toContain('Causal Inference')
+  })
+  it('rejects a lab table with an empty course list', () => {
+    const bad = { ...real, lab: real.lab.map((l, i) => i === 0 ? { ...l, courses: [] } : l) }
+    expect(validateVillage(bad)).not.toEqual([])
   })
   it('quiz answers are Linkin Park, Insomania Radio, huahua', () => {
     const [q1, q2, q3] = real.library.quiz

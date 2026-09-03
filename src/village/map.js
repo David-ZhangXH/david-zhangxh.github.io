@@ -100,7 +100,7 @@ const school = interior({
 school.kind = 'school'
 
 const lab = interior({
-  zones: [{ id: 'bio', x: 3, y: 3 }, { id: 'chem', x: 7, y: 3 }, { id: 'env', x: 11, y: 3 }]
+  zones: [{ id: 'bio', x: 2, y: 3 }, { id: 'chem', x: 5, y: 3 }, { id: 'env', x: 8, y: 3 }, { id: 'stats', x: 11, y: 3 }]
 })
 lab.kind = 'lab'
 

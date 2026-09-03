@@ -231,8 +231,14 @@ try {
   await page.screenshot({ path: 'shots/village-school.png' })
 
   await enterVia('lab'); await page.waitForTimeout(300)
-  const chem = await openZoneByKeys(7, 4, 'ArrowUp')
-  check(chem && /chemistry/i.test(await chem.innerText()), 'lab: Chemistry table opens')
+  const chem = await openZoneByKeys(5, 4, 'ArrowUp')
+  const chemText = chem ? await chem.innerText() : ''
+  check(/chemistry/i.test(chemText) && /Intensive Chemistry II/.test(chemText) && /Chemistry in Culture & Society/.test(chemText), 'lab: Chemistry table lists his five courses')
+  await closePanel()
+  const st = await openZoneByKeys(11, 4, 'ArrowUp')
+  const stText = st ? await st.innerText() : ''
+  check(/Statistics & Biostatistics/.test(stText) && /B\.A\. level/.test(stText) && /M\.S\. level/.test(stText) && /Causal Inference/.test(stText) && /Estimation Theory/.test(stText), 'lab: Statistics & Biostatistics table shows B.A. + M.S. courses')
+  await page.screenshot({ path: 'shots/village-stats.png' })
   await closePanel()
   await page.screenshot({ path: 'shots/village-lab.png' })
 

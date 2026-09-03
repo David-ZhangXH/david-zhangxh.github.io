@@ -376,17 +376,81 @@
     {
       "id": "bio",
       "name": "Biology",
-      "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
+      "text": "",
+      "courses": [
+        "Biology I",
+        "Biology II",
+        "Biological Global Change",
+        "Behavioral Biology",
+        "Methods in Epidemiology"
+      ]
     },
     {
       "id": "chem",
       "name": "Chemistry",
-      "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
+      "text": "",
+      "courses": [
+        "AP Chemistry",
+        "Intensive Chemistry I",
+        "Intensive Chemistry II",
+        "Mathematical Methods for Molecular Science",
+        "Chemistry in Culture & Society"
+      ]
     },
     {
       "id": "env",
       "name": "Environmental Science",
-      "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
+      "text": "",
+      "courses": [
+        "AP Environmental Science",
+        "Sustainable Energy",
+        "Climate & Earth Science",
+        "Crisis of Planet",
+        "Biological Global Change"
+      ]
+    },
+    {
+      "id": "stats",
+      "name": "Statistics & Biostatistics",
+      "text": "",
+      "groups": [
+        {
+          "title": "B.A. level",
+          "courses": [
+            "AP Calculus",
+            "Multivariate Calculus",
+            "Intro to Computer Science",
+            "Basic Statistics & Probability",
+            "Applied Statistics",
+            "Linear Algebra",
+            "Differential Equations",
+            "Discrete Math"
+          ]
+        },
+        {
+          "title": "M.S. level",
+          "courses": [
+            "Probability",
+            "Stochastic Processes",
+            "Linear Models",
+            "Bayesian Statistics",
+            "Mathematical Statistics",
+            "Stochastic Algorithms",
+            "Computational Statistics",
+            "Causal Inference",
+            "Statistical Machine Learning",
+            "Advanced Statistical Analysis",
+            "Statistical Learning with R",
+            "Meta-Analysis",
+            "Logistic Regression & Survival Analysis",
+            "Genomic Data Mining",
+            "Generalized Linear Models",
+            "Analysis of Correlated Data",
+            "Applied Genetic Analysis",
+            "Estimation Theory"
+          ]
+        }
+      ]
     }
   ],
   "library": {
