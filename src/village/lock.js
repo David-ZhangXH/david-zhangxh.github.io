@@ -1,5 +1,6 @@
 // The handheld's passcode lock. The answer hides in the photo frame.
-export function createLock({ code = '0716', onUnlock } = {}) {
+export const DEFAULT_CODE = '0716'
+export function createLock({ code = DEFAULT_CODE, onUnlock } = {}) {
   let open = false
   let misses = 0
   return {

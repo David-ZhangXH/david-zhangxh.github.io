@@ -230,6 +230,57 @@ export function makeSteam(origin) {
   return { object: points, update, heartBurst }
 }
 
+// a single puff of smoke — the candle, just blown out
+export function makeSmoke(origin) {
+  const N = 26
+  const geo = new THREE.BufferGeometry()
+  const pos = new Float32Array(N * 3)
+  const parts = Array.from({ length: N }, (_, i) => ({
+    delay: prand(i) * 0.5,
+    speed: 0.10 + prand(i + 30) * 0.09,
+    drift: (prand(i + 60) - 0.5) * 0.08,
+    phase: prand(i + 80) * 6.28
+  }))
+  for (let i = 0; i < N; i++) { pos[i * 3] = origin.x; pos[i * 3 + 1] = -9; pos[i * 3 + 2] = origin.z }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+  const pc = document.createElement('canvas')
+  pc.width = pc.height = 32
+  const pg = pc.getContext('2d')
+  const rg = pg.createRadialGradient(16, 16, 0, 16, 16, 16)
+  rg.addColorStop(0, 'rgba(255,255,255,.9)')
+  rg.addColorStop(0.5, 'rgba(255,255,255,.4)')
+  rg.addColorStop(1, 'rgba(255,255,255,0)')
+  pg.fillStyle = rg
+  pg.fillRect(0, 0, 32, 32)
+  const mat = new THREE.PointsMaterial({
+    color: 0x9aa3b8, size: 0.022, map: new THREE.CanvasTexture(pc), transparent: true,
+    opacity: 0, depthWrite: false
+  })
+  const points = new THREE.Points(geo, mat)
+  points.frustumCulled = false
+  let startedAt = -1
+  const DURATION = 2.6
+  function puff(now) { startedAt = now }
+  function update(dt, t) {
+    if (startedAt < 0) { mat.opacity = 0; return }
+    const age = t - startedAt
+    if (age > DURATION + 0.6) { startedAt = -1; mat.opacity = 0; return }
+    for (let i = 0; i < N; i++) {
+      const p = parts[i]
+      const a = Math.max(0, age - p.delay)
+      const o = i * 3
+      const rise = a * p.speed * 1.6
+      pos[o] = origin.x + p.drift * a + Math.sin(p.phase + a * 3) * 0.012 * a
+      pos[o + 1] = a > 0 ? origin.y + rise : -9
+      pos[o + 2] = origin.z + Math.cos(p.phase + a * 2) * 0.006
+    }
+    mat.opacity = Math.max(0, 0.55 * (1 - age / DURATION))
+    mat.size = 0.02 + age * 0.014
+    geo.attributes.position.needsUpdate = true
+  }
+  return { object: points, update, puff }
+}
+
 export function lampFlicker(light, base = light.intensity) {
   let next = 2
   return (dt, t) => {

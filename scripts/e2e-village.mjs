@@ -130,6 +130,40 @@ try {
     await closePanel()
   } else check(false, 'music box reopens')
 
+  // world map: China → cities → 北京 (photos coming); the picture board asks for the birthday
+  const wmPanel = await openZoneByKeys(2, 4, 'ArrowLeft')
+  if (wmPanel) {
+    let t = await wmPanel.innerText()
+    check(/China/.test(t) && /US/.test(t) && /Next stop/.test(t) && !/北京/.test(t), 'world map: countries + single stops at the root')
+    await page.click('.v-wm [data-wm-group="0"]')
+    t = await wmPanel.innerText()
+    check(/北京/.test(t) && /香港/.test(t), 'world map: China opens into his cities')
+    await page.click('.v-wm [data-wm-place="0"]')
+    t = await wmPanel.innerText()
+    check(/growing up/.test(t) && /Photos coming/.test(t), 'world map: 北京 shows its photo slot')
+    await page.click('.v-wm [data-wm-back]')
+    t = await wmPanel.innerText()
+    check(/China/.test(t) && !/北京/.test(t), 'world map: World breadcrumb goes back')
+    await page.screenshot({ path: 'shots/village-worldmap.png' })
+    await closePanel()
+  } else check(false, 'world map opens')
+  await page.evaluate(() => localStorage.removeItem('davidworld:board-open'))
+  const pbGate = await openZoneByKeys(2, 7, "ArrowLeft")
+  if (pbGate) {
+    const gt = await pbGate.innerText()
+    check(/birthday-month-day/.test(gt) && !/0716/.test(gt), 'picture board: locked, hint only')
+    for (let i = 0; i < 4; i++) await page.fill(`.v-gate .v-code input[data-d="${i}"]`, '1234'[i])
+    await page.click('[data-try-board]')
+    await page.waitForTimeout(200)
+    check(!!(await page.$('.v-gate')), 'picture board: wrong code stays locked')
+    for (let i = 0; i < 4; i++) await page.fill(`.v-gate .v-code input[data-d="${i}"]`, '0716'[i])
+    await page.click('[data-try-board]')
+    await page.waitForTimeout(300)
+    const opened = await page.$eval('.v-panel', el => el.innerText).catch(() => '')
+    check(/Picture board/.test(opened) && /Photos coming/.test(opened), 'picture board: the birthday opens it')
+    await closePanel()
+  } else check(false, 'picture board gate opens')
+
   // clicking the jersey wall from the bottom row must NOT walk out the door
   const homePoint = (tx, ty) => page.evaluate(([tx, ty]) => {
     const c = document.querySelector('#village-root canvas')
@@ -176,7 +210,7 @@ try {
   // world map (left wall now)
   const wm = await openZoneByKeys(2, 4, 'ArrowLeft')
   const wmText = wm ? await wm.innerText() : ''
-  check(/北京/.test(wmText) && /Next stop/.test(wmText) && !/pinned/i.test(wmText), 'home: world map lists his stops, ending with Next stop...')
+  check(/China/.test(wmText) && /Kyoto/.test(wmText) && /Next stop/.test(wmText) && !/pinned/i.test(wmText), 'home: world map lists his stops, ending with Next stop...')
   await closePanel()
 
   // ---- memory placard gate (right wall now) ----

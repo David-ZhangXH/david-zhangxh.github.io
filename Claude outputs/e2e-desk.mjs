@@ -44,7 +44,7 @@ try {
     tray: 'Curriculum',
     frame: 'July 16', notes: 'Insomania Radio', musicbox: '静止',
     plant: 'childhood', keyboard: 'board', board: 'message board',
-    mouse: 'DPI 1600 * 0.23', shelf: 'nothing there', headphones: 'Volume: 001'
+    mouse: 'DPI 1600 * 0.23', candle: 'Le Labo 25', shelf: 'nothing there', headphones: 'Volume: 001'
   }
   // proxies are keyboard controls: activate via focus + Enter (the real a11y path)
   const pressProxy = async (id) => {
@@ -84,20 +84,6 @@ try {
   await page.keyboard.press('Escape')
   await page.waitForSelector('.card-backdrop', { state: 'detached', timeout: 6000 })
   await page.waitForTimeout(1200)
-
-  // candle: no card — a click blows it out (smoke), another relights it
-  await page.screenshot({ path: 'shots/desk-candle-on.png' })
-  await pressProxy('candle')
-  await page.waitForTimeout(1400)
-  const candleCard = await page.$('.card-backdrop')
-  const candleOff = await page.$eval('#desk-root', el => el.dataset.candle)
-  check(!candleCard && candleOff === 'off', 'candle: click blows it out, no card')
-  await page.screenshot({ path: 'shots/desk-candle-off.png' })
-  await pressProxy('candle')
-  await page.waitForTimeout(1200)
-  const candleOn = await page.$eval('#desk-root', el => el.dataset.candle)
-  check(candleOn === 'on', 'candle: a second click relights it')
-  await page.waitForTimeout(900)
 
   // mug: no card, just the heart
   await pressProxy('mug')

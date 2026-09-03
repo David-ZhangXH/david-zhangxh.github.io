@@ -5,6 +5,7 @@
 # (v22's depth layers / cat were removed in v23 at David's request — calm desk.)
 from PIL import Image, ImageEnhance, ImageDraw, ImageFilter, ImageFont, ImageChops
 import numpy as np, os, json, math
+import cv2
 
 SRC = '/mnt/user-data/uploads/davidworld-site/public/images/creator-studio-desk-v3.png'
 OUT_BASE = 'src/assets/studio-desk.webp'
@@ -101,6 +102,38 @@ sh = Image.composite(sh, Image.new('L', (W, H), 0), mask)
 art = Image.composite(Image.new('RGB', (W, H), (6, 5, 9)), art, sh)
 
 full = art.copy()   # the complete painting — shipped whole (David asked for the calm desk back)
+
+# ------------------------------------------------------------------ the candle: a lit layer over an unlit base
+# The lantern's glass interior (flame, wax, warm glass) is cut out as its own
+# layer so the site can flicker it and blow it out. The base underneath shows
+# the same lantern dark, flame inpainted away.
+CANDLE_BOX = (1518, 526, 1602, 626)   # 1x art px, the glass interior + candle
+FLAME_BOX = (1550, 553, 1572, 598)
+def candle_mask(box):
+    x0, y0, x1, y1 = box
+    m = Image.new('L', (W, H), 0)
+    ImageDraw.Draw(m).rounded_rectangle([x0, y0, x1, y1], radius=26, fill=255)
+    return m.filter(ImageFilter.GaussianBlur(2.2))
+cm = candle_mask(CANDLE_BOX)
+cx0, cy0, cx1, cy1 = CANDLE_BOX
+lit = full.crop(CANDLE_BOX).convert('RGBA')
+lit.putalpha(cm.crop(CANDLE_BOX))
+lit.resize(((cx1 - cx0) * 2, (cy1 - cy0) * 2), Image.LANCZOS).save('src/assets/candle-lit.webp', 'WEBP', quality=90, method=6)
+# unlit: inpaint the flame, then darken + cool the interior
+hole = np.zeros((H, W), dtype=np.uint8)
+fx0, fy0, fx1, fy1 = FLAME_BOX
+cv2.ellipse(hole, ((fx0 + fx1) // 2, (fy0 + fy1) // 2), ((fx1 - fx0) // 2 + 2, (fy1 - fy0) // 2 + 2), 0, 0, 360, 255, -1)
+bgr = cv2.cvtColor(np.asarray(full), cv2.COLOR_RGB2BGR)
+dark_src = Image.fromarray(cv2.cvtColor(cv2.inpaint(bgr, hole, 5, cv2.INPAINT_TELEA), cv2.COLOR_BGR2RGB))
+arr = np.asarray(dark_src).astype(np.float32)
+grey = arr.mean(2, keepdims=True)
+cool = (arr * 0.45 + grey * 0.55) * 0.30
+cool[:, :, 2] += 6; cool[:, :, 0] -= 2                       # a faint blue-grey cast, the room's own light
+unlit = Image.fromarray(np.clip(cool, 0, 255).astype(np.uint8))
+full = Image.composite(unlit, full, cm)
+full.crop((1490, 480, 1630, 660)).resize((280, 360), Image.LANCZOS).save('/tmp/candle-unlit.png')
+CANDLE_WORLD = {'x0': cx0, 'y0': cy0, 'x1': cx1, 'y1': cy1, 'flame': [(fx0 + fx1) / 2, fy0 + 6]}
+json.dump({'w': W, 'h': H, 'candle': CANDLE_WORLD}, open('src/assets/candle.json', 'w'))
 
 # ------------------------------------------------------------------ base plate: 2x, gentle sharpen
 base2 = full.resize((W * 2, H * 2), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.4, percent=55, threshold=2))

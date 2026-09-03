@@ -175,3 +175,13 @@
 .v-letter p { margin: 0 0 10px; }
 .v-letter-greet { font-weight: 700; }
 .v-letter-sign { margin-top: 12px !important; }
+
+/* ---- world map (countries → cities → photos) + picture board gate ---- */
+.v-worldmap { max-width: 560px; }
+.v-place { cursor: pointer; font: inherit; font-size: 11px; }
+.v-place.group { background: #ffd93b; font-weight: 700; }
+.v-place.later { opacity: .55; cursor: default; }
+.v-place:hover:not(:disabled) { filter: brightness(1.06); }
+.v-crumbs { margin: 0 0 10px; font-size: 12px; }
+.v-link { background: none; border: 0; padding: 0; color: #2b5fb3; cursor: pointer; font: inherit; font-size: 12px; text-decoration: underline; }
+.v-gate .v-code input { color: #2b3550; background: #fff; border: 2px solid #2b3550; }

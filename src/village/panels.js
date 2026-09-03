@@ -115,15 +115,57 @@ export function gamesPanel(obj) {
 </div>`
 }
 
-export function worldmapPanel(obj) {
-  const stops = (obj.stops || []).map(s => s.img
-    ? `<li><details><summary><b>${esc(s.place)}</b>${s.when ? ` <span class="v-dim">${esc(s.when)}</span>` : ''}</summary><img class="v-stop-img" src="${esc(s.img)}" alt="${esc(s.place)}" loading="lazy"></details></li>`
-    : `<li><b>${esc(s.place)}</b>${s.when ? ` <span class="v-dim">${esc(s.when)}</span>` : ''}</li>`).join('')
+// the travelling world map: stops → (countries open into cities) → photos
+const photoGrid = (photos, alt) => (photos || []).length
+  ? `<div class="v-photos">${photos.map((src, i) => `<figure class="v-photo"><img src="${esc(src)}" alt="${esc(alt)} ${i + 1}" loading="lazy" data-zoom></figure>`).join('')}</div>`
+  : '<p class="v-dim">Photos coming.</p>'
+export function worldmapView(obj, view = {}) {
+  const stops = obj.stops || []
+  const chip = (s, attrs) => `<button class="v-chip v-place${s.later ? ' later' : ''}${s.places ? ' group' : ''}" ${attrs}${s.later ? ' disabled' : ''}>${esc(s.place)}${s.when ? ` <span class="v-dim">${esc(s.when)}</span>` : ''}${s.places ? ' ›' : ''}</button>`
+  if (view.group != null) {
+    const g = stops[view.group]
+    if (view.place != null) {
+      const pl = g.places[view.place]
+      return `<p class="v-crumbs"><button class="v-link" data-wm-back="root">World</button> › <button class="v-link" data-wm-group="${view.group}">${esc(g.place)}</button> › <b>${esc(pl.place)}</b>${pl.when ? ` <span class="v-dim">${esc(pl.when)}</span>` : ''}</p>${photoGrid(pl.photos, pl.place)}`
+    }
+    return `<p class="v-crumbs"><button class="v-link" data-wm-back="root">World</button> › <b>${esc(g.place)}</b></p>
+  <div class="v-chips">${g.places.map((pl, j) => chip(pl, `data-wm-group="${view.group}" data-wm-place="${j}"`)).join('')}</div>`
+  }
+  if (view.stop != null) {
+    const st = stops[view.stop]
+    return `<p class="v-crumbs"><button class="v-link" data-wm-back="root">World</button> › <b>${esc(st.place)}</b>${st.when ? ` <span class="v-dim">${esc(st.when)}</span>` : ''}</p>${photoGrid(st.photos, st.place)}`
+  }
+  return `<div class="v-chips">${stops.map((st, i) => chip(st, st.places ? `data-wm-group="${i}"` : `data-wm-stop="${i}"`)).join('')}</div>`
+}
+export function worldmapPanel(obj, view = {}) {
   return `
-<div class="v-panel">
+<div class="v-panel v-worldmap">
   <h3>${esc(obj.title)}</h3>
   ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
-  ${stops ? `<ul class="v-stops">${stops}</ul>` : ''}
+  <div class="v-wm">${worldmapView(obj, view)}</div>
+</div>`
+}
+
+// the picture board's lock: four digits, the hint is David's
+export function boardGate(hint) {
+  return `
+<div class="v-panel v-gate">
+  <h3>PICTURE BOARD</h3>
+  <p>Locked.</p>
+  <div class="v-code">
+    ${[0, 1, 2, 3].map(i => `<input inputmode="numeric" maxlength="1" data-d="${i}" aria-label="digit ${i + 1}">`).join('')}
+  </div>
+  <p class="v-dim">hint: ${esc(hint || '')}</p>
+  <p class="v-actions"><button class="v-btn" data-try-board>open</button></p>
+  <p class="v-nudge2" hidden>not that — month, then day.</p>
+</div>`
+}
+export function boardPanel(obj) {
+  return `
+<div class="v-panel v-station">
+  <h3>${esc(obj.title)}</h3>
+  ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
+  ${photoGrid(obj.photos, obj.title)}
 </div>`
 }
 

@@ -1,8 +1,38 @@
 import { describe, it, expect } from 'vitest'
-import { arcadeWin, docsPanel } from '../src/village/panels.js'
+import { arcadeWin, docsPanel, worldmapView, boardGate, boardPanel } from '../src/village/panels.js'
 import { readFileSync } from 'node:fs'
 
 const real = JSON.parse(readFileSync(new URL('../content/village.json', import.meta.url), 'utf8'))
+
+describe('world map + picture board', () => {
+  const wm = real.home.worldmap
+  it('root shows countries as groups and single stops; Next stop... is not clickable', () => {
+    const html = worldmapView(wm)
+    expect(html).toContain('data-wm-group="0"')
+    expect(html).toContain('China')
+    expect(html).toContain('data-wm-stop="2"')
+    expect(html).toMatch(/v-place later"[^>]*disabled>Next stop\.\.\./)
+    expect(html).not.toContain('北京')
+  })
+  it('opening China lists the cities; opening 北京 shows its photos (or that they are coming)', () => {
+    const cities = worldmapView(wm, { group: 0 })
+    expect(cities).toContain('北京')
+    expect(cities).toContain('香港')
+    expect(cities).toContain('data-wm-back="root"')
+    const bj = worldmapView(wm, { group: 0, place: 0 })
+    expect(bj).toContain('growing up')
+    expect(bj).toContain('Photos coming.')
+    const withPhotos = worldmapView({ stops: [{ place: 'Paris', photos: ['a.jpg', 'b.jpg'] }] }, { stop: 0 })
+    expect(withPhotos.match(/<img /g)).toHaveLength(2)
+  })
+  it('the picture board gate never prints the code, only the hint', () => {
+    const gate = boardGate(real.home.board.hint)
+    expect(gate).toContain('birthday-month-day')
+    expect(gate).not.toContain('0716')
+    expect(gate.match(/<input /g)).toHaveLength(4)
+    expect(boardPanel(real.home.board)).toContain('Photos coming.')
+  })
+})
 
 describe('village panels', () => {
   it('a record-breaker reads the whole letter, signed D, and can send the screenshot', () => {

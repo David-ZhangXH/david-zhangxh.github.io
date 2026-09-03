@@ -60,7 +60,6 @@ export function mountVillage({ onExit, onClassic } = {}) {
     world = startWorld()
   } else {
     const lock = createLock({
-      code: '0716',
       onUnlock() {
         localStorage.setItem(UNLOCK_KEY, 'yes')
         lockEl.remove()
@@ -362,7 +361,8 @@ export function mountVillage({ onExit, onClassic } = {}) {
       if (id === 'npc1') return talk('villager', 'VILLAGER')
       if (id === 'npc2') return talk('librarian', 'LIBRARIAN')
       // home
-      if (id === 'worldmap') return openOverlay(ui.worldmapPanel(village.home.worldmap))
+      if (id === 'worldmap') return openWorldmap()
+      if (id === 'board') return openPictureBoard()
       if (id === 'memory') return openMemory()
       if (id === 'jerseys') return openOverlay(ui.jerseysPanel(village.home.jerseys))
       if (id === 'musicbox') return openOverlay(ui.musicboxPanel(village.home.musicbox))
@@ -391,6 +391,56 @@ export function mountVillage({ onExit, onClassic } = {}) {
       if (id === 'quiz') return startQuiz(0, 0)
     }
 
+    function openWorldmap() {
+      const wm = village.home.worldmap
+      openOverlay(ui.worldmapPanel(wm), (panel) => {
+        const host = panel.querySelector('.v-wm')
+        const render = (view) => {
+          host.innerHTML = ui.worldmapView(wm, view)
+          host.querySelectorAll('[data-wm-back]').forEach(b => b.addEventListener('click', () => render({})))
+          host.querySelectorAll('[data-wm-stop]').forEach(b => b.addEventListener('click', () => render({ stop: Number(b.dataset.wmStop) })))
+          host.querySelectorAll('[data-wm-group]').forEach(b => b.addEventListener('click', () => {
+            const view = { group: Number(b.dataset.wmGroup) }
+            if (b.dataset.wmPlace != null) view.place = Number(b.dataset.wmPlace)
+            render(view)
+          }))
+          wireZoom(host)
+        }
+        render({})
+      })
+    }
+    function wireZoom(scope) {
+      scope.querySelectorAll('[data-zoom]').forEach(img => img.addEventListener('click', () => {
+        const fig = img.closest('.v-photo')
+        const big = fig.classList.toggle('big')
+        scope.querySelectorAll('.v-photo').forEach(f => { if (f !== fig) f.classList.remove('big') })
+        if (big) img.scrollIntoView({ block: 'nearest' })
+      }))
+    }
+    const BOARD_KEY = 'davidworld:board-open'
+    function openPictureBoard() {
+      const b = village.home.board
+      if (localStorage.getItem(BOARD_KEY) === 'yes') return openOverlay(ui.boardPanel(b), wireZoom)
+      const gate = createLock({ onUnlock() { localStorage.setItem(BOARD_KEY, 'yes') } })
+      openOverlay(ui.boardGate(b.hint), (panel) => {
+        const inputs = [...panel.querySelectorAll('.v-code input')]
+        const tryIt = () => {
+          const res = gate.try(inputs.map(x => x.value).join(''))
+          if (res === 'open') { closeOverlay(); return openOverlay(ui.boardPanel(b), wireZoom) }
+          panel.querySelector('.v-nudge2').hidden = res !== 'nudge'
+          inputs.forEach(x => { x.value = '' }); inputs[0].focus()
+        }
+        inputs.forEach((inp, i) => {
+          inp.addEventListener('input', () => { if (inp.value && i < 3) inputs[i + 1].focus() })
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus()
+            if (e.key === 'Enter') tryIt()
+          })
+        })
+        panel.querySelector('[data-try-board]').addEventListener('click', tryIt)
+        inputs[0].focus()
+      })
+    }
     function openMemory() {
       if (quests.isDone('memory')) {
         return openOverlay(ui.memoryReveal(village.home.memory))

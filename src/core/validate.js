@@ -106,9 +106,12 @@ export function validateVillage2(v) {
       !jz.items.every(j => j && filled(j.team) && filled(j.name) && Number.isInteger(j.number) && j.number >= 0)))
       errs.push('village.home.jerseys: items need team + name + non-negative integer number')
     const wm = v.home.worldmap
+    const okPlace = (s2) => s2 && filled(s2.place) && (s2.photos === undefined || (Array.isArray(s2.photos) && s2.photos.every(filled)))
     if (wm && (!Array.isArray(wm.stops) || wm.stops.length === 0 ||
-      !wm.stops.every(s2 => s2 && filled(s2.place))))
-      errs.push('village.home.worldmap.stops: each stop needs a place')
+      !wm.stops.every(s2 => okPlace(s2) && (s2.places === undefined || (Array.isArray(s2.places) && s2.places.length > 0 && s2.places.every(okPlace))))))
+      errs.push('village.home.worldmap.stops: each stop needs a place (groups: places[] of places; photos: paths)')
+    const pb = v.home.board
+    if (pb && pb.photos !== undefined && !(Array.isArray(pb.photos) && pb.photos.every(filled))) errs.push('village.home.board.photos: array of paths')
     const gl = v.home.games
     if (gl && (!Array.isArray(gl.games) || gl.games.length === 0 || !gl.games.every(g2 => g2 && filled(g2.name))))
       errs.push('village.home.games.games: each game needs a name')

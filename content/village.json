@@ -130,7 +130,9 @@
     },
     "board": {
       "title": "Picture board",
-      "text": ""
+      "text": "",
+      "hint": "birthday-month-day",
+      "photos": []
     },
     "toy": {
       "title": "Toy",
@@ -153,11 +155,136 @@
       "text": "",
       "stops": [
         {
-          "place": "北京",
-          "when": "growing up"
+          "place": "China",
+          "places": [
+            {
+              "place": "北京",
+              "when": "growing up"
+            },
+            {
+              "place": "合肥"
+            },
+            {
+              "place": "上海"
+            },
+            {
+              "place": "重庆"
+            },
+            {
+              "place": "成都"
+            },
+            {
+              "place": "厦门"
+            },
+            {
+              "place": "济南"
+            },
+            {
+              "place": "三亚"
+            },
+            {
+              "place": "广州"
+            },
+            {
+              "place": "武夷山"
+            },
+            {
+              "place": "新疆"
+            },
+            {
+              "place": "内蒙"
+            },
+            {
+              "place": "武汉"
+            },
+            {
+              "place": "西安"
+            },
+            {
+              "place": "苏州"
+            },
+            {
+              "place": "杭州"
+            },
+            {
+              "place": "长沙"
+            },
+            {
+              "place": "延边"
+            },
+            {
+              "place": "香港"
+            }
+          ]
         },
         {
-          "place": "合肥"
+          "place": "US",
+          "places": [
+            {
+              "place": "Seattle"
+            },
+            {
+              "place": "San Francisco"
+            },
+            {
+              "place": "LA"
+            },
+            {
+              "place": "San Diego"
+            },
+            {
+              "place": "Las Vegas"
+            },
+            {
+              "place": "Zion"
+            },
+            {
+              "place": "Grand Canyon"
+            },
+            {
+              "place": "Antelope Canyon"
+            },
+            {
+              "place": "Yellowstone"
+            },
+            {
+              "place": "Chicago"
+            },
+            {
+              "place": "Boston",
+              "when": "School life"
+            },
+            {
+              "place": "Minneapolis"
+            },
+            {
+              "place": "Pittsburgh"
+            },
+            {
+              "place": "Rochester"
+            },
+            {
+              "place": "Maine"
+            },
+            {
+              "place": "New York"
+            },
+            {
+              "place": "Philadelphia"
+            },
+            {
+              "place": "Baltimore"
+            },
+            {
+              "place": "Washington"
+            },
+            {
+              "place": "Orlando"
+            },
+            {
+              "place": "Honolulu"
+            }
+          ]
         },
         {
           "place": "Singapore"
@@ -167,16 +294,6 @@
         },
         {
           "place": "New Zealand"
-        },
-        {
-          "place": "Honolulu"
-        },
-        {
-          "place": "Boston",
-          "when": "School life"
-        },
-        {
-          "place": "Chicago"
         },
         {
           "place": "Reykjavik"
@@ -191,7 +308,8 @@
           "place": "Kyoto"
         },
         {
-          "place": "Next stop..."
+          "place": "Next stop...",
+          "later": true
         }
       ]
     },

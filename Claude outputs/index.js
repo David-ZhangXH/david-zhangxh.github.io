@@ -2,7 +2,7 @@
 import * as THREE from 'three'
 import { createScene } from './scene.js'
 import { buildFurniture } from './furniture.js'
-import { makeScreenTexture, makeRain, makeSteam, makeSmoke, lampFlicker } from './effects.js'
+import { makeScreenTexture, makeRain, makeSteam, lampFlicker } from './effects.js'
 import { createDeskState, HOTSPOTS } from './state.js'
 import { HOME, INTRO_START, POSES } from './poses.js'
 import { aboutCard, cvCard, contactCard, linksCard, playlistCard, teaserCard, plantCard, keyboardCard, boardCard, microCard } from './cards.js'
@@ -25,6 +25,7 @@ const CARD_FOR = {
   keyboard: () => keyboardCard(),
   board: () => boardCard([], { loading: true }),
   mouse: () => microCard('The mouse', 'DPI 1600 * 0.23'),
+  candle: () => microCard('The candle', 'Le Labo 25'),
   shelf: () => microCard('The bookshelves', 'nothing there...'),
   headphones: () => microCard('The headphones', 'Volume: 001')
 }
@@ -48,7 +49,7 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     <div class="desk-mark"><span class="desk-mark__eyebrow">DAVID / WORLD 01</span><strong>THE DESK</strong></div>
     <div class="desk-weather"><span class="desk-weather__dot"></span>23:47 · RAIN OVER THE CITY</div>`
   root.appendChild(hud)
-  const { hotspots, screen, crank, mugTip, windowRegion, candle } = buildFurniture(world.scene)
+  const { hotspots, screen, crank, mugTip, windowRegion } = buildFurniture(world.scene)
   if (audio.soundOn()) audio.startProfile('desk')
   world.onTick((dt) => { if (audio.soundOn()) crank.rotation.x += dt * 1.6 })
 
@@ -60,31 +61,12 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   world.scene.add(rain.object)
   const steam = makeSteam(mugTip)
   world.scene.add(steam.object)
-  const smoke = makeSmoke(candle.flameTip)
-  world.scene.add(smoke.object)
-  // the candle: lit by default, blown out with a click, relit with another
-  let candleOn = true
-  let candleLevel = 1          // 0 = dark, 1 = burning (eased)
-  root.dataset.candle = 'on'
-  function toggleCandle(now) {
-    candleOn = !candleOn
-    root.dataset.candle = candleOn ? 'on' : 'off'
-    if (!candleOn) smoke.puff(now)
-    else toast('Le Labo 25')
-  }
   const flicker = lampFlicker(world.lampLight)
   let screenClock = 0
   world.onTick((dt, t) => {
     rain.update(dt)
     steam.update(dt, t)
-    smoke.update(dt, t)
     flicker(dt, t)
-    // candle: ease toward its state; while burning, a soft irregular flicker
-    candleLevel += ((candleOn ? 1 : 0) - candleLevel) * Math.min(1, dt * (candleOn ? 2.2 : 5))
-    const wobble = 0.9 + 0.1 * (0.5 + 0.5 * Math.sin(t * 9.1) * Math.sin(t * 5.3 + 1.7))
-    candle.lit.material.opacity = candleLevel * (0.88 + 0.12 * wobble)
-    candle.glow.material.opacity = candle.glowBase * candleLevel * wobble
-    candle.dim.material.opacity = 0.42 * (1 - candleLevel)
     screenClock += dt
     // The monitor is a living picture: smooth enough to notice, restrained
     // enough to remain ambient while the rest of the desk is explored.
@@ -185,7 +167,6 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     const st = state.get()
     if (st.mode === 'intro') { endIntro(); return }
     if (id === 'mug') { steam.heartBurst(worldTime); return }
-    if (id === 'candle') { toggleCandle(worldTime); return }
     if (st.mode !== 'idle') return
     root.classList.add('has-explored')
     if (id === 'monitor' && onPortal) { dive('galaxy', POSES.monitor, { pos: [-0.18, 0.33, -0.48], look: [-0.18, 0.33, -1] }); return }

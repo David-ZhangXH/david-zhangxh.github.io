@@ -6,6 +6,8 @@ import { glowSprite } from '../core/glow.js'
 // imported as a module asset so its filename carries a content hash —
 // browsers can never show a stale artwork after an update
 import studioDeskUrl from '../assets/studio-desk.webp'
+import candleLitUrl from '../assets/candle-lit.webp'
+import candleMeta from '../assets/candle.json'
 
 const ART_W = 4
 const ART_H = 2.25
@@ -120,7 +122,29 @@ export function buildFurniture(scene) {
   addGlow(group, 0xdd4fff, 0.42, 0.24, -1.04, 0.52)
   addGlow(group, 0xb64cff, 0.58, 0.18, 1.34, 0.78)
   addGlow(group, 0x67cfff, 0.36, 0.16, 1.40, 0.64)
-  addGlow(group, 0xffa657, 0.20, 0.28, 1.64, -0.40)
+  const candleGlow = addGlow(group, 0xffa657, 0.20, 0.28, 1.64, -0.40)
+
+  // The candle is alive: its lit glass interior is a separate painted layer
+  // over an unlit lantern, so it can flicker and be blown out.
+  const PX = ART_W / candleMeta.w
+  const toWorldX = (px) => px * PX - ART_W / 2
+  const toWorldY = (py) => ART_H / 2 - py * PX
+  const cb = candleMeta.candle
+  const candleTex = loader.load(candleLitUrl)
+  candleTex.colorSpace = THREE.SRGBColorSpace
+  candleTex.minFilter = THREE.LinearMipmapLinearFilter
+  candleTex.anisotropy = 8
+  const candleLit = new THREE.Mesh(
+    new THREE.PlaneGeometry((cb.x1 - cb.x0) * PX, (cb.y1 - cb.y0) * PX),
+    new THREE.MeshBasicMaterial({ map: candleTex, transparent: true, toneMapped: false, depthWrite: false })
+  )
+  candleLit.position.set(toWorldX((cb.x0 + cb.x1) / 2), toWorldY((cb.y0 + cb.y1) / 2), ART_Z + 0.02)
+  group.add(candleLit)
+  const candleDim = glowSprite(0x000000, 0.36, 0)
+  candleDim.material.blending = THREE.NormalBlending
+  candleDim.position.set(1.64, -0.36, ART_Z + 0.033)
+  group.add(candleDim)
+  const flameTip = new THREE.Vector3(toWorldX(cb.flame[0]), toWorldY(cb.flame[1]), ART_Z + 0.06)
 
   // Hotspots are mapped directly to their painted objects. They stay invisible
   // but participate in raycasting and keyboard navigation.
@@ -217,6 +241,7 @@ export function buildFurniture(scene) {
     screen,
     crank,
     mugTip: new THREE.Vector3(-0.75, -0.34, ART_Z + 0.075),
+    candle: { lit: candleLit, glow: candleGlow, dim: candleDim, flameTip, glowBase: 0.28 },
     windowRegion: { x: -1.72, y: 0.48, z: ART_Z + 0.06, w: 0.56, h: 1.43 }
   }
 }
