@@ -36,7 +36,7 @@ describe('world map + picture board', () => {
     expect(root).not.toContain('<img')
     const mid = boardView(real.home.board, { section: 0 })
     expect(mid.match(/<img /g)).toHaveLength(12)
-    expect(boardView(real.home.board, { section: 1 }).match(/<img /g)).toHaveLength(16)
+    expect(boardView(real.home.board, { section: 1 }).match(/<img /g)).toHaveLength(20)
     expect(boardView(real.home.board, { section: 2 })).toContain('Photos coming.')
   })
 })
