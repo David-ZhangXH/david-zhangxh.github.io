@@ -376,7 +376,6 @@ export function mountVillage({ onExit, onClassic } = {}) {
       // school + lab
       const school = village.schools.find(s => s.id === id)
       if (school) {
-        if (!school.photos?.length) return openOverlay(ui.objectPanel(school.name, school.text))
         return openOverlay(ui.stationPanel(school), (panel) => {
           panel.querySelectorAll('[data-zoom]').forEach(img => img.addEventListener('click', () => {
             const big = img.closest('.v-photo').classList.toggle('big')

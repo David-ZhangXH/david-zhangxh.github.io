@@ -1,410 +1,430 @@
 {
- "home": {
-  "musicbox": {
-   "title": "Music box",
-   "text": "",
-   "lyric": "Love can fight everything.",
-   "genres": [
-    "R&B",
-    "Neo-Soul",
-    "Jazz-pop",
-    "Rock & Roll",
-    "Garage",
-    "Afro",
-    "EDM",
-    "Future Bass",
-    "Flamenco"
-   ],
-   "artists": [
-    "王以太",
-    "艾热",
-    "Gali",
-    "Linkin Park",
-    "大张伟",
-    "邓紫棋"
-   ],
-   "loves": [
-    "NewJeans",
-    "Kendrick Lamar",
-    "Harry Styles",
-    "Post Malone",
-    "Taylor Swift",
-    "Djo",
-    "Linkin Park",
-    "The Weeknd",
-    "Molchat Doma",
-    "黄宣",
-    "Shark",
-    "王以太",
-    "艾热",
-    "Gali",
-    "黑豹乐队",
-    "大张伟",
-    "Bruno Mars",
-    "Billie Eilish",
-    "陶喆",
-    "方大同",
-    "Maroon 5",
-    "Imagine Dragons"
-   ],
-   "albums": [
-    {
-     "img": "albums/20.jpg",
-     "title": "20是件更美好的事"
+  "home": {
+    "musicbox": {
+      "title": "Music box",
+      "text": "",
+      "lyric": "Love can fight everything.",
+      "genres": [
+        "R&B",
+        "Neo-Soul",
+        "Jazz-pop",
+        "Rock & Roll",
+        "Garage",
+        "Afro",
+        "EDM",
+        "Future Bass",
+        "Flamenco"
+      ],
+      "artists": [
+        "王以太",
+        "艾热",
+        "Gali",
+        "Linkin Park",
+        "大张伟",
+        "邓紫棋"
+      ],
+      "loves": [
+        "NewJeans",
+        "Kendrick Lamar",
+        "Harry Styles",
+        "Post Malone",
+        "Taylor Swift",
+        "Djo",
+        "Linkin Park",
+        "The Weeknd",
+        "Molchat Doma",
+        "黄宣",
+        "Shark",
+        "王以太",
+        "艾热",
+        "Gali",
+        "黑豹乐队",
+        "大张伟",
+        "Bruno Mars",
+        "Billie Eilish",
+        "陶喆",
+        "方大同",
+        "Maroon 5",
+        "Imagine Dragons"
+      ],
+      "albums": [
+        {
+          "img": "albums/20.jpg",
+          "title": "20是件更美好的事"
+        },
+        {
+          "img": "albums/gladiator.jpg",
+          "title": "悲伤角斗士"
+        },
+        {
+          "img": "albums/survivor.jpg",
+          "title": "幸存者负罪感"
+        },
+        {
+          "img": "albums/speaker.jpg",
+          "title": "演说家"
+        },
+        {
+          "img": "albums/memories.jpg",
+          "title": "Memories…Do Not Open"
+        },
+        {
+          "img": "albums/one-more-light.jpg",
+          "title": "One More Light"
+        }
+      ]
     },
-    {
-     "img": "albums/gladiator.jpg",
-     "title": "悲伤角斗士"
+    "tv": {
+      "title": "Television",
+      "text": "",
+      "shows": [
+        "Stranger Things",
+        "唐朝诡事录",
+        "Fight Club",
+        "白日梦想家",
+        "Friends",
+        "Iron Man",
+        "Coco",
+        "Who am I — KEIN SYSTEM IST SICHER"
+      ],
+      "footer": "Follow my Douban: 207128578"
     },
-    {
-     "img": "albums/survivor.jpg",
-     "title": "幸存者负罪感"
+    "laptop": {
+      "title": "Gaming laptop",
+      "text": "",
+      "favorites": [
+        "Total War: Warhammer",
+        "It Takes Two"
+      ],
+      "often": [
+        "Valorant",
+        "League of Legends",
+        "Hearthstone"
+      ],
+      "award": "Hearthstone rank 50"
     },
-    {
-     "img": "albums/speaker.jpg",
-     "title": "演说家"
+    "music_corner": {
+      "title": "Music corner",
+      "text": "",
+      "items": [
+        {
+          "name": "Piano",
+          "note": "Played in primary school for 3 years."
+        },
+        {
+          "name": "Guitar & Bass",
+          "note": "Played in University for a year."
+        },
+        {
+          "name": "Microphone",
+          "note": "I want to be a rock star."
+        }
+      ]
     },
-    {
-     "img": "albums/memories.jpg",
-     "title": "Memories…Do Not Open"
+    "shelves": {
+      "title": "Book-shelves",
+      "text": "I am not really a book-lover, read randomly.",
+      "books": [
+        "查理九世"
+      ]
     },
-    {
-     "img": "albums/one-more-light.jpg",
-     "title": "One More Light"
-    }
-   ]
-  },
-  "tv": {
-   "title": "Television",
-   "text": "",
-   "shows": [
-    "Stranger Things",
-    "唐朝诡事录",
-    "Fight Club",
-    "白日梦想家",
-    "Friends",
-    "Iron Man",
-    "Coco",
-    "Who am I — KEIN SYSTEM IST SICHER"
-   ],
-   "footer": "Follow my Douban: 207128578"
-  },
-  "laptop": {
-   "title": "Gaming laptop",
-   "text": "",
-   "favorites": [
-    "Total War: Warhammer",
-    "It Takes Two"
-   ],
-   "often": [
-    "Valorant",
-    "League of Legends",
-    "Hearthstone"
-   ],
-   "award": "Hearthstone rank 50"
-  },
-  "music_corner": {
-   "title": "Music corner",
-   "text": "",
-   "items": [
-    {
-     "name": "Piano",
-     "note": "Played in primary school for 3 years."
+    "board": {
+      "title": "Picture board",
+      "text": ""
     },
-    {
-     "name": "Guitar & Bass",
-     "note": "Played in University for a year."
+    "toy": {
+      "title": "Toy",
+      "text": ""
     },
-    {
-     "name": "Microphone",
-     "note": "I want to be a rock star."
-    }
-   ]
-  },
-  "shelves": {
-   "title": "Book-shelves",
-   "text": "I am not really a book-lover, read randomly.",
-   "books": [
-    "查理九世"
-   ]
-  },
-  "board": {
-   "title": "Picture board",
-   "text": ""
-  },
-  "toy": {
-   "title": "Toy",
-   "text": ""
-  },
-  "bigbook": {
-   "title": "The Big Book",
-   "text": "",
-   "lines": [
-    "Born in 2002 Beijing",
-    "02–08 洋桥",
-    "08–17 朱各庄",
-    "17–xx 天润福熙大道",
-    "2022.02.21 姥姥去世了",
-    "2025.12 伯爵去世了"
-   ]
-  },
-  "worldmap": {
-   "title": "Travelling world map",
-   "text": "",
-   "stops": [
-    {
-     "place": "北京",
-     "when": "growing up"
+    "bigbook": {
+      "title": "The Big Book",
+      "text": "",
+      "lines": [
+        "Born in 2002 Beijing",
+        "02–08 洋桥",
+        "08–17 朱各庄",
+        "17–xx 天润福熙大道",
+        "2022.02.21 姥姥去世了",
+        "2025.12 伯爵去世了"
+      ]
     },
-    {
-     "place": "合肥"
+    "worldmap": {
+      "title": "Travelling world map",
+      "text": "",
+      "stops": [
+        {
+          "place": "北京",
+          "when": "growing up"
+        },
+        {
+          "place": "合肥"
+        },
+        {
+          "place": "Singapore"
+        },
+        {
+          "place": "Bali Island"
+        },
+        {
+          "place": "New Zealand"
+        },
+        {
+          "place": "Honolulu"
+        },
+        {
+          "place": "Boston",
+          "when": "School life"
+        },
+        {
+          "place": "Chicago"
+        },
+        {
+          "place": "Reykjavik"
+        },
+        {
+          "place": "Paris"
+        },
+        {
+          "place": "Tokyo"
+        },
+        {
+          "place": "Kyoto"
+        },
+        {
+          "place": "Next stop..."
+        }
+      ]
     },
-    {
-     "place": "Singapore"
+    "tape": {
+      "title": "Video-tape",
+      "text": "Follow my Bilibili Account “Insomania Radio” with AI-show, and AI-remix music."
     },
-    {
-     "place": "Bali Island"
+    "memory": {
+      "question": "What is my nickname?",
+      "answers": [
+        "flower",
+        "huahua",
+        "花花"
+      ],
+      "title": "Secret memory placard",
+      "text": "You know the nickname — so you may read this."
     },
-    {
-     "place": "New Zealand"
+    "jerseys": {
+      "title": "The jersey wall",
+      "text": "",
+      "items": [
+        {
+          "team": "Manchester United",
+          "number": 8,
+          "name": "Bruno Fernandes",
+          "body": "#da291c",
+          "trim": "#ffffff",
+          "numColor": "#ffffff"
+        },
+        {
+          "team": "Argentina",
+          "number": 10,
+          "name": "Lionel Messi",
+          "body": "#75aadb",
+          "body2": "#ffffff",
+          "trim": "#1b2a4a",
+          "numColor": "#1b2a4a"
+        },
+        {
+          "team": "OKC Thunder",
+          "number": 13,
+          "name": "Paul George",
+          "body": "#007ac1",
+          "trim": "#ef3b24",
+          "numColor": "#ffffff"
+        },
+        {
+          "team": "OKC Thunder",
+          "number": 0,
+          "name": "Russell Westbrook",
+          "body": "#f4f6f8",
+          "trim": "#007ac1",
+          "numColor": "#007ac1"
+        }
+      ]
     },
-    {
-     "place": "Honolulu"
-    },
-    {
-     "place": "Boston",
-     "when": "School life"
-    },
-    {
-     "place": "Chicago"
-    },
-    {
-     "place": "Reykjavik"
-    },
-    {
-     "place": "Paris"
-    },
-    {
-     "place": "Tokyo"
-    },
-    {
-     "place": "Kyoto"
-    },
-    {
-     "place": "Next stop..."
-    }
-   ]
-  },
-  "tape": {
-   "title": "Video-tape",
-   "text": "Follow my Bilibili Account “Insomania Radio” with AI-show, and AI-remix music."
-  },
-  "memory": {
-   "question": "What is my nickname?",
-   "answers": [
-    "flower",
-    "huahua",
-    "花花"
-   ],
-   "title": "Secret memory placard",
-   "text": "You know the nickname — so you may read this."
-  },
-  "jerseys": {
-   "title": "The jersey wall",
-   "text": "",
-   "items": [
-    {
-     "team": "Manchester United",
-     "number": 8,
-     "name": "Bruno Fernandes",
-     "body": "#da291c",
-     "trim": "#ffffff",
-     "numColor": "#ffffff"
-    },
-    {
-     "team": "Argentina",
-     "number": 10,
-     "name": "Lionel Messi",
-     "body": "#75aadb",
-     "body2": "#ffffff",
-     "trim": "#1b2a4a",
-     "numColor": "#1b2a4a"
-    },
-    {
-     "team": "OKC Thunder",
-     "number": 13,
-     "name": "Paul George",
-     "body": "#007ac1",
-     "trim": "#ef3b24",
-     "numColor": "#ffffff"
-    },
-    {
-     "team": "OKC Thunder",
-     "number": 0,
-     "name": "Russell Westbrook",
-     "body": "#f4f6f8",
-     "trim": "#007ac1",
-     "numColor": "#007ac1"
-    }
-   ]
-  },
-  "cats": [
-   {
-    "id": "twizzler",
-    "name": "Twizzler",
-    "line": "Twizzler 2023.9, Tortoiseshell",
-    "kind": "tortoiseshell"
-   },
-   {
-    "id": "huahua",
-    "name": "小花",
-    "line": "小花 2017.9.21, American shorthair",
-    "kind": "grey"
-   },
-   {
-    "id": "littleguy",
-    "name": "小不点",
-    "line": "小不点, 2021.8.31, Maine",
-    "kind": "white"
-   }
-  ],
-  "go": {
-   "title": "围棋",
-   "text": "围棋三段。"
-  },
-  "games": {
-   "title": "Table games",
-   "text": "Inspired by my middle school math teacher.",
-   "games": [
-    {
-     "name": "马尼拉"
-    },
-    {
-     "name": "波多黎各"
-    },
-    {
-     "name": "纽约之王"
-    },
-    {
-     "name": "骆驼大赛"
-    },
-    {
-     "name": "山中小屋"
-    }
-   ]
-  },
-  "dog": {
-   "id": "bojue",
-   "name": "伯爵",
-   "line": "",
-   "kind": "poodle"
-  },
-  "poster": {
-   "title": "Iron Man",
-   "text": "With great power comes great responsibility."
-  }
- },
- "schools": [
-  {
-   "id": "yuying",
-   "name": "Yuying",
-   "text": "2008–2014 Primary School Class 13, 2014–2017 Middle School Class 9",
-   "photos": [
-    "school/yuying-01.jpg",
-    "school/yuying-02.jpg",
-    "school/yuying-03.jpg",
-    "school/yuying-04.jpg",
-    "school/yuying-05.jpg",
-    "school/yuying-06.jpg",
-    "school/yuying-07.jpg",
-    "school/yuying-08.jpg",
-    "school/yuying-09.jpg",
-    "school/yuying-10.jpg"
-   ],
-   "footer": "朱各庄联队, 12号院，卓展，紫金长安，华熙"
-  },
-  {
-   "id": "s101",
-   "name": "101",
-   "text": "Special memories from 101. (Placeholder — David will write these.)"
-  },
-  {
-   "id": "bu",
-   "name": "BU",
-   "text": "Boston University — Statistics B.A., Biostatistics M.S. Memories and moments. (Placeholder.)"
-  }
- ],
- "lab": [
-  {
-   "id": "bio",
-   "name": "Biology",
-   "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
-  },
-  {
-   "id": "chem",
-   "name": "Chemistry",
-   "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
-  },
-  {
-   "id": "env",
-   "name": "Environmental Science",
-   "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
-  }
- ],
- "library": {
-  "documents": [
-   {
-    "title": "An important document (replace me)",
-    "note": "David will shelve his important life documents here — visitors browse and read what interests them."
-   },
-   {
-    "title": "Another document (replace me)",
-    "note": "Placeholder."
-   }
-  ],
-  "quiz": [
-   {
-    "q": "What is my favorite band?",
-    "options": [
-     "Coldplay",
-     "Linkin Park",
-     "Radiohead",
-     "花儿乐队"
+    "cats": [
+      {
+        "id": "twizzler",
+        "name": "Twizzler",
+        "line": "Twizzler 2023.9, Tortoiseshell",
+        "kind": "tortoiseshell"
+      },
+      {
+        "id": "huahua",
+        "name": "小花",
+        "line": "小花 2017.9.21, American shorthair",
+        "kind": "grey"
+      },
+      {
+        "id": "littleguy",
+        "name": "小不点",
+        "line": "小不点, 2021.8.31, Maine",
+        "kind": "white"
+      }
     ],
-    "answer": 1
-   },
-   {
-    "q": "What is my bilibili music account called?",
-    "options": [
-     "Midnight Radio",
-     "Insomania Radio",
-     "Sleepless FM",
-     "Radio Huahua"
-    ],
-    "answer": 1
-   },
-   {
-    "q": "What is my cat's name?",
-    "options": [
-     "feifei",
-     "huahua",
-     "maomao",
-     "doudou"
-    ],
-    "answer": 1
-   }
-  ]
- },
- "npcs": {
-  "villager": [
-   "Welcome to town! Not many make it past the lock.",
-   "You can just click where you want to go — or a door.",
-   "The Lab has an old arcade machine. The record on it is... intimidating."
+    "go": {
+      "title": "围棋",
+      "text": "围棋三段。"
+    },
+    "games": {
+      "title": "Table games",
+      "text": "Inspired by my middle school math teacher.",
+      "games": [
+        {
+          "name": "马尼拉"
+        },
+        {
+          "name": "波多黎各"
+        },
+        {
+          "name": "纽约之王"
+        },
+        {
+          "name": "骆驼大赛"
+        },
+        {
+          "name": "山中小屋"
+        }
+      ]
+    },
+    "dog": {
+      "id": "bojue",
+      "name": "伯爵",
+      "line": "",
+      "kind": "poodle"
+    },
+    "poster": {
+      "title": "Iron Man",
+      "text": "With great power comes great responsibility."
+    }
+  },
+  "schools": [
+    {
+      "id": "yuying",
+      "name": "Yuying",
+      "text": "2008–2014 Primary School Class 13, 2014–2017 Middle School Class 9",
+      "photos": [
+        "school/yuying-01.jpg",
+        "school/yuying-02.jpg",
+        "school/yuying-03.jpg",
+        "school/yuying-04.jpg",
+        "school/yuying-05.jpg",
+        "school/yuying-06.jpg",
+        "school/yuying-07.jpg",
+        "school/yuying-08.jpg",
+        "school/yuying-09.jpg",
+        "school/yuying-10.jpg"
+      ],
+      "footer": "朱各庄联队, 12号院，卓展，紫金长安，华熙"
+    },
+    {
+      "id": "s101",
+      "name": "101",
+      "text": "2017–2020 Class 15, Virginia Woolf",
+      "lines": [
+        "AP Chemistry",
+        "AP Physics C: Mechanics",
+        "AP Environmental Science",
+        "AP Calculus",
+        "AP Microeconomics",
+        "AP Macroeconomics",
+        "AP Psychology"
+      ],
+      "photos": [
+        "school/s101-01.jpg",
+        "school/s101-02.jpg",
+        "school/s101-03.jpg",
+        "school/s101-04.jpg",
+        "school/s101-05.jpg"
+      ]
+    },
+    {
+      "id": "bu",
+      "name": "BU",
+      "text": "Minor in Chemistry, Biology, and Environmental Science.",
+      "lines": [
+        "Major in Mathematics & Statistics — B.A. 2020 — 2024",
+        "Major in Biostatistics — M.S. 2024 — 2026"
+      ]
+    }
   ],
-  "librarian": [
-   "Shh — welcome to the library.",
-   "David's important documents live on these shelves.",
-   "Try my little quiz — three questions about him. A prize if you know him well."
-  ]
- }
+  "lab": [
+    {
+      "id": "bio",
+      "name": "Biology",
+      "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
+    },
+    {
+      "id": "chem",
+      "name": "Chemistry",
+      "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
+    },
+    {
+      "id": "env",
+      "name": "Environmental Science",
+      "text": "One of David's minor fields — many courses, many hours at this table. (Placeholder for stories.)"
+    }
+  ],
+  "library": {
+    "documents": [
+      {
+        "title": "An important document (replace me)",
+        "note": "David will shelve his important life documents here — visitors browse and read what interests them."
+      },
+      {
+        "title": "Another document (replace me)",
+        "note": "Placeholder."
+      }
+    ],
+    "quiz": [
+      {
+        "q": "What is my favorite band?",
+        "options": [
+          "Coldplay",
+          "Linkin Park",
+          "Radiohead",
+          "花儿乐队"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is my bilibili music account called?",
+        "options": [
+          "Midnight Radio",
+          "Insomania Radio",
+          "Sleepless FM",
+          "Radio Huahua"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is my cat's name?",
+        "options": [
+          "feifei",
+          "huahua",
+          "maomao",
+          "doudou"
+        ],
+        "answer": 1
+      }
+    ]
+  },
+  "npcs": {
+    "villager": [
+      "Welcome to town! Not many make it past the lock.",
+      "You can just click where you want to go — or a door.",
+      "The Lab has an old arcade machine. The record on it is... intimidating."
+    ],
+    "librarian": [
+      "Shh — welcome to the library.",
+      "David's important documents live on these shelves.",
+      "Try my little quiz — three questions about him. A prize if you know him well."
+    ]
+  }
 }

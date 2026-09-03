@@ -140,6 +140,7 @@ export function validateVillage2(v) {
       if (!filled(s?.id) || !filled(s?.name) || !filled(s?.text)) errs.push(`village.${sec}[${i}]: needs id/name/text`)
       if (s?.photos !== undefined && !(Array.isArray(s.photos) && s.photos.every(filled))) errs.push(`village.${sec}[${i}].photos: array of paths`)
       if (s?.footer !== undefined && !isStr(s.footer)) errs.push(`village.${sec}[${i}].footer: string`)
+      if (s?.lines !== undefined && !(Array.isArray(s.lines) && s.lines.every(filled))) errs.push(`village.${sec}[${i}].lines: non-empty strings`)
     })
   }
   if (!v.library || !Array.isArray(v.library.documents) || v.library.documents.length === 0)

@@ -18,6 +18,7 @@ export function stationPanel(st) {
 <div class="v-panel v-station">
   <h3>${esc(st.name)}</h3>
   ${st.text ? `<p>${esc(st.text)}</p>` : ''}
+  ${(st.lines || []).map(l => `<p class="v-line">${esc(l)}</p>`).join('')}
   ${photos ? `<div class="v-photos">${photos}</div>` : ''}
   ${st.footer ? `<p class="v-footer">${esc(st.footer)}</p>` : ''}
 </div>`

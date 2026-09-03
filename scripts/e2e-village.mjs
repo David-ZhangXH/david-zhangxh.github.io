@@ -212,6 +212,18 @@ try {
   check(yyPhotos.length === 10 && yyPhotos.every(Boolean), `school: all ten Yuying photos render (${yyPhotos.filter(Boolean).length}/10)`)
   await page.screenshot({ path: 'shots/village-yuying.png' })
   await closePanel()
+  const s101 = await openZoneByKeys(7, 3, 'ArrowUp')
+  const s101Text = s101 ? await s101.innerText() : ''
+  check(/2017–2020 Class 15, Virginia Woolf/.test(s101Text) && /AP Psychology/.test(s101Text) && /AP Physics C/.test(s101Text), 'school: 101 tells Class 15 + the seven APs')
+  await page.waitForTimeout(900)
+  const s101Photos = await page.$$eval('.v-photo img', els => els.map(i => i.naturalWidth > 0))
+  check(s101Photos.length === 5 && s101Photos.every(Boolean), `school: all five 101 photos render (${s101Photos.filter(Boolean).length}/5)`)
+  await page.screenshot({ path: 'shots/village-101.png' })
+  await closePanel()
+  const bu = await openZoneByKeys(11, 3, 'ArrowUp')
+  const buText = bu ? await bu.innerText() : ''
+  check(/Minor in Chemistry, Biology, and Environmental Science/.test(buText) && /Mathematics & Statistics — B.A./.test(buText) && /Biostatistics — M.S. 2024 — 2026/.test(buText), 'school: BU tells minors + both degrees')
+  await closePanel()
   await page.screenshot({ path: 'shots/village-school.png' })
 
   await enterVia('lab'); await page.waitForTimeout(300)
