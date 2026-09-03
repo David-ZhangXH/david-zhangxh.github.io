@@ -445,15 +445,26 @@ export function mountVillage({ onExit, onClassic } = {}) {
       }))
     }
     const BOARD_KEY = 'davidworld:board-open'
+    function wireBoard(panel) {
+      const b = village.home.board
+      const host = panel.querySelector('.v-pb')
+      const render = (view) => {
+        host.innerHTML = ui.boardView(b, view)
+        host.querySelectorAll('[data-pb-back]').forEach(x => x.addEventListener('click', () => render({})))
+        host.querySelectorAll('[data-pb-section]').forEach(x => x.addEventListener('click', () => render({ section: Number(x.dataset.pbSection) })))
+        wireZoom(host)
+      }
+      render({})
+    }
     function openPictureBoard() {
       const b = village.home.board
-      if (localStorage.getItem(BOARD_KEY) === 'yes') return openOverlay(ui.boardPanel(b), wireZoom)
+      if (localStorage.getItem(BOARD_KEY) === 'yes') return openOverlay(ui.boardPanel(b), wireBoard)
       const gate = createLock({ onUnlock() { localStorage.setItem(BOARD_KEY, 'yes') } })
       openOverlay(ui.boardGate(b.hint), (panel) => {
         const inputs = [...panel.querySelectorAll('.v-code input')]
         const tryIt = () => {
           const res = gate.try(inputs.map(x => x.value).join(''))
-          if (res === 'open') { closeOverlay(); return openOverlay(ui.boardPanel(b), wireZoom) }
+          if (res === 'open') { closeOverlay(); return openOverlay(ui.boardPanel(b), wireBoard) }
           panel.querySelector('.v-nudge2').hidden = res !== 'nudge'
           inputs.forEach(x => { x.value = '' }); inputs[0].focus()
         }

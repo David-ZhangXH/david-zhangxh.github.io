@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { arcadeWin, docsPanel, worldmapView, boardGate, boardPanel, prizePanel } from '../src/village/panels.js'
+import { arcadeWin, docsPanel, worldmapView, boardGate, boardPanel, boardView, prizePanel } from '../src/village/panels.js'
 import { readFileSync } from 'node:fs'
 
 const real = JSON.parse(readFileSync(new URL('../content/village.json', import.meta.url), 'utf8'))
@@ -30,7 +30,13 @@ describe('world map + picture board', () => {
     expect(gate).toContain('birthday-month-day')
     expect(gate).not.toContain('0716')
     expect(gate.match(/<input /g)).toHaveLength(4)
-    expect(boardPanel(real.home.board)).toContain('Photos coming.')
+    const root = boardPanel(real.home.board)
+    expect(root).toContain('Middle School')
+    expect(root).toMatch(/later"[^>]*disabled>Future\.\.\.\./)
+    expect(root).not.toContain('<img')
+    const mid = boardView(real.home.board, { section: 0 })
+    expect(mid.match(/<img /g)).toHaveLength(12)
+    expect(boardView(real.home.board, { section: 1 })).toContain('Photos coming.')
   })
 })
 

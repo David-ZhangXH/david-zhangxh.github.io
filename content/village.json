@@ -132,7 +132,41 @@
       "title": "Picture board",
       "text": "",
       "hint": "birthday-month-day",
-      "photos": []
+      "sections": [
+        {
+          "title": "Middle School",
+          "photos": [
+            "board/middle/01.jpg",
+            "board/middle/02.jpg",
+            "board/middle/03.jpg",
+            "board/middle/04.jpg",
+            "board/middle/05.jpg",
+            "board/middle/06.jpg",
+            "board/middle/07.jpg",
+            "board/middle/08.jpg",
+            "board/middle/09.jpg",
+            "board/middle/10.jpg",
+            "board/middle/11.jpg",
+            "board/middle/12.jpg"
+          ]
+        },
+        {
+          "title": "High School",
+          "photos": []
+        },
+        {
+          "title": "University",
+          "photos": []
+        },
+        {
+          "title": "Life",
+          "photos": []
+        },
+        {
+          "title": "Future....",
+          "later": true
+        }
+      ]
     },
     "toy": {
       "title": "Toy",

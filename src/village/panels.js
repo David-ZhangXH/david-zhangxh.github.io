@@ -160,12 +160,21 @@ export function boardGate(hint) {
   <p class="v-nudge2" hidden>not that — month, then day.</p>
 </div>`
 }
-export function boardPanel(obj) {
+// the picture board, unlocked: sections → photos (Future.... stays shut)
+export function boardView(obj, view = {}) {
+  const secs = obj.sections || []
+  if (view.section != null) {
+    const sec = secs[view.section]
+    return `<p class="v-crumbs"><button class="v-link" data-pb-back>Board</button> › <b>${esc(sec.title)}</b></p>${photoGrid(sec.photos, sec.title)}`
+  }
+  return `<div class="v-chips">${secs.map((sec, i) => `<button class="v-chip v-place${sec.later ? ' later' : ' group'}" data-pb-section="${i}"${sec.later ? ' disabled' : ''}>${esc(sec.title)}</button>`).join('')}</div>`
+}
+export function boardPanel(obj, view = {}) {
   return `
-<div class="v-panel v-station">
+<div class="v-panel v-station v-pboard">
   <h3>${esc(obj.title)}</h3>
   ${obj.text ? `<p>${esc(obj.text)}</p>` : ''}
-  ${photoGrid(obj.photos, obj.title)}
+  <div class="v-pb">${boardView(obj, view)}</div>
 </div>`
 }
 

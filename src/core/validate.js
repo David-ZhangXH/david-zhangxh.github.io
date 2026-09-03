@@ -111,7 +111,8 @@ export function validateVillage2(v) {
       !wm.stops.every(s2 => okPlace(s2) && (s2.places === undefined || (Array.isArray(s2.places) && s2.places.length > 0 && s2.places.every(okPlace))))))
       errs.push('village.home.worldmap.stops: each stop needs a place (groups: places[] of places; photos: paths)')
     const pb = v.home.board
-    if (pb && pb.photos !== undefined && !(Array.isArray(pb.photos) && pb.photos.every(filled))) errs.push('village.home.board.photos: array of paths')
+    if (pb && pb.sections !== undefined && !(Array.isArray(pb.sections) && pb.sections.length > 0 && pb.sections.every(sc => sc && filled(sc.title) && (sc.photos === undefined || (Array.isArray(sc.photos) && sc.photos.every(filled))))))
+      errs.push('village.home.board.sections: each needs a title (+ photos: paths)')
     const gl = v.home.games
     if (gl && (!Array.isArray(gl.games) || gl.games.length === 0 || !gl.games.every(g2 => g2 && filled(g2.name))))
       errs.push('village.home.games.games: each game needs a name')
