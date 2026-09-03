@@ -249,11 +249,11 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     })
     if (id === 'board') {
       const own = backdrop
-      board.list().then(({ messages, shared, offline }) => {
+      board.list().then(({ messages, shared, offline, reason }) => {
         if (backdrop !== own) return
         const cardEl = own.querySelector('.card')
         if (!cardEl) return
-        const html = boardCard(messages.map(m => ({ ...m, when: formatWhen(m.at) })), { shared, offline })
+        const html = boardCard(messages.map(m => ({ ...m, when: formatWhen(m.at) })), { shared, offline, reason })
         const fresh = document.createElement('div'); fresh.innerHTML = html
         const body = fresh.firstElementChild
         cardEl.querySelectorAll(':scope > *:not(.card-close)').forEach(n => n.remove())

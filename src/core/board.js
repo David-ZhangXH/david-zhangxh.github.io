@@ -48,12 +48,12 @@ export function createBoard(cfg = { provider: 'local' }, fetchImpl = globalThis.
     if (!remote || !fetchImpl) return { messages: local, shared: false }
     try {
       const r = await fetchImpl(`${endpoint}?select=text,at&order=at.desc&limit=${MAX_LOCAL}`, { headers: supabaseHeaders(cfg) })
-      if (!r.ok) throw new Error(`board: ${r.status}`)
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
       const rows = (await r.json()).filter(m => m && typeof m.text === 'string' && typeof m.at === 'string')
       writeLocal(rows)
       return { messages: rows.sort(newestFirst), shared: true }
-    } catch {
-      return { messages: local, shared: false, offline: true }
+    } catch (e) {
+      return { messages: local, shared: false, offline: true, reason: e && e.message ? String(e.message) : 'network' }
     }
   }
 

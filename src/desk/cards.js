@@ -87,9 +87,12 @@ export function keyboardCard() {
 export function boardCard(messages, meta = {}) {
   const rows = (messages || []).map(m => `
     <li class="board-msg"><span class="board-who">匿名：</span><span class="board-text">${esc(m.text)}</span><span class="board-when">—— ${esc(m.when || '')}</span></li>`).join('')
+  const scope = meta.shared ? ''
+    : meta.offline ? `<p class="hint board-scope">The shared board could not be reached${meta.reason ? ` (${esc(meta.reason)})` : ''} — showing what this browser remembers.</p>`
+    : '<p class="hint board-scope">This board is kept in your browser only.</p>'
   const note = meta.loading ? '<p class="hint">opening the board…</p>'
-    : !rows ? '<p class="hint">Nothing pinned yet — the keyboard is right there.</p>'
-    : meta.shared ? '' : '<p class="hint board-scope">This board is kept in your browser only.</p>'
+    : !rows ? `<p class="hint">Nothing pinned yet — the keyboard is right there.</p>${scope}`
+    : scope
   return card('The message board', `
   ${rows ? `<ol class="board">${rows}</ol>` : ''}
   ${note}`, 'boardcard')

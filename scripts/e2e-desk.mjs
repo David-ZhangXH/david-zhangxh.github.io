@@ -103,7 +103,7 @@ try {
   check(canvasBack, 're-entering the world works')
   await page.keyboard.press('Enter')
 
-  const benign = /favicon|Autoplay|preload/i
+  const benign = /favicon|Autoplay|preload|supabase\.co|ERR_TUNNEL_CONNECTION_FAILED|ERR_NAME_NOT_RESOLVED/i  // the sandbox cannot reach the board's backend
   const realErrors = errors.filter(e => !benign.test(e))
   check(realErrors.length === 0, `no console errors (${realErrors.slice(0, 3).join(' | ') || 'clean'})`)
   await page.close()

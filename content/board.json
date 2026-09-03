@@ -1,6 +1,6 @@
 {
-  "provider": "local",
-  "url": "",
-  "anonKey": "",
+  "provider": "supabase",
+  "url": "https://zoyngrpyvatyfvrtvwzf.supabase.co",
+  "anonKey": "sb_publishable_LEUZI9_uNFnAR6dY8cdmpA_K7xGnmnv",
   "table": "messages"
 }
