@@ -182,7 +182,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
       if (overlayOpen) return
       const t = renderer.screenToTile(e.clientX, e.clientY)
       const cat = catAt(t.x, t.y)
-      if (cat) { openOverlay(ui.objectPanel(cat.name, cat.line)); return }
+      if (cat) { openOverlay(ui.petPanel(cat, village.home.pets), wireZoom); return }
       const zone = scene.zoneAt(t.x, t.y)
       let goal = null
       if (zone) {

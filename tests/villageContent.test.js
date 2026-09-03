@@ -48,7 +48,12 @@ describe('David\'s specifics are honored', () => {
   })
   it('world map: China and US open into his cities; the rest are single stops, ending with Next stop...', () => {
     const stops = real.home.worldmap.stops
-    expect(stops.map(s => s.place)).toEqual(['China', 'US', 'Singapore', 'Bali Island', 'New Zealand', 'Reykjavik', 'Paris', 'Tokyo', 'Kyoto', 'Next stop...'])
+    expect(stops.map(s => s.place)).toEqual(['China', 'US', 'Singapore', 'Bali Island', 'New Zealand', 'Iceland', 'Paris', 'Japan', 'Next stop...'])
+    expect(stops.find(s => s.place === 'Japan').places.map(p => p.place)).toEqual(['Tokyo', 'Kyoto', 'Nara'])
+    expect(stops.find(s => s.place === 'Iceland').photos).toHaveLength(41)
+    expect(stops.find(s => s.place === 'Paris').photos).toHaveLength(26)
+    expect(stops[1].places.find(p => p.place === 'Boston').photos).toHaveLength(15)
+    expect(real.home.pets.photos).toHaveLength(46)
     const cn = stops[0].places.map(p => p.place)
     expect(cn).toEqual(['北京', '合肥', '上海', '重庆', '成都', '厦门', '济南', '三亚', '广州', '武夷山', '新疆', '内蒙', '武汉', '西安', '苏州', '杭州', '长沙', '延边', '香港'])
     expect(stops[0].places[0].when).toBe('growing up')

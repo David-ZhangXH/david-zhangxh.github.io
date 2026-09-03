@@ -144,6 +144,10 @@ try {
     await page.click('.v-wm [data-wm-back]')
     t = await wmPanel.innerText()
     check(/China/.test(t) && !/北京/.test(t), 'world map: World breadcrumb goes back')
+    await page.click('.v-wm [data-wm-group="7"]')
+    t = await wmPanel.innerText()
+    check(/Tokyo/.test(t) && /Kyoto/.test(t) && /Nara/.test(t), 'world map: Japan opens into Tokyo / Kyoto / Nara')
+    await page.click('.v-wm [data-wm-back]')
     await page.click('.v-wm [data-wm-stop="4"]')
     await page.waitForTimeout(1500)
     const nzPhotos = await page.$$eval('.v-wm .v-photo img', els => els.map(i => i.naturalWidth > 0))
@@ -233,7 +237,7 @@ try {
   // world map (left wall now)
   const wm = await openZoneByKeys(2, 4, 'ArrowLeft')
   const wmText = wm ? await wm.innerText() : ''
-  check(/China/.test(wmText) && /Kyoto/.test(wmText) && /Next stop/.test(wmText) && !/pinned/i.test(wmText), 'home: world map lists his stops, ending with Next stop...')
+  check(/China/.test(wmText) && /Japan/.test(wmText) && /Next stop/.test(wmText) && !/pinned/i.test(wmText), 'home: world map lists his stops, ending with Next stop...')
   await closePanel()
 
   // ---- memory placard gate (right wall now) ----

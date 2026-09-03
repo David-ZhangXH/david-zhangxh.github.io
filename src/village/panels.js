@@ -146,6 +146,16 @@ export function worldmapPanel(obj, view = {}) {
 </div>`
 }
 
+// a pet, clicked: its name, its line, and the family's shared album
+export function petPanel(pet, album) {
+  return `
+<div class="v-panel v-station v-pet">
+  <h3>${esc(pet.name)}</h3>
+  ${pet.line ? `<p>${esc(pet.line)}</p>` : ''}
+  ${album && album.photos && album.photos.length ? `<h4>${esc(album.title || 'The pets')}</h4>${photoGrid(album.photos, album.title || 'pets')}` : ''}
+</div>`
+}
+
 // the picture board's lock: four digits, the hint is David's
 export function boardGate(hint) {
   return `

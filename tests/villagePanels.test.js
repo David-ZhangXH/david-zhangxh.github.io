@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { arcadeWin, docsPanel, worldmapView, boardGate, boardPanel, boardView, prizePanel } from '../src/village/panels.js'
+import { arcadeWin, docsPanel, worldmapView, boardGate, boardPanel, boardView, prizePanel, petPanel } from '../src/village/panels.js'
 import { readFileSync } from 'node:fs'
 
 const real = JSON.parse(readFileSync(new URL('../content/village.json', import.meta.url), 'utf8'))
@@ -24,6 +24,12 @@ describe('world map + picture board', () => {
     expect(bj).toContain('Photos coming.')
     expect(worldmapView(wm, { stop: 4 }).match(/<img /g)).toHaveLength(10)   // New Zealand
     expect(worldmapView(wm, { stop: 2 }).match(/<img /g)).toHaveLength(7)    // Singapore
+    expect(worldmapView(wm, { group: 7 })).toContain('Nara')                     // Japan opens into three cities
+    expect(worldmapView(wm, { group: 7, place: 0 }).match(/<img /g)).toHaveLength(9)
+    const pet = petPanel(real.home.cats[1], real.home.pets)
+    expect(pet).toContain('小花')
+    expect(pet.match(/<img /g)).toHaveLength(46)
+    expect(petPanel(real.home.dog, real.home.pets)).not.toContain('<p>')       // 伯爵: name + album, no line
     const withPhotos = worldmapView({ stops: [{ place: 'Paris', photos: ['a.jpg', 'b.jpg'] }] }, { stop: 0 })
     expect(withPhotos.match(/<img /g)).toHaveLength(2)
   })

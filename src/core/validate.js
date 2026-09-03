@@ -110,6 +110,8 @@ export function validateVillage2(v) {
     if (wm && (!Array.isArray(wm.stops) || wm.stops.length === 0 ||
       !wm.stops.every(s2 => okPlace(s2) && (s2.places === undefined || (Array.isArray(s2.places) && s2.places.length > 0 && s2.places.every(okPlace))))))
       errs.push('village.home.worldmap.stops: each stop needs a place (groups: places[] of places; photos: paths)')
+    const pets = v.home.pets
+    if (pets !== undefined && !(pets && isStr(pets.title) && Array.isArray(pets.photos) && pets.photos.every(filled))) errs.push('village.home.pets: title + photos[]')
     const pb = v.home.board
     if (pb && pb.sections !== undefined && !(Array.isArray(pb.sections) && pb.sections.length > 0 && pb.sections.every(sc => sc && filled(sc.title) && (sc.photos === undefined || (Array.isArray(sc.photos) && sc.photos.every(filled))))))
       errs.push('village.home.board.sections: each needs a title (+ photos: paths)')

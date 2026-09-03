@@ -333,7 +333,24 @@
             },
             {
               "place": "Boston",
-              "when": "School life"
+              "when": "School life",
+              "photos": [
+                "map/us/boston/01.jpg",
+                "map/us/boston/02.jpg",
+                "map/us/boston/03.jpg",
+                "map/us/boston/04.jpg",
+                "map/us/boston/05.jpg",
+                "map/us/boston/06.jpg",
+                "map/us/boston/07.jpg",
+                "map/us/boston/08.jpg",
+                "map/us/boston/09.jpg",
+                "map/us/boston/10.jpg",
+                "map/us/boston/11.jpg",
+                "map/us/boston/12.jpg",
+                "map/us/boston/13.jpg",
+                "map/us/boston/14.jpg",
+                "map/us/boston/15.jpg"
+              ]
             },
             {
               "place": "Minneapolis"
@@ -398,16 +415,118 @@
           ]
         },
         {
-          "place": "Reykjavik"
+          "place": "Iceland",
+          "photos": [
+            "map/iceland/01.jpg",
+            "map/iceland/02.jpg",
+            "map/iceland/03.jpg",
+            "map/iceland/04.jpg",
+            "map/iceland/05.jpg",
+            "map/iceland/06.jpg",
+            "map/iceland/07.jpg",
+            "map/iceland/08.jpg",
+            "map/iceland/09.jpg",
+            "map/iceland/10.jpg",
+            "map/iceland/11.jpg",
+            "map/iceland/12.jpg",
+            "map/iceland/13.jpg",
+            "map/iceland/14.jpg",
+            "map/iceland/15.jpg",
+            "map/iceland/16.jpg",
+            "map/iceland/17.jpg",
+            "map/iceland/18.jpg",
+            "map/iceland/19.jpg",
+            "map/iceland/20.jpg",
+            "map/iceland/21.jpg",
+            "map/iceland/22.jpg",
+            "map/iceland/23.jpg",
+            "map/iceland/24.jpg",
+            "map/iceland/25.jpg",
+            "map/iceland/26.jpg",
+            "map/iceland/27.jpg",
+            "map/iceland/28.jpg",
+            "map/iceland/29.jpg",
+            "map/iceland/30.jpg",
+            "map/iceland/31.jpg",
+            "map/iceland/32.jpg",
+            "map/iceland/33.jpg",
+            "map/iceland/34.jpg",
+            "map/iceland/35.jpg",
+            "map/iceland/36.jpg",
+            "map/iceland/37.jpg",
+            "map/iceland/38.jpg",
+            "map/iceland/39.jpg",
+            "map/iceland/40.jpg",
+            "map/iceland/41.jpg"
+          ]
         },
         {
-          "place": "Paris"
+          "place": "Paris",
+          "photos": [
+            "map/paris/01.jpg",
+            "map/paris/02.jpg",
+            "map/paris/03.jpg",
+            "map/paris/04.jpg",
+            "map/paris/05.jpg",
+            "map/paris/06.jpg",
+            "map/paris/07.jpg",
+            "map/paris/08.jpg",
+            "map/paris/09.jpg",
+            "map/paris/10.jpg",
+            "map/paris/11.jpg",
+            "map/paris/12.jpg",
+            "map/paris/13.jpg",
+            "map/paris/14.jpg",
+            "map/paris/15.jpg",
+            "map/paris/16.jpg",
+            "map/paris/17.jpg",
+            "map/paris/18.jpg",
+            "map/paris/19.jpg",
+            "map/paris/20.jpg",
+            "map/paris/21.jpg",
+            "map/paris/22.jpg",
+            "map/paris/23.jpg",
+            "map/paris/24.jpg",
+            "map/paris/25.jpg",
+            "map/paris/26.jpg"
+          ]
         },
         {
-          "place": "Tokyo"
-        },
-        {
-          "place": "Kyoto"
+          "place": "Japan",
+          "places": [
+            {
+              "place": "Tokyo",
+              "photos": [
+                "map/japan/tokyo/01.jpg",
+                "map/japan/tokyo/02.jpg",
+                "map/japan/tokyo/03.jpg",
+                "map/japan/tokyo/04.jpg",
+                "map/japan/tokyo/05.jpg",
+                "map/japan/tokyo/06.jpg",
+                "map/japan/tokyo/07.jpg",
+                "map/japan/tokyo/08.jpg",
+                "map/japan/tokyo/09.jpg"
+              ]
+            },
+            {
+              "place": "Kyoto",
+              "photos": [
+                "map/japan/kyoto/01.jpg",
+                "map/japan/kyoto/02.jpg",
+                "map/japan/kyoto/03.jpg"
+              ]
+            },
+            {
+              "place": "Nara",
+              "photos": [
+                "map/japan/nara/01.jpg",
+                "map/japan/nara/02.jpg",
+                "map/japan/nara/03.jpg",
+                "map/japan/nara/04.jpg",
+                "map/japan/nara/05.jpg"
+              ]
+            }
+          ]
         },
         {
           "place": "Next stop...",
@@ -522,6 +641,57 @@
     "poster": {
       "title": "Iron Man",
       "text": "With great power comes great responsibility."
+    },
+    "pets": {
+      "title": "The pets",
+      "photos": [
+        "pets/01.jpg",
+        "pets/02.jpg",
+        "pets/03.jpg",
+        "pets/04.jpg",
+        "pets/05.jpg",
+        "pets/06.jpg",
+        "pets/07.jpg",
+        "pets/08.jpg",
+        "pets/09.jpg",
+        "pets/10.jpg",
+        "pets/11.jpg",
+        "pets/12.jpg",
+        "pets/13.jpg",
+        "pets/14.jpg",
+        "pets/15.jpg",
+        "pets/16.jpg",
+        "pets/17.jpg",
+        "pets/18.jpg",
+        "pets/19.jpg",
+        "pets/20.jpg",
+        "pets/21.jpg",
+        "pets/22.jpg",
+        "pets/23.jpg",
+        "pets/24.jpg",
+        "pets/25.jpg",
+        "pets/26.jpg",
+        "pets/27.jpg",
+        "pets/28.jpg",
+        "pets/29.jpg",
+        "pets/30.jpg",
+        "pets/31.jpg",
+        "pets/32.jpg",
+        "pets/33.jpg",
+        "pets/34.jpg",
+        "pets/35.jpg",
+        "pets/36.jpg",
+        "pets/37.jpg",
+        "pets/38.jpg",
+        "pets/39.jpg",
+        "pets/40.jpg",
+        "pets/41.jpg",
+        "pets/42.jpg",
+        "pets/43.jpg",
+        "pets/44.jpg",
+        "pets/45.jpg",
+        "pets/46.jpg"
+      ]
     }
   },
   "schools": [
