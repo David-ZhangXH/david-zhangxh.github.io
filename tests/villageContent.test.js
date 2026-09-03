@@ -113,6 +113,23 @@ describe('David\'s specifics are honored', () => {
     const bad = { ...real, lab: real.lab.map((l, i) => i === 0 ? { ...l, courses: [] } : l) }
     expect(validateVillage(bad)).not.toEqual([])
   })
+  it('the library shelves Hello-world, Life Experience, the anxiety letter — then To be continued', () => {
+    const docs = real.library.documents
+    expect(docs.map(d => d.title)).toEqual(['Hello-world', 'Life Experience', 'If you are feeling anxious & depression, read this'])
+    expect(docs[0].paragraphs[0]).toMatch(/I am David, 张晓航/)
+    expect(docs[0].paragraphs.at(-1)).toBe('Enjoy.')
+    expect(real.library.toBeContinued).toBe('....To be continued.')
+  })
+  it("the record-breaker's letter is David's, signed D", () => {
+    const L = real.arcade.letter
+    expect(L.greeting).toBe('Dear person reading this,')
+    expect(L.paragraphs).toHaveLength(4)
+    expect(L.paragraphs[1]).toMatch(/middle school/)
+    expect(L.paragraphs[2]).toMatch(/screenshot/)
+    expect(L.signature).toBe('D')
+    const bad = { ...real, arcade: { letter: { ...L, paragraphs: [] } } }
+    expect(validateVillage(bad)).not.toEqual([])
+  })
   it('quiz answers are Linkin Park, Insomania Radio, huahua', () => {
     const [q1, q2, q3] = real.library.quiz
     expect(q1.options[q1.answer]).toBe('Linkin Park')

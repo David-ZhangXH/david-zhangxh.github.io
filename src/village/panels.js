@@ -176,14 +176,20 @@ export function memoryGate(question) {
 </div>`
 }
 
-export function docsPanel(documents) {
-  const rows = documents.map(d => `
-  <details><summary>${esc(d.title)}</summary><p>${esc(d.note || '')}</p></details>`).join('')
+export function docsPanel(documents, toBeContinued = '') {
+  const rows = documents.map(d => {
+    const paras = (d.paragraphs || []).filter(Boolean)
+    const body = paras.length
+      ? paras.map(t => `<p>${esc(t)}</p>`).join('')
+      : `<p class="v-dim">${esc(d.note || 'Still being written.')}</p>`
+    return `
+  <details class="v-doc"><summary>${esc(d.title)}</summary><div class="v-doc-body">${body}</div></details>`
+  }).join('')
   return `
-<div class="v-panel">
+<div class="v-panel v-docs">
   <h3>THE DOCUMENT SHELVES</h3>
-  <p class="v-flavor">Important documents from David's life — pull out whichever interests you.</p>
   ${rows}
+  ${toBeContinued ? `<p class="v-dim v-tbc">${esc(toBeContinued)}</p>` : ''}
 </div>`
 }
 
@@ -250,7 +256,7 @@ export function arcadeBoard() {
 </div>`
 }
 
-export function arcadeWin({ timeMs, moves, code, beat, email }) {
+export function arcadeWin({ timeMs, moves, code, beat, email, letter }) {
   const t = (timeMs / 1000).toFixed(2)
   if (!beat) {
     return `
@@ -260,14 +266,20 @@ export function arcadeWin({ timeMs, moves, code, beat, email }) {
   <p class="v-actions"><button class="v-btn" data-again>again</button><button class="v-btn ghost" data-close-arcade>step away</button></p>
 </div>`
   }
+  const L = letter || {}
+  const letterHtml = L.paragraphs ? `
+  <div class="v-letter">
+    <p class="v-letter-greet">${esc(L.greeting || '')}</p>
+    ${L.paragraphs.map(t => `<p>${esc(t)}</p>`).join('')}
+    <p class="v-letter-sign">${esc(L.signoff || '')}<br>${esc(L.signature || '')}</p>
+  </div>` : ''
   return `
 <div class="v-panel arcade win">
   <h3>★ NEW RECORD — ${t}s ★</h3>
-  <p>You beat 26.00. The machine prints a small ticket:</p>
   <p class="v-ticket">TIME ${t}s · MOVES ${esc(moves)} · CODE ${esc(code)}</p>
-  <p>Email it to David — he owes you a hand-written letter. He's good for it.</p>
+  ${letterHtml}
   <p class="v-actions">
-    <a class="v-btn" data-claim href="mailto:${esc(email)}?subject=${encodeURIComponent('I beat 26.00s')}&body=${encodeURIComponent(`My ticket: TIME ${t}s · MOVES ${moves} · CODE ${code}`)}">claim the letter</a>
+    <a class="v-btn" data-claim href="mailto:${esc(email)}?subject=${encodeURIComponent('I beat your record')}&body=${encodeURIComponent(`My ticket: TIME ${t}s · MOVES ${moves} · CODE ${code}\n\n(screenshot attached)\n\nMy address:\n`)}">send David the screenshot</a>
     <button class="v-btn ghost" data-close-arcade>walk away a legend</button>
   </p>
 </div>`

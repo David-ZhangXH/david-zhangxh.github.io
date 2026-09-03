@@ -244,7 +244,15 @@ try {
 
   await enterVia('library'); await page.waitForTimeout(300)
   const docs = await openZoneByKeys(4, 3, 'ArrowUp')
-  check(docs && /document/i.test(await docs.innerText()), 'library: document shelves open')
+  const docsText = docs ? await docs.innerText() : ''
+  check(/document/i.test(docsText) && /Hello-world/.test(docsText) && /Life Experience/.test(docsText) && /To be continued/.test(docsText), 'library: the three documents + To be continued')
+  if (docs) {
+    await page.click('.v-doc summary')
+    await page.waitForTimeout(200)
+    const opened = await page.$eval('.v-docs', el => el.innerText)
+    check(/I am David, 张晓航/.test(opened) && /Enjoy\./.test(opened), 'library: Hello-world opens and reads in his words')
+    await page.screenshot({ path: 'shots/village-docs.png' })
+  }
   await closePanel()
 
   // quiz: answer the three correct answers → prize

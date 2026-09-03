@@ -162,3 +162,16 @@
 .v-photo.big { grid-column: 1 / -1; cursor: zoom-out; }
 .v-photo.big img { aspect-ratio: auto; max-height: 60vh; object-fit: contain; background: #2b3550; }
 .v-footer { margin-top: 12px; padding-top: 8px; border-top: 2px dashed #d9cbb0; font-weight: 700; }
+
+/* ---- document shelves + the record-breaker's letter ---- */
+.v-docs { max-width: 560px; }
+.v-doc { border-bottom: 2px dashed #d9cbb0; padding: 6px 0; }
+.v-doc summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
+.v-doc-body { padding: 4px 0 6px 14px; line-height: 1.6; }
+.v-doc-body p { margin: 0 0 10px; }
+.v-tbc { margin-top: 12px; text-align: center; letter-spacing: .04em; }
+.v-letter { background: #f7ecd7; color: #2b3550; border: 2px solid #2b3550; border-radius: 3px;
+  padding: 12px 14px; margin: 10px 0 12px; line-height: 1.6; font-size: 13px; max-height: 44vh; overflow: auto; }
+.v-letter p { margin: 0 0 10px; }
+.v-letter-greet { font-weight: 700; }
+.v-letter-sign { margin-top: 12px !important; }

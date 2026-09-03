@@ -149,7 +149,16 @@ export function validateVillage2(v) {
   }
   if (!v.library || !Array.isArray(v.library.documents) || v.library.documents.length === 0)
     errs.push('village.library.documents: non-empty array required')
-  else v.library.documents.forEach((d, i) => { if (!filled(d?.title)) errs.push(`village.library.documents[${i}].title: required`) })
+  else v.library.documents.forEach((d, i) => {
+    if (!filled(d?.title)) errs.push(`village.library.documents[${i}].title: required`)
+    if (d?.paragraphs !== undefined && !(Array.isArray(d.paragraphs) && d.paragraphs.every(filled))) errs.push(`village.library.documents[${i}].paragraphs: non-empty strings`)
+  })
+  if (v.library?.toBeContinued !== undefined && !isStr(v.library.toBeContinued)) errs.push('village.library.toBeContinued: string')
+  if (v.arcade !== undefined) {
+    const L = v.arcade?.letter
+    if (!L || !filled(L.greeting) || !Array.isArray(L.paragraphs) || L.paragraphs.length === 0 || !L.paragraphs.every(filled) || !filled(L.signoff) || !filled(L.signature))
+      errs.push('village.arcade.letter: greeting, paragraphs[], signoff, signature')
+  }
   if (!v.library || !Array.isArray(v.library.quiz) || v.library.quiz.length !== 3) errs.push('village.library.quiz: exactly 3 questions')
   else v.library.quiz.forEach((q, i) => {
     if (!filled(q?.q)) errs.push(`village.library.quiz[${i}].q: required`)

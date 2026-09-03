@@ -387,7 +387,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
       const table = village.lab.find(l => l.id === id)
       if (table) return openOverlay(ui.labPanel(table))
       // library
-      if (id === 'docs') return openOverlay(ui.docsPanel(village.library.documents))
+      if (id === 'docs') return openOverlay(ui.docsPanel(village.library.documents, village.library.toBeContinued))
       if (id === 'quiz') return startQuiz(0, 0)
     }
 
@@ -499,7 +499,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
           const code = claimCode(timeMs, puzzle.moves(), seed, new Date().toISOString().slice(0, 10))
           if (beat) questToast('record')
           closeOverlay()
-          openOverlay(ui.arcadeWin({ timeMs, moves: puzzle.moves(), code, beat, email: profile.email }), (p2) => {
+          openOverlay(ui.arcadeWin({ timeMs, moves: puzzle.moves(), code, beat, email: profile.email, letter: village.arcade?.letter }), (p2) => {
             p2.querySelector('[data-again]')?.addEventListener('click', () => runPuzzle())
             p2.querySelector('[data-close-arcade]')?.addEventListener('click', closeOverlay)
           })

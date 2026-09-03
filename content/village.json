@@ -456,12 +456,21 @@
   "library": {
     "documents": [
       {
-        "title": "An important document (replace me)",
-        "note": "David will shelve his important life documents here — visitors browse and read what interests them."
+        "title": "Hello-world",
+        "paragraphs": [
+          "To the people who might see this — hi, I am David, 张晓航, though my Chinese name is hard to pronounce.",
+          "I am a musician, daydreamer, writer, director, and learner. This place is where I express my true feelings to everyone, including you, whoever you are. I hope you find out here why you love this world.",
+          "And remember: I always love you and support you. If you have any questions, or you are facing difficulties, feel free to leave me a message in my village. It is totally personal and safe.",
+          "Enjoy."
+        ]
       },
       {
-        "title": "Another document (replace me)",
-        "note": "Placeholder."
+        "title": "Life Experience",
+        "paragraphs": []
+      },
+      {
+        "title": "If you are feeling anxious & depression, read this",
+        "paragraphs": []
       }
     ],
     "quiz": [
@@ -495,7 +504,8 @@
         ],
         "answer": 1
       }
-    ]
+    ],
+    "toBeContinued": "....To be continued."
   },
   "npcs": {
     "villager": [
@@ -508,5 +518,18 @@
       "David's important documents live on these shelves.",
       "Try my little quiz — three questions about him. A prize if you know him well."
     ]
+  },
+  "arcade": {
+    "letter": {
+      "greeting": "Dear person reading this,",
+      "paragraphs": [
+        "Congratulations — you have surpassed my record. I hope you had fun with it. Enjoy your life the way you enjoyed the game; and if you didn't enjoy it, then I'm sorry you spent your time here.",
+        "When I played this game I was in middle school. I played it after class, after lunch, in every minute that wasn't a lesson, with my classmates on our class's computer — and by the time I was about to graduate, I held a record that nobody could beat. As I grew up, I slowly forgot how much joy and peace I had there. I miss my friends and that time. If you have a moment, reach out to a friend you haven't spoken with in a long while. Trust me, it will be fun.",
+        "By the way, I want to give you a sincere gift for beating my record. Send me an email with a screenshot of your time and your address.",
+        "In case I never get to meet you: I wish you the best."
+      ],
+      "signoff": "Best,",
+      "signature": "D"
+    }
   }
 }
