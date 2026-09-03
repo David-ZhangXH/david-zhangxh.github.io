@@ -181,7 +181,24 @@
         },
         {
           "title": "University",
-          "photos": []
+          "photos": [
+            "board/university/01.jpg",
+            "board/university/02.jpg",
+            "board/university/03.jpg",
+            "board/university/04.jpg",
+            "board/university/05.jpg",
+            "board/university/06.jpg",
+            "board/university/07.jpg",
+            "board/university/08.jpg",
+            "board/university/09.jpg",
+            "board/university/10.jpg",
+            "board/university/11.jpg",
+            "board/university/12.jpg",
+            "board/university/13.jpg",
+            "board/university/14.jpg",
+            "board/university/15.jpg",
+            "board/university/16.jpg"
+          ]
         },
         {
           "title": "Life",

@@ -178,7 +178,12 @@ try {
     check(hsPhotos.length === 24 && hsPhotos.every(Boolean), `picture board: all 24 High School photos render (${hsPhotos.filter(Boolean).length}/24)`)
     await page.click('.v-pb [data-pb-back]')
     await page.click('.v-pb [data-pb-section="2"]')
-    check(/Photos coming/.test(await page.$eval('.v-pb', el => el.innerText)), 'picture board: University waits for its photos')
+    await page.waitForTimeout(1500)
+    const uniPhotos = await page.$$eval('.v-pb .v-photo img', els => els.map(i => i.naturalWidth > 0))
+    check(uniPhotos.length === 16 && uniPhotos.every(Boolean), `picture board: all 16 University photos render (${uniPhotos.filter(Boolean).length}/16)`)
+    await page.click('.v-pb [data-pb-back]')
+    await page.click('.v-pb [data-pb-section="3"]')
+    check(/Photos coming/.test(await page.$eval('.v-pb', el => el.innerText)), 'picture board: Life waits for its photos')
     await closePanel()
   } else check(false, 'picture board gate opens')
 

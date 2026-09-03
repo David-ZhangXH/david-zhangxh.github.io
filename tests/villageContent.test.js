@@ -62,6 +62,7 @@ describe('David\'s specifics are honored', () => {
     expect(real.home.board.sections.map(s => s.title)).toEqual(['Middle School', 'High School', 'University', 'Life', 'Future....'])
     expect(real.home.board.sections[0].photos).toHaveLength(12)
     expect(real.home.board.sections[1].photos).toHaveLength(24)
+    expect(real.home.board.sections[2].photos).toHaveLength(16)
     expect(real.home.board.sections.at(-1).later).toBe(true)
     const bad = { ...real, home: { ...real.home, worldmap: { ...real.home.worldmap, stops: [{ place: 'X', places: [] }] } } }
     expect(validateVillage(bad)).not.toEqual([])
