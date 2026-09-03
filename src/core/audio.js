@@ -105,24 +105,6 @@ export function startProfile(name) {
   PROFILES[name]?.()
 }
 
-// a distant roll of thunder, for the lightning outside the window
-export function thunder() {
-  if (!soundOn()) return
-  ensureCtx()
-  const src = ctx.createBufferSource()
-  src.buffer = noiseBuffer()
-  const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 160
-  const g = ctx.createGain()
-  const now = ctx.currentTime
-  g.gain.setValueAtTime(0.0001, now)
-  g.gain.exponentialRampToValueAtTime(0.28, now + 0.25)
-  g.gain.exponentialRampToValueAtTime(0.12, now + 1.2)
-  g.gain.exponentialRampToValueAtTime(0.0001, now + 3.4)
-  src.connect(lp).connect(g).connect(master)
-  src.start(now)
-  src.stop(now + 3.6)
-}
-
 export function stopAll() {
   for (const fn of stops.splice(0)) fn()
 }
