@@ -180,7 +180,7 @@ try {
     await page.click('.v-pb [data-pb-section="2"]')
     await page.waitForTimeout(1500)
     const uniPhotos = await page.$$eval('.v-pb .v-photo img', els => els.map(i => i.naturalWidth > 0))
-    check(uniPhotos.length === 16 && uniPhotos.every(Boolean), `picture board: all 16 University photos render (${uniPhotos.filter(Boolean).length}/16)`)
+    check(uniPhotos.length === 21 && uniPhotos.every(Boolean), `picture board: all 21 University photos render (${uniPhotos.filter(Boolean).length}/21)`)
     await page.click('.v-pb [data-pb-back]')
     await page.click('.v-pb [data-pb-section="3"]')
     check(/Photos coming/.test(await page.$eval('.v-pb', el => el.innerText)), 'picture board: Life waits for its photos')

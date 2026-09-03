@@ -197,7 +197,12 @@
             "board/university/13.jpg",
             "board/university/14.jpg",
             "board/university/15.jpg",
-            "board/university/16.jpg"
+            "board/university/16.jpg",
+            "board/university/17.jpg",
+            "board/university/18.jpg",
+            "board/university/19.jpg",
+            "board/university/20.jpg",
+            "board/university/21.jpg"
           ]
         },
         {
@@ -363,7 +368,16 @@
           ]
         },
         {
-          "place": "Singapore"
+          "place": "Singapore",
+          "photos": [
+            "map/singapore/01.jpg",
+            "map/singapore/02.jpg",
+            "map/singapore/03.jpg",
+            "map/singapore/04.jpg",
+            "map/singapore/05.jpg",
+            "map/singapore/06.jpg",
+            "map/singapore/07.jpg"
+          ]
         },
         {
           "place": "Bali Island"
