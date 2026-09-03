@@ -152,7 +152,24 @@
         },
         {
           "title": "High School",
-          "photos": []
+          "photos": [
+            "board/high/01.jpg",
+            "board/high/02.jpg",
+            "board/high/03.jpg",
+            "board/high/04.jpg",
+            "board/high/05.jpg",
+            "board/high/06.jpg",
+            "board/high/07.jpg",
+            "board/high/08.jpg",
+            "board/high/09.jpg",
+            "board/high/10.jpg",
+            "board/high/11.jpg",
+            "board/high/12.jpg",
+            "board/high/13.jpg",
+            "board/high/14.jpg",
+            "board/high/15.jpg",
+            "board/high/16.jpg"
+          ]
         },
         {
           "title": "University",
