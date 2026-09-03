@@ -21,8 +21,8 @@ describe('world map + picture board', () => {
     expect(cities).toContain('data-wm-back="root"')
     const bj = worldmapView(wm, { group: 0, place: 0 })
     expect(bj).toContain('growing up')
-    expect(bj).toContain('Photos coming.')
-    expect(worldmapView(wm, { stop: 4 }).match(/<img /g)).toHaveLength(10)   // New Zealand
+    expect(bj.match(/<img /g)).toHaveLength(16)
+    expect(worldmapView(wm, { stop: 4 }).match(/<img /g)).toHaveLength(11)   // New Zealand
     expect(worldmapView(wm, { stop: 2 }).match(/<img /g)).toHaveLength(7)    // Singapore
     expect(worldmapView(wm, { group: 7 })).toContain('Nara')                     // Japan opens into three cities
     expect(worldmapView(wm, { group: 7, place: 0 }).match(/<img /g)).toHaveLength(9)
@@ -35,7 +35,8 @@ describe('world map + picture board', () => {
     expect(petSec).toContain('小不点')
     expect(petSec).not.toContain('<img')
     expect(boardView(real.home.board, { section: 4, child: 1 }).match(/<img /g)).toHaveLength(35)
-    expect(boardView(real.home.board, { section: 5 }).match(/<img /g)).toHaveLength(33)
+    expect(boardView(real.home.board, { section: 5 }).match(/<img /g)).toHaveLength(35)
+    expect(boardView(real.home.board, { section: 3 }).match(/<img /g)).toHaveLength(54)
     const withPhotos = worldmapView({ stops: [{ place: 'Paris', photos: ['a.jpg', 'b.jpg'] }] }, { stop: 0 })
     expect(withPhotos.match(/<img /g)).toHaveLength(2)
   })
@@ -52,7 +53,7 @@ describe('world map + picture board', () => {
     expect(mid.match(/<img /g)).toHaveLength(12)
     expect(boardView(real.home.board, { section: 1 }).match(/<img /g)).toHaveLength(24)
     expect(boardView(real.home.board, { section: 2 }).match(/<img /g)).toHaveLength(21)
-    expect(boardView(real.home.board, { section: 3 })).toContain('Photos coming.')
+    expect(boardView(real.home.board, { section: 3 }).match(/<img /g)).toHaveLength(54)
   })
 })
 

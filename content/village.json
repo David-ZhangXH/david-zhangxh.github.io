@@ -207,7 +207,62 @@
         },
         {
           "title": "Life",
-          "photos": []
+          "photos": [
+            "board/life/01.jpg",
+            "board/life/02.jpg",
+            "board/life/03.jpg",
+            "board/life/04.jpg",
+            "board/life/05.jpg",
+            "board/life/06.jpg",
+            "board/life/07.jpg",
+            "board/life/08.jpg",
+            "board/life/09.jpg",
+            "board/life/10.jpg",
+            "board/life/11.jpg",
+            "board/life/12.jpg",
+            "board/life/13.jpg",
+            "board/life/14.jpg",
+            "board/life/15.jpg",
+            "board/life/16.jpg",
+            "board/life/17.jpg",
+            "board/life/18.jpg",
+            "board/life/19.jpg",
+            "board/life/20.jpg",
+            "board/life/21.jpg",
+            "board/life/22.jpg",
+            "board/life/23.jpg",
+            "board/life/24.jpg",
+            "board/life/25.jpg",
+            "board/life/26.jpg",
+            "board/life/27.jpg",
+            "board/life/28.jpg",
+            "board/life/29.jpg",
+            "board/life/30.jpg",
+            "board/life/31.jpg",
+            "board/life/32.jpg",
+            "board/life/33.jpg",
+            "board/life/34.jpg",
+            "board/life/35.jpg",
+            "board/life/36.jpg",
+            "board/life/37.jpg",
+            "board/life/38.jpg",
+            "board/life/39.jpg",
+            "board/life/40.jpg",
+            "board/life/41.jpg",
+            "board/life/42.jpg",
+            "board/life/43.jpg",
+            "board/life/44.jpg",
+            "board/life/45.jpg",
+            "board/life/46.jpg",
+            "board/life/47.jpg",
+            "board/life/48.jpg",
+            "board/life/49.jpg",
+            "board/life/50.jpg",
+            "board/life/51.jpg",
+            "board/life/52.jpg",
+            "board/life/53.jpg",
+            "board/life/54.jpg"
+          ]
         },
         {
           "title": "Pet",
@@ -315,7 +370,9 @@
             "board/family/30.jpg",
             "board/family/31.jpg",
             "board/family/32.jpg",
-            "board/family/33.jpg"
+            "board/family/33.jpg",
+            "board/family/34.jpg",
+            "board/family/35.jpg"
           ]
         },
         {
@@ -349,61 +406,267 @@
           "places": [
             {
               "place": "北京",
+              "photos": [
+                "map/china/beijing/01.jpg",
+                "map/china/beijing/02.jpg",
+                "map/china/beijing/03.jpg",
+                "map/china/beijing/04.jpg",
+                "map/china/beijing/05.jpg",
+                "map/china/beijing/06.jpg",
+                "map/china/beijing/07.jpg",
+                "map/china/beijing/08.jpg",
+                "map/china/beijing/09.jpg",
+                "map/china/beijing/10.jpg",
+                "map/china/beijing/11.jpg",
+                "map/china/beijing/12.jpg",
+                "map/china/beijing/13.jpg",
+                "map/china/beijing/14.jpg",
+                "map/china/beijing/15.jpg",
+                "map/china/beijing/16.jpg"
+              ],
               "when": "growing up"
             },
             {
-              "place": "合肥"
+              "place": "天津",
+              "photos": [
+                "map/china/tianjin/01.jpg",
+                "map/china/tianjin/02.jpg",
+                "map/china/tianjin/03.jpg",
+                "map/china/tianjin/04.jpg",
+                "map/china/tianjin/05.jpg",
+                "map/china/tianjin/06.jpg",
+                "map/china/tianjin/07.jpg"
+              ]
             },
             {
-              "place": "上海"
+              "place": "合肥",
+              "photos": [
+                "map/china/hefei/01.jpg",
+                "map/china/hefei/02.jpg",
+                "map/china/hefei/03.jpg",
+                "map/china/hefei/04.jpg"
+              ]
             },
             {
-              "place": "重庆"
+              "place": "芜湖",
+              "photos": [
+                "map/china/wuhu/01.jpg",
+                "map/china/wuhu/02.jpg",
+                "map/china/wuhu/03.jpg",
+                "map/china/wuhu/04.jpg",
+                "map/china/wuhu/05.jpg"
+              ]
             },
             {
-              "place": "成都"
+              "place": "徐州",
+              "photos": [
+                "map/china/xuzhou/01.jpg",
+                "map/china/xuzhou/02.jpg"
+              ]
             },
             {
-              "place": "厦门"
+              "place": "上海",
+              "photos": [
+                "map/china/shanghai/01.jpg",
+                "map/china/shanghai/02.jpg",
+                "map/china/shanghai/03.jpg",
+                "map/china/shanghai/04.jpg",
+                "map/china/shanghai/05.jpg",
+                "map/china/shanghai/06.jpg",
+                "map/china/shanghai/07.jpg",
+                "map/china/shanghai/08.jpg",
+                "map/china/shanghai/09.jpg",
+                "map/china/shanghai/10.jpg",
+                "map/china/shanghai/11.jpg",
+                "map/china/shanghai/12.jpg",
+                "map/china/shanghai/13.jpg",
+                "map/china/shanghai/14.jpg",
+                "map/china/shanghai/15.jpg",
+                "map/china/shanghai/16.jpg",
+                "map/china/shanghai/17.jpg",
+                "map/china/shanghai/18.jpg",
+                "map/china/shanghai/19.jpg",
+                "map/china/shanghai/20.jpg",
+                "map/china/shanghai/21.jpg"
+              ]
             },
             {
-              "place": "济南"
+              "place": "重庆",
+              "photos": [
+                "map/china/chongqing/01.jpg",
+                "map/china/chongqing/02.jpg",
+                "map/china/chongqing/03.jpg",
+                "map/china/chongqing/04.jpg"
+              ]
             },
             {
-              "place": "三亚"
+              "place": "成都",
+              "photos": [
+                "map/china/chengdu/01.jpg",
+                "map/china/chengdu/02.jpg",
+                "map/china/chengdu/03.jpg",
+                "map/china/chengdu/04.jpg",
+                "map/china/chengdu/05.jpg",
+                "map/china/chengdu/06.jpg",
+                "map/china/chengdu/07.jpg",
+                "map/china/chengdu/08.jpg",
+                "map/china/chengdu/09.jpg"
+              ]
             },
             {
-              "place": "广州"
+              "place": "厦门",
+              "photos": [
+                "map/china/xiamen/01.jpg",
+                "map/china/xiamen/02.jpg",
+                "map/china/xiamen/03.jpg",
+                "map/china/xiamen/04.jpg",
+                "map/china/xiamen/05.jpg",
+                "map/china/xiamen/06.jpg",
+                "map/china/xiamen/07.jpg"
+              ]
             },
             {
-              "place": "武夷山"
+              "place": "济南",
+              "photos": [
+                "map/china/jinan/01.jpg",
+                "map/china/jinan/02.jpg",
+                "map/china/jinan/03.jpg",
+                "map/china/jinan/04.jpg",
+                "map/china/jinan/05.jpg"
+              ]
             },
             {
-              "place": "新疆"
+              "place": "三亚",
+              "photos": [
+                "map/china/sanya/01.jpg",
+                "map/china/sanya/02.jpg",
+                "map/china/sanya/03.jpg"
+              ]
             },
             {
-              "place": "内蒙"
+              "place": "广州",
+              "photos": [
+                "map/china/guangzhou/01.jpg",
+                "map/china/guangzhou/02.jpg",
+                "map/china/guangzhou/03.jpg",
+                "map/china/guangzhou/04.jpg",
+                "map/china/guangzhou/05.jpg",
+                "map/china/guangzhou/06.jpg",
+                "map/china/guangzhou/07.jpg"
+              ]
             },
             {
-              "place": "武汉"
+              "place": "武夷山",
+              "photos": [
+                "map/china/wuyishan/01.jpg",
+                "map/china/wuyishan/02.jpg",
+                "map/china/wuyishan/03.jpg",
+                "map/china/wuyishan/04.jpg",
+                "map/china/wuyishan/05.jpg",
+                "map/china/wuyishan/06.jpg"
+              ]
             },
             {
-              "place": "西安"
+              "place": "新疆",
+              "photos": [
+                "map/china/xinjiang/01.jpg",
+                "map/china/xinjiang/02.jpg",
+                "map/china/xinjiang/03.jpg",
+                "map/china/xinjiang/04.jpg",
+                "map/china/xinjiang/05.jpg",
+                "map/china/xinjiang/06.jpg",
+                "map/china/xinjiang/07.jpg",
+                "map/china/xinjiang/08.jpg",
+                "map/china/xinjiang/09.jpg",
+                "map/china/xinjiang/10.jpg",
+                "map/china/xinjiang/11.jpg",
+                "map/china/xinjiang/12.jpg",
+                "map/china/xinjiang/13.jpg",
+                "map/china/xinjiang/14.jpg",
+                "map/china/xinjiang/15.jpg"
+              ]
             },
             {
-              "place": "苏州"
+              "place": "内蒙",
+              "photos": [
+                "map/china/neimeng/01.jpg",
+                "map/china/neimeng/02.jpg",
+                "map/china/neimeng/03.jpg",
+                "map/china/neimeng/04.jpg",
+                "map/china/neimeng/05.jpg",
+                "map/china/neimeng/06.jpg",
+                "map/china/neimeng/07.jpg"
+              ]
             },
             {
-              "place": "杭州"
+              "place": "武汉",
+              "photos": [
+                "map/china/wuhan/01.jpg",
+                "map/china/wuhan/02.jpg",
+                "map/china/wuhan/03.jpg",
+                "map/china/wuhan/04.jpg",
+                "map/china/wuhan/05.jpg",
+                "map/china/wuhan/06.jpg",
+                "map/china/wuhan/07.jpg",
+                "map/china/wuhan/08.jpg",
+                "map/china/wuhan/09.jpg"
+              ]
             },
             {
-              "place": "长沙"
+              "place": "西安",
+              "photos": [
+                "map/china/xian/01.jpg",
+                "map/china/xian/02.jpg",
+                "map/china/xian/03.jpg",
+                "map/china/xian/04.jpg"
+              ]
             },
             {
-              "place": "延边"
+              "place": "苏州",
+              "photos": [
+                "map/china/suzhou/01.jpg",
+                "map/china/suzhou/02.jpg",
+                "map/china/suzhou/03.jpg",
+                "map/china/suzhou/04.jpg"
+              ]
             },
             {
-              "place": "香港"
+              "place": "杭州",
+              "photos": [
+                "map/china/hangzhou/01.jpg",
+                "map/china/hangzhou/02.jpg",
+                "map/china/hangzhou/03.jpg",
+                "map/china/hangzhou/04.jpg",
+                "map/china/hangzhou/05.jpg",
+                "map/china/hangzhou/06.jpg",
+                "map/china/hangzhou/07.jpg",
+                "map/china/hangzhou/08.jpg",
+                "map/china/hangzhou/09.jpg"
+              ]
+            },
+            {
+              "place": "长沙",
+              "photos": [
+                "map/china/changsha/01.jpg",
+                "map/china/changsha/02.jpg",
+                "map/china/changsha/03.jpg",
+                "map/china/changsha/04.jpg"
+              ]
+            },
+            {
+              "place": "延边",
+              "photos": [
+                "map/china/yanbian/01.jpg"
+              ]
+            },
+            {
+              "place": "香港",
+              "photos": [
+                "map/china/hongkong/01.jpg",
+                "map/china/hongkong/02.jpg",
+                "map/china/hongkong/03.jpg",
+                "map/china/hongkong/04.jpg"
+              ]
             }
           ]
         },
@@ -626,7 +889,8 @@
                 "map/us/connecticuts/03.jpg",
                 "map/us/connecticuts/04.jpg",
                 "map/us/connecticuts/05.jpg",
-                "map/us/connecticuts/06.jpg"
+                "map/us/connecticuts/06.jpg",
+                "map/us/connecticuts/07.jpg"
               ]
             },
             {
@@ -788,7 +1052,8 @@
             "map/new-zealand/07.jpg",
             "map/new-zealand/08.jpg",
             "map/new-zealand/09.jpg",
-            "map/new-zealand/10.jpg"
+            "map/new-zealand/10.jpg",
+            "map/new-zealand/11.jpg"
           ]
         },
         {
