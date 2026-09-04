@@ -1,5 +1,7 @@
 // The handheld's passcode lock. The answer hides in the photo frame.
 export const DEFAULT_CODE = '0716'
+// the private albums (picture board + world map) share a longer code
+export const ALBUM_CODE = '130915'
 export function createLock({ code = DEFAULT_CODE, onUnlock } = {}) {
   let open = false
   let misses = 0

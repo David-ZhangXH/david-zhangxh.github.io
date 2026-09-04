@@ -20,3 +20,13 @@ describe('createLock', () => {
     expect(l.try('0716')).toBe('open')
   })
 })
+
+describe('the album code', () => {
+  it('is six digits and opens both private albums through the same lock', async () => {
+    const { createLock, ALBUM_CODE } = await import('../src/village/lock.js')
+    expect(ALBUM_CODE).toMatch(/^\d{6}$/)
+    const l = createLock({ code: ALBUM_CODE })
+    expect(l.try('071600')).toBe('wrong')
+    expect(l.try(ALBUM_CODE)).toBe('open')
+  })
+})

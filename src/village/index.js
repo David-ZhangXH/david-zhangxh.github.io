@@ -4,7 +4,7 @@ import { TILE, SCENES, RETURN_SPOTS } from './map.js'
 import { makeSprites } from './sprites.js'
 import { createRenderer } from './render.js'
 import { createPuzzle, claimCode } from './puzzle.js'
-import { createLock } from './lock.js'
+import { createLock, ALBUM_CODE } from './lock.js'
 import { createQuests, QUEST_IDS, QUEST_LABELS } from './quests.js'
 import * as ui from './panels.js'
 import { drawShareCard } from './share.js'
@@ -393,6 +393,11 @@ export function mountVillage({ onExit, onClassic } = {}) {
 
     function openWorldmap() {
       const wm = village.home.worldmap
+      if (!albumOpen()) return openAlbumGate('TRAVELLING WORLD MAP', wm.hint, showWorldmap)
+      showWorldmap()
+    }
+    function showWorldmap() {
+      const wm = village.home.worldmap
       openOverlay(ui.worldmapPanel(wm), (panel) => {
         const host = panel.querySelector('.v-wm')
         const render = (view) => {
@@ -444,8 +449,7 @@ export function mountVillage({ onExit, onClassic } = {}) {
         if (big) img.scrollIntoView({ block: 'nearest' })
       }))
     }
-    const BOARD_KEY = 'davidworld:board-open'
-    function wireBoard(panel) {
+        function wireBoard(panel) {
       const b = village.home.board
       const host = panel.querySelector('.v-pb')
       const render = (view) => {
@@ -460,28 +464,41 @@ export function mountVillage({ onExit, onClassic } = {}) {
       }
       render({})
     }
-    function openPictureBoard() {
-      const b = village.home.board
-      if (localStorage.getItem(BOARD_KEY) === 'yes') return openOverlay(ui.boardPanel(b), wireBoard)
-      const gate = createLock({ onUnlock() { localStorage.setItem(BOARD_KEY, 'yes') } })
-      openOverlay(ui.boardGate(b.hint), (panel) => {
+    // the picture board and the world map share one lock (and one unlock)
+    const ALBUM_KEY = 'davidworld:album-open'
+    const albumOpen = () => localStorage.getItem(ALBUM_KEY) === 'yes'
+    function openAlbumGate(title, hint, then) {
+      const gate = createLock({ code: ALBUM_CODE, onUnlock() { localStorage.setItem(ALBUM_KEY, 'yes') } })
+      openOverlay(ui.albumGate(title, hint, ALBUM_CODE.length), (panel) => {
         const inputs = [...panel.querySelectorAll('.v-code input')]
         const tryIt = () => {
           const res = gate.try(inputs.map(x => x.value).join(''))
-          if (res === 'open') { closeOverlay(); return openOverlay(ui.boardPanel(b), wireBoard) }
+          if (res === 'open') { closeOverlay(); return then() }
           panel.querySelector('.v-nudge2').hidden = res !== 'nudge'
           inputs.forEach(x => { x.value = '' }); inputs[0].focus()
         }
         inputs.forEach((inp, i) => {
-          inp.addEventListener('input', () => { if (inp.value && i < 3) inputs[i + 1].focus() })
+          inp.addEventListener('input', () => { if (inp.value && i < inputs.length - 1) inputs[i + 1].focus() })
           inp.addEventListener('keydown', (e) => {
             if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus()
             if (e.key === 'Enter') tryIt()
           })
+          inp.addEventListener('paste', (e) => {          // paste the whole code at once
+            const txt = (e.clipboardData?.getData('text') || '').replace(/\D/g, '')
+            if (txt.length < 2) return
+            e.preventDefault()
+            inputs.forEach((x, k) => { x.value = txt[k] || '' })
+            inputs[Math.min(txt.length, inputs.length) - 1].focus()
+          })
         })
-        panel.querySelector('[data-try-board]').addEventListener('click', tryIt)
+        panel.querySelector('[data-try-gate]').addEventListener('click', tryIt)
         inputs[0].focus()
       })
+    }
+    function openPictureBoard() {
+      const b = village.home.board
+      if (!albumOpen()) return openAlbumGate('PICTURE BOARD', b.hint, () => openOverlay(ui.boardPanel(b), wireBoard))
+      openOverlay(ui.boardPanel(b), wireBoard)
     }
     function openMemory() {
       if (quests.isDone('memory')) {

@@ -42,9 +42,10 @@ describe('world map + picture board', () => {
   })
   it('the picture board gate never prints the code, only the hint', () => {
     const gate = boardGate(real.home.board.hint)
-    expect(gate).toContain('birthday-month-day')
+    expect(gate).toContain('six digits')
+    expect(gate).not.toContain('130915')
     expect(gate).not.toContain('0716')
-    expect(gate.match(/<input /g)).toHaveLength(4)
+    expect(gate.match(/<input /g)).toHaveLength(6)
     const root = boardPanel(real.home.board)
     expect(root).toContain('Middle School')
     expect(root).toMatch(/later"[^>]*disabled>Future\.\.\.\./)

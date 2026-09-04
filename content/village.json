@@ -131,7 +131,7 @@
     "board": {
       "title": "Picture board",
       "text": "",
-      "hint": "birthday-month-day",
+      "hint": "six digits",
       "sections": [
         {
           "title": "Middle School",
@@ -1098,8 +1098,7 @@
             "map/iceland/37.jpg",
             "map/iceland/38.jpg",
             "map/iceland/39.jpg",
-            "map/iceland/40.jpg",
-            "map/iceland/41.jpg"
+            "map/iceland/40.jpg"
           ]
         },
         {
@@ -1174,7 +1173,8 @@
           "place": "Next stop...",
           "later": true
         }
-      ]
+      ],
+      "hint": "six digits"
     },
     "tape": {
       "title": "Video-tape",

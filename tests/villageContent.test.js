@@ -50,7 +50,7 @@ describe('David\'s specifics are honored', () => {
     const stops = real.home.worldmap.stops
     expect(stops.map(s => s.place)).toEqual(['China', 'US', 'Singapore', 'Bali Island', 'New Zealand', 'Iceland', 'Paris', 'Japan', 'Next stop...'])
     expect(stops.find(s => s.place === 'Japan').places.map(p => p.place)).toEqual(['Tokyo', 'Kyoto', 'Nara'])
-    expect(stops.find(s => s.place === 'Iceland').photos).toHaveLength(41)
+    expect(stops.find(s => s.place === 'Iceland').photos).toHaveLength(40)
     expect(stops.find(s => s.place === 'Paris').photos).toHaveLength(26)
     expect(stops[1].places.find(p => p.place === 'Boston').photos).toHaveLength(15)
     const us = stops[1].places
@@ -67,7 +67,8 @@ describe('David\'s specifics are honored', () => {
     expect(stops.at(-1).later).toBe(true)
   })
   it('the picture board is locked behind the birthday hint, photos to come', () => {
-    expect(real.home.board.hint).toBe('birthday-month-day')
+    expect(real.home.board.hint).toBe('six digits')
+    expect(real.home.worldmap.hint).toBe('six digits')
     expect(real.home.board.sections.map(s => s.title)).toEqual(['Middle School', 'High School', 'University', 'Life', 'Pet', 'Family & Friend', 'Future....'])
     expect(real.home.board.sections[4].children.map(c => c.title)).toEqual(['Twizzler', '小花', '小不点', '伯爵'])
     expect(real.home.board.sections[5].photos).toHaveLength(35)

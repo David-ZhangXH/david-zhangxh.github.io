@@ -156,21 +156,22 @@ export function petPanel(pet) {
 </div>`
 }
 
-// the picture board's lock: four digits, the hint is David's
-export function boardGate(hint) {
+// a private album's lock: N digits, the hint is David's
+export function albumGate(title, hint, digits = 6) {
   return `
 <div class="v-panel v-gate">
-  <h3>PICTURE BOARD</h3>
+  <h3>${esc(title)}</h3>
   <p>Locked.</p>
-  <div class="v-code">
-    ${[0, 1, 2, 3].map(i => `<input inputmode="numeric" maxlength="1" data-d="${i}" aria-label="digit ${i + 1}">`).join('')}
+  <div class="v-code v-code-${digits}">
+    ${Array.from({ length: digits }, (_, i) => `<input inputmode="numeric" maxlength="1" data-d="${i}" aria-label="digit ${i + 1}">`).join('')}
   </div>
-  <p class="v-dim">hint: ${esc(hint || '')}</p>
-  <p class="v-actions"><button class="v-btn" data-try-board>open</button></p>
-  <p class="v-nudge2" hidden>not that — month, then day.</p>
+  ${hint ? `<p class="v-dim">hint: ${esc(hint)}</p>` : ''}
+  <p class="v-actions"><button class="v-btn" data-try-gate>open</button></p>
+  <p class="v-nudge2" hidden>not that one.</p>
 </div>`
 }
-// the picture board, unlocked: sections → photos (Future.... stays shut)
+export const boardGate = (hint) => albumGate('PICTURE BOARD', hint)
+
 export function boardView(obj, view = {}) {
   const secs = obj.sections || []
   const chips = (list, attr) => `<div class="v-chips">${list.map((x, i) => `<button class="v-chip v-place${x.later ? ' later' : ' group'}" ${attr}="${i}"${x.later ? ' disabled' : ''}>${esc(x.title)}</button>`).join('')}</div>`
