@@ -188,10 +188,10 @@
 
 /* ---- the prize flip-book ---- */
 .v-prize { max-width: 420px; }
-.v-book { position: relative; width: 100%; aspect-ratio: 9 / 16; max-height: 56vh; margin: 8px auto 6px; perspective: 900px; cursor: pointer; }
+.v-book { position: relative; width: min(100%, calc(56vh * 9 / 16)); aspect-ratio: 9 / 16; margin: 8px auto 6px; perspective: 900px; cursor: pointer; }
 .v-page { position: absolute; inset: 0; margin: 0; display: none; transform-origin: left center;
-  border: 3px solid #2b3550; border-radius: 3px; background: #2b3550; overflow: hidden; box-shadow: 4px 4px 0 rgba(43,53,80,.35); backface-visibility: hidden; }
-.v-page img { width: 100%; height: 100%; object-fit: contain; display: block; background: #0f1320; }
+  border: 3px solid #2b3550; border-radius: 3px; background: #f7ecd7; overflow: hidden; box-shadow: 4px 4px 0 rgba(43,53,80,.35); backface-visibility: hidden; }
+.v-page img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .v-page.on { display: block; }
 .v-page.flip-out { animation: v-flip-out .24s ease-in forwards; }
 .v-page.flip-in { animation: v-flip-in .26s ease-out; }
@@ -203,3 +203,13 @@
 @keyframes v-flip-in-back { from { transform: rotateY(-88deg) } to { transform: rotateY(0) } }
 .v-book-nav { justify-content: space-between; align-items: center; }
 .v-book-nav .v-btn:disabled { opacity: .4; cursor: default; }
+
+/* ---- phones: every panel fits the screen, photo grids drop to two columns ---- */
+@media (max-width: 560px) {
+  .v-overlay { padding: 10px; align-items: flex-start; padding-top: 14px; }
+  .v-panel, .v-musicbox, .v-station, .v-docs, .v-worldmap, .v-prize { max-width: 100%; max-height: calc(100vh - 28px); padding: 16px 14px; }
+  .v-photos { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .v-albums { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .v-letter { max-height: 40vh; }
+  .v-toast { top: auto; bottom: 64px; max-width: calc(100vw - 40px); }
+}

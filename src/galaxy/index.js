@@ -22,10 +22,13 @@ export function mountGalaxy({ onExit, onClassic, reducedMotion = false } = {}) {
 
   const engine = createEngine(root, {
     background: 0x04060f,
-    fovFor: (aspect) => (aspect < 0.8 ? 72 : 55)
+    fovFor: (aspect) => (aspect < 0.8 ? 66 : 55)
   })
   const { scene, camera } = engine
-  camera.position.set(0, 1.4, 7)
+  // a phone held upright sees a narrow slice, so the camera starts further back
+  const isPortrait = () => (root.clientWidth || window.innerWidth) / (root.clientHeight || window.innerHeight) < 0.8
+  const homePos = () => (isPortrait() ? [0, 1.8, 12.5] : [0, 1.4, 7])
+  camera.position.set(...homePos())
 
   const grade = document.createElement('div')
   grade.className = 'galaxy-grade'
@@ -47,7 +50,15 @@ export function mountGalaxy({ onExit, onClassic, reducedMotion = false } = {}) {
   controls.enableDamping = true
   controls.dampingFactor = 0.06
   controls.minDistance = 2.2
-  controls.maxDistance = 11
+  controls.maxDistance = 14
+  let wasPortrait = isPortrait()
+  const onOrient = () => {
+    const now = isPortrait()
+    if (now === wasPortrait) return
+    wasPortrait = now
+    if (state.get().mode === 'drift') { camera.position.set(...homePos()); controls.target.set(0, 0, 0) }
+  }
+  window.addEventListener('resize', onOrient)
   controls.autoRotate = !reducedMotion
   controls.autoRotateSpeed = 0.35
   let lastT = 0
@@ -208,6 +219,7 @@ export function mountGalaxy({ onExit, onClassic, reducedMotion = false } = {}) {
   function unmount() {
     audio.stopAll()
     window.removeEventListener('keydown', escKey)
+    window.removeEventListener('resize', onOrient)
     backdrop?.remove()
     tooltip.remove(); proxies.remove(); back.remove(); classicBtn.remove()
     controls.dispose()

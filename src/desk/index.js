@@ -46,7 +46,8 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   hud.className = 'desk-hud'
   hud.innerHTML = `
     <div class="desk-mark"><span class="desk-mark__eyebrow">DAVID / WORLD 01</span><strong>THE DESK</strong></div>
-    <div class="desk-weather"><span class="desk-weather__dot"></span>23:47 · RAIN OVER THE CITY</div>`
+    <div class="desk-weather"><span class="desk-weather__dot"></span>23:47 · RAIN OVER THE CITY</div>
+    <div class="desk-panhint">← drag to look around →</div>`
   root.appendChild(hud)
   const { hotspots, screen, crank, mugTip, windowRegion, candle } = buildFurniture(world.scene)
   if (audio.soundOn()) audio.startProfile('desk')
@@ -97,6 +98,11 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   const cur = { pos: new THREE.Vector3(...INTRO_START.pos), look: new THREE.Vector3(...INTRO_START.look) }
   let tween = null // {fromPos, fromLook, toPos, toLook, t, dur, then}
   const mouse = { x: 0, y: 0 }
+  // narrow screens see a slice of the desk; a horizontal drag pans across it
+  const pan = { x: 0, dragging: false, moved: false, startX: 0, startPan: 0 }
+  const isNarrow = () => root.clientWidth / root.clientHeight < 1.6
+  const halfVisible = () => 1.125 * Math.min(root.clientWidth / root.clientHeight, 4 / 2.25)  // world units at the art plane
+  const panLimit = () => Math.max(0, 2 - halfVisible() - 0.02)
 
   function tweenTo(pose, dur, then) {
     tween = {
@@ -119,8 +125,12 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
     const portrait = root.clientWidth / root.clientHeight < 0.8
     const px = state.get().mode === 'idle' && !tween ? mouse.x * (portrait ? 0.34 : 0.08) : 0
     const py = state.get().mode === 'idle' && !tween ? mouse.y * (portrait ? 0.10 : 0.05) : 0
-    cam.position.set(cur.pos.x + px, cur.pos.y - py, cur.pos.z)
-    cam.lookAt(cur.look)
+    const atHome = state.get().mode === 'idle' && !tween
+    if (!atHome && !pan.dragging) pan.x += (0 - pan.x) * Math.min(1, dt * 4)
+    pan.x = Math.max(-panLimit(), Math.min(panLimit(), pan.x))
+    const ox = atHome ? pan.x : 0
+    cam.position.set(cur.pos.x + px + ox, cur.pos.y - py, cur.pos.z)
+    cam.lookAt(cur.look.x + ox, cur.look.y, cur.look.z)
   })
 
   // ---- intro ----
@@ -169,6 +179,7 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   }
 
   root.addEventListener('pointermove', (e) => {
+    if (pan.dragging && pan.moved) root.classList.add('has-panned')
     mouse.x = (e.clientX / root.clientWidth) * 2 - 1
     mouse.y = (e.clientY / root.clientHeight) * 2 - 1
     const id = state.get().mode === 'idle' ? pick(e.clientX, e.clientY) : null
@@ -216,7 +227,21 @@ export function mountDesk({ reducedMotion = false, skipIntro = false, onExit, on
   let worldTime = 0
   world.onTick((dt, t) => { worldTime = t })
 
+  root.addEventListener('pointerdown', (e) => {
+    if (!isNarrow() || state.get().mode !== 'idle') return
+    pan.dragging = true; pan.moved = false; pan.startX = e.clientX; pan.startPan = pan.x
+  })
+  root.addEventListener('pointermove', (e) => {
+    if (!pan.dragging) return
+    const dx = e.clientX - pan.startX
+    if (Math.abs(dx) > 8) pan.moved = true
+    pan.x = pan.startPan - dx / root.clientWidth * halfVisible() * 2
+  })
+  const endDrag = () => { pan.dragging = false }
+  root.addEventListener('pointerup', endDrag)
+  root.addEventListener('pointercancel', endDrag)
   root.addEventListener('click', (e) => {
+    if (pan.moved) { pan.moved = false; return }   // that was a drag, not a tap
     const st = state.get()
     if (st.mode === 'intro') { endIntro(); return }
     if (st.mode !== 'idle') return

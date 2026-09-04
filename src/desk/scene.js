@@ -10,8 +10,9 @@ export function createScene(container) {
     // phones use a legible close-up and pan across the wider studio.
     // COVER fit: the artwork always fills the whole window (the shorter
     // axis crops slightly instead of showing black bars at the sides).
+    // cover-fit: the painting always fills the screen. On a phone that means a
+    // tall slice of the desk — the visitor drags sideways to look around.
     fovFor: (aspect) => {
-      if (aspect < 0.8) return 64
       const t = Math.min(1.125 / 3, 2 / (3 * aspect))
       return THREE.MathUtils.radToDeg(2 * Math.atan(t))
     },
